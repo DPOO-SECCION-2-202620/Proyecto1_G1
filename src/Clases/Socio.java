@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.Duration;
-import java.time.LocalDateTime;
 
 public class Socio extends Usuario{
 private int edad;
@@ -15,19 +14,25 @@ private List<InscripcionEquipo> inscripcionesEquipo;
 private List<InscripcionIndividual> inscripcionesIndividuales;
 private List<Reserva> reservas;
 
-public Socio(int edad,  String nombre, String login, String password, int puntosFidelidad) {
-	super(nombre,login,password);
+public Socio(int edad, String nombre, String login, String password) {
+	this(edad, nombre, login, password, 0);
+}
+
+public Socio(int edad, String nombre, String login, String password, int puntosFidelidad) {
+	super(nombre, login, password);
+	if (puntosFidelidad < 0) {
+		throw new IllegalArgumentException("Los puntos de fidelidad no pueden ser negativos");
+	}
 	this.edad = edad;
 	this.puntosFidelidad = puntosFidelidad;
 	this.horaUltimaBebidaCaliente = null;
-    this.inscripcionesEquipo = new ArrayList<>();
-    this.inscripcionesIndividuales = new ArrayList<>();
-    this.reservas = new ArrayList<>();
-	
+	this.inscripcionesEquipo = new ArrayList<>();
+	this.inscripcionesIndividuales = new ArrayList<>();
+	this.reservas = new ArrayList<>();
 }
 
-public boolean tieneEquipoEn (DeporteConjunto deporte) {
-	for (InscripcionEquipo inscripcion : inscripcionesEquipo ) {
+public boolean tieneEquipoEn(DeporteConjunto deporte) {
+	for (InscripcionEquipo inscripcion : inscripcionesEquipo) {
 		Equipo equipo = inscripcion.getEquipo();
 		DeporteConjunto deporteDelEquipo = equipo.getDeporte();
 		if (deporteDelEquipo.equals(deporte)) {
@@ -37,13 +42,15 @@ public boolean tieneEquipoEn (DeporteConjunto deporte) {
 	return false;
 }
 
+public boolean estaInscritoEn(DisciplinaIndividual disciplina) {
+	return buscarInscripcionIndividual(disciplina) != null;
+}
+
 public void redimirPuntos(int puntos){
 if (puntos <= 0 || puntos > puntosFidelidad) {
 	throw new IllegalArgumentException ("Los puntos no pueden ser redimidos");
 }
-else {
-	this.puntosFidelidad -= puntos;
-}
+this.puntosFidelidad -= puntos;
 }
 
 public void acumularPuntos (int puntos) {

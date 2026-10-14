@@ -1,11 +1,13 @@
 package Clases;
 
 public abstract class DeporteConjunto {
-
+	
+	private String nombre;
 	protected int minimoJugadores;
 
-	public DeporteConjunto(int minimoJugadores) {
+	public DeporteConjunto(String nombre, int minimoJugadores) {
 		super();
+		this.nombre = nombre;
 		this.minimoJugadores = minimoJugadores;
 	}
 	
@@ -16,5 +18,10 @@ public abstract class DeporteConjunto {
 	public int getMinimoJugadores() {
 		return minimoJugadores;
 	}
+
+	public String getNombre() {
+		return nombre;
+	}
+	
 	
 }

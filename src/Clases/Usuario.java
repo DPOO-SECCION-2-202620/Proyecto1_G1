@@ -27,5 +27,9 @@ public String getPassword() {
 	return password;
 }
 
+public boolean verificarPassword (String password) {
+	return this.password.equals(password);
+}
+
 
 }

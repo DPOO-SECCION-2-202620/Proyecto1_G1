@@ -3,7 +3,7 @@ package Clases;
 public class Baloncesto extends DeporteConjunto{
 	
 	public Baloncesto() {
-		super(5);
+		super("Baloncesto", 5);
 	}
 
 	@Override

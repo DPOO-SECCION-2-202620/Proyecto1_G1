@@ -11,12 +11,12 @@ private List<InscripcionEquipo> inscripciones;
 private DeporteConjunto deporte;
 private Categoria categoria;
 
-public Equipo(String nombre, int cupoMaximo, List<InscripcionEquipo> inscripciones, DeporteConjunto deporte,
+public Equipo(String nombre, int cupoMaximo, DeporteConjunto deporte,
 		Categoria categoria) {
 	super();
 	this.nombre = nombre;
 	this.cupoMaximo = cupoMaximo;
-	this.inscripciones = inscripciones;
+	this.inscripciones = new ArrayList<>();
 	this.deporte = deporte;
 	this.categoria = categoria;
 }
@@ -52,6 +52,15 @@ public boolean camisetaOcupada(int numeroCamiseta) {
 	return false;
 }
 
+public InscripcionEquipo buscarInscripcion(Socio jugador) {
+	for (InscripcionEquipo inscripcion : inscripciones) {
+		if (inscripcion.getJugador() == jugador) {
+			return inscripcion;
+		}
+	}
+	return null;
+}
+
 public String getNombre() {
     return nombre;
 }
@@ -71,6 +80,10 @@ public Categoria getCategoria() {
 public List<InscripcionEquipo> getInscripciones() {
     return inscripciones;
 }
-	
+
+@Override
+public String toString() {
+	return nombre + " (" + deporte + ", " + categoria + ")";
+
 }
 

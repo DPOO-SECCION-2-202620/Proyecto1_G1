@@ -7,17 +7,28 @@ import java.util.List;
 
 public abstract class DisciplinaIndividual {
 
-	private int maxInstalacionesIndividuales;
+	private int maxInstalacionesSimultaneas;
 	private String nombre;
 	private List<InstalacionIndividual> instalaciones;
 	
-	public DisciplinaIndividual(int maxInstalacionesIndividuales, String nombre) {
+	public DisciplinaIndividual(int maxInstalacionesSimultaneas, String nombre) {
 		super();
-		this.maxInstalacionesIndividuales = maxInstalacionesIndividuales;
+		this.maxInstalacionesSimultaneas = maxInstalacionesSimultaneas;
 		this.nombre = nombre;
 		this.instalaciones = new ArrayList<>();
 	}
 	
+	public boolean hayCupo() {
+		
+	}
+
+	public int getMaxInstalacionesSimultaneas() {
+		return maxInstalacionesSimultaneas;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
 	
 	
 	
