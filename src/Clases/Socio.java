@@ -14,9 +14,6 @@ private List<InscripcionEquipo> inscripcionesEquipo;
 private List<InscripcionIndividual> inscripcionesIndividuales;
 private List<Reserva> reservas;
 
-public Socio(int edad, String nombre, String login, String password) {
-	this(edad, nombre, login, password, 0);
-}
 
 public Socio(int edad, String nombre, String login, String password, int puntosFidelidad) {
 	super(nombre, login, password);
@@ -44,6 +41,10 @@ public boolean tieneEquipoEn(DeporteConjunto deporte) {
 
 public boolean estaInscritoEn(DisciplinaIndividual disciplina) {
 	return buscarInscripcionIndividual(disciplina) != null;
+}
+
+public InscripcionIndividual buscarInscripcionIndividual () {
+	
 }
 
 public void redimirPuntos(int puntos){
@@ -119,6 +120,8 @@ public List<InscripcionIndividual> getInscripcionesIndividuales() {
 public List<Reserva> getReservas() {
 	return reservas;
 }
+
+
 
 
 

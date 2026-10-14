@@ -1,5 +1,5 @@
 package Clases;
 
-public class TenisDeMesa {
+public class TenisDeMesa extends DisciplinaIndividual {
 
 }

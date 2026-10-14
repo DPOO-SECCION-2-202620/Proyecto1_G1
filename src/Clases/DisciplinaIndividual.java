@@ -18,10 +18,25 @@ public abstract class DisciplinaIndividual {
 		this.instalaciones = new ArrayList<>();
 	}
 	
-	public boolean hayCupo() {
-		
+	public abstract boolean aceptaEstadistica(EstadisticaPractica estadistica);
+	
+	public boolean hayCupo(List<Reserva> reservas, LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
+		int ocupadas = 0;
+		for (Reserva reserva : reservas) {
+			if (reserva.getInstalacion().getDisciplina() == this
+					&& reserva.seSolapaCon(fecha, horaInicio, horaFinal)) {
+				ocupadas++;
+			}
+		}
+		return ocupadas < maxInstalacionesSimultaneas;
 	}
 
+	public void agregarInstalacion(InstalacionIndividual instalacion) {
+		if (!instalaciones.contains(instalacion)) {
+			instalaciones.add(instalacion);
+		}
+	}
+	
 	public int getMaxInstalacionesSimultaneas() {
 		return maxInstalacionesSimultaneas;
 	}

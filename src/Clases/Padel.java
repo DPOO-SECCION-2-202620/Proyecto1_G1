@@ -1,5 +1,5 @@
 package Clases;
 
-public class Padel {
+public class Padel extends DisciplinaIndividual   {
 
 }
