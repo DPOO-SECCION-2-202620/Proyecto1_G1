@@ -13,7 +13,6 @@ private Categoria categoria;
 
 public Equipo(String nombre, int cupoMaximo, DeporteConjunto deporte,
 		Categoria categoria) {
-	super();
 	this.nombre = nombre;
 	this.cupoMaximo = cupoMaximo;
 	this.inscripciones = new ArrayList<>();
@@ -25,13 +24,12 @@ public boolean agregarJugador(Socio jugador, String posicion, int numeroCamiseta
 	if (inscripciones.size() >= cupoMaximo) {
 		return false;
 	}
-	if (categoria.getEdadMinima() > jugador.getEdad() || jugador.getEdad() > categoria.getEdadMaxima()) {
+	if (!categoria.admiteEdad(jugador.getEdad())) {
 		return false;
 	}
 	if (jugador.tieneEquipoEn(deporte)) {
-		return false;	
+		return false;
 	}
-	
 	if (camisetaOcupada(numeroCamiseta)) {
 		return false;
 	}
@@ -52,13 +50,48 @@ public boolean camisetaOcupada(int numeroCamiseta) {
 	return false;
 }
 
-public InscripcionEquipo buscarInscripcion(Socio jugador) {
+public InscripcionEquipo getInscripcionDe(Socio socio) {
 	for (InscripcionEquipo inscripcion : inscripciones) {
-		if (inscripcion.getJugador() == jugador) {
+		if (inscripcion.getJugador() == socio) {
 			return inscripcion;
 		}
 	}
 	return null;
+}
+
+public boolean estaHabilitado(Socio jugador) {
+	InscripcionEquipo inscripcion = getInscripcionDe(jugador);
+	if (inscripcion == null) {
+		return false;
+	}
+	return inscripcion.estaHabilitado();
+}
+
+public int contarJugadoresHabilitados() {
+	int habilitados = 0;
+	for(InscripcionEquipo inscripcion : inscripciones) {
+		if(inscripcion.estaHabilitado()) {
+			habilitados++;
+		}
+	}
+	return habilitados;
+}
+
+public boolean puedeJugar() {
+	if (contarJugadoresHabilitados() >= deporte.getMinimoJugadores()) {
+		return true;
+	}
+	return false;
+}
+
+public List<InscripcionEquipo> getInscripcionesSuspendidas() {
+	List<InscripcionEquipo> suspendidas = new ArrayList<>();
+	for (InscripcionEquipo inscripcion : inscripciones) {
+		if (!inscripcion.estaHabilitado()) {
+			suspendidas.add(inscripcion);
+		}
+	}
+	return suspendidas;
 }
 
 public String getNombre() {
@@ -85,5 +118,6 @@ public List<InscripcionEquipo> getInscripciones() {
 public String toString() {
 	return nombre + " (" + deporte + ", " + categoria + ")";
 
+}
 }
 

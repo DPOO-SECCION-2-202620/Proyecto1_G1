@@ -12,20 +12,15 @@ public static final int minutosBebidaCaliente = 30;
 private LocalDateTime horaUltimaBebidaCaliente;
 private List<InscripcionEquipo> inscripcionesEquipo;
 private List<InscripcionIndividual> inscripcionesIndividuales;
-private List<Reserva> reservas;
 
 
-public Socio(int edad, String nombre, String login, String password, int puntosFidelidad) {
+public Socio(int edad, String nombre, String login, String password) {
 	super(nombre, login, password);
-	if (puntosFidelidad < 0) {
-		throw new IllegalArgumentException("Los puntos de fidelidad no pueden ser negativos");
-	}
 	this.edad = edad;
-	this.puntosFidelidad = puntosFidelidad;
+	this.puntosFidelidad = 0;
 	this.horaUltimaBebidaCaliente = null;
 	this.inscripcionesEquipo = new ArrayList<>();
 	this.inscripcionesIndividuales = new ArrayList<>();
-	this.reservas = new ArrayList<>();
 }
 
 public boolean tieneEquipoEn(DeporteConjunto deporte) {
@@ -39,12 +34,13 @@ public boolean tieneEquipoEn(DeporteConjunto deporte) {
 	return false;
 }
 
-public boolean estaInscritoEn(DisciplinaIndividual disciplina) {
-	return buscarInscripcionIndividual(disciplina) != null;
-}
-
-public InscripcionIndividual buscarInscripcionIndividual () {
-	
+public NivelJugador getNivelEn(DisciplinaIndividual disciplina) {
+	for (InscripcionIndividual inscripcion : inscripcionesIndividuales) {
+		if (inscripcion.getDisciplina() == disciplina) {
+			return inscripcion.getNivel();
+		}
+	}
+	return null;
 }
 
 public void redimirPuntos(int puntos){
@@ -85,9 +81,6 @@ public void agregarInscripcionIndividual(InscripcionIndividual inscripcion) {
     inscripcionesIndividuales.add(inscripcion);
 }
 
-public void agregarReserva(Reserva reserva) {
-    reservas.add(reserva);
-}
 
 public boolean esEntrenador() {
     return false;
@@ -95,10 +88,6 @@ public boolean esEntrenador() {
 
 public int getEdad() {
 	return edad;
-}
-
-public void setEdad(int edad) {
-	this.edad = edad;
 }
 
 public int getPuntosFidelidad() {
@@ -115,10 +104,6 @@ public List<InscripcionEquipo> getInscripcionesEquipo() {
 
 public List<InscripcionIndividual> getInscripcionesIndividuales() {
 	return inscripcionesIndividuales;
-}
-
-public List<Reserva> getReservas() {
-	return reservas;
 }
 
 

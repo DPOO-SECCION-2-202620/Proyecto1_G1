@@ -23,7 +23,7 @@ public abstract class DisciplinaIndividual {
 	public boolean hayCupo(List<Reserva> reservas, LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
 		int ocupadas = 0;
 		for (Reserva reserva : reservas) {
-			if (reserva.getInstalacion().getDisciplina() == this
+			if (listaInstalaciones.contains(reserva.getInstalacion())
 					&& reserva.seSolapaCon(fecha, horaInicio, horaFinal)) {
 				ocupadas++;
 			}
@@ -44,6 +44,16 @@ public abstract class DisciplinaIndividual {
 	public String getNombre() {
 		return nombre;
 	}
+
+	public List<InstalacionIndividual> getInstalaciones() {
+		return instalaciones;
+	}
+	
+	@Override
+	public String toString() {
+		return nombre;
+	}
+	
 	
 	
 	
