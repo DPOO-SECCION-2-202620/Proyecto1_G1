@@ -2,7 +2,8 @@ package Clases;
 
 public class CanchaPadel extends InstalacionIndividual{
 	
-	public CanchaPadel(String nombre, boolean techado, String salon, Padel padel) {
+	public CanchaPadel(String nombre, int capacidadMaxima, boolean techado, int salon,
+			Padel padel) {
 		super(nombre, 4, techado, salon, padel);
 	}
 

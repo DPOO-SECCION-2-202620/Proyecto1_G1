@@ -6,7 +6,6 @@ public abstract class DeporteConjunto {
 	protected int minimoJugadores;
 
 	public DeporteConjunto(String nombre, int minimoJugadores) {
-		super();
 		this.nombre = nombre;
 		this.minimoJugadores = minimoJugadores;
 	}

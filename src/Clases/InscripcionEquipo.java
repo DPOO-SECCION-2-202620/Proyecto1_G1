@@ -28,7 +28,7 @@ public class InscripcionEquipo {
 		controlSanciones.suspender();
 	}
 
-	public void habilitar() {
+	public void cumplirSuspension() {
 		controlSanciones.habilitar();
 	}
 

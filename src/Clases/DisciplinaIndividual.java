@@ -18,12 +18,10 @@ public abstract class DisciplinaIndividual {
 		this.instalaciones = new ArrayList<>();
 	}
 	
-	public abstract boolean aceptaEstadistica(EstadisticaPractica estadistica);
-	
 	public boolean hayCupo(List<Reserva> reservas, LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
 		int ocupadas = 0;
 		for (Reserva reserva : reservas) {
-			if (listaInstalaciones.contains(reserva.getInstalacion())
+			if (instalaciones.contains(reserva.getInstalacion())
 					&& reserva.seSolapaCon(fecha, horaInicio, horaFinal)) {
 				ocupadas++;
 			}
