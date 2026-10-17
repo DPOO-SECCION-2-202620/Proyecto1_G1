@@ -3,6 +3,9 @@ package DeportesIndividuales;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import Instalaciones.InstalacionIndividual;
+import Usuarios.Socio;
+
 public class Reserva {
 
 	private int numeroJugadores;

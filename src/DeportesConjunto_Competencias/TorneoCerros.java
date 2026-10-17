@@ -3,6 +3,8 @@ package DeportesConjunto_Competencias;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import PartidosEquipo_Estadisticas.PartidoExterno;
+
 public class TorneoCerros extends Competencia{
 
 	private Map <Equipo, Integer> tablaPosiciones;

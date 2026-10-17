@@ -5,6 +5,7 @@ import DeportesConjunto_Competencias.Competencia;
 import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
 import Excepciones.ReglaNegocioException;
+import NucleoSistema.ClubSeneca;
 
 public class Administrador extends Usuario{
 

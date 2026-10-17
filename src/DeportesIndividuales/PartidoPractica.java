@@ -1,8 +1,12 @@
 package DeportesIndividuales;
 
-import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+
+import Excepciones.ReglaNegocioException;
+import Instalaciones.InstalacionIndividual;
+import Usuarios.Socio;
 
 public class PartidoPractica {
 

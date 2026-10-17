@@ -3,6 +3,8 @@ package DeportesConjunto_Competencias;
 import java.util.ArrayList;
 import java.util.List;
 
+import Usuarios.Socio;
+
 public class InscripcionCompetencia {
 
 	private Equipo equipo;

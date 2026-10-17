@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import Instalaciones.InstalacionIndividual;
+
 public abstract class DisciplinaIndividual {
 
 	private int maxInstalacionesSimultaneas;

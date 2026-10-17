@@ -5,6 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import PartidosEquipo_Estadisticas.EstadisticaBaloncesto;
+import PartidosEquipo_Estadisticas.EstadisticaConjunto;
+import PartidosEquipo_Estadisticas.EstadisticaFutbol;
+import PartidosEquipo_Estadisticas.EstadisticaVoleibol;
+import PartidosEquipo_Estadisticas.PartidoExterno;
+import Usuarios.Socio;
+
 public abstract class Competencia {
 
 	private String nombre;
