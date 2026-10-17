@@ -8,7 +8,7 @@ import java.time.Duration;
 public class Socio extends Usuario{
 private int edad;
 private int puntosFidelidad;
-public static final int minutosBebidaCaliente = 30;
+public static final int MINUTOS_BEBIDA_CALIENTE = 30;
 private LocalDateTime horaUltimaBebidaCaliente;
 private List<InscripcionEquipo> inscripcionesEquipo;
 private List<InscripcionIndividual> inscripcionesIndividuales;
@@ -50,9 +50,9 @@ if (puntos <= 0 || puntos > puntosFidelidad) {
 this.puntosFidelidad -= puntos;
 }
 
-public void acumularPuntos (int puntos) {
-	if (puntosFidelidad >= 0) {
-	this.puntosFidelidad += puntos;	
+public void acumularPuntos(int puntos) {
+	if (puntos > 0) {
+		this.puntosFidelidad += puntos;
 	}
 }
 
@@ -66,7 +66,7 @@ public boolean llevaBebidaCaliente(LocalDateTime momento) {
         return false;
     }
 	long minutos = Duration.between(this.horaUltimaBebidaCaliente, momento).toMinutes();
-	if (minutos >= 0 && minutos < minutosBebidaCaliente) {
+	if (minutos >= 0 && minutos < MINUTOS_BEBIDA_CALIENTE) {
 		return true;
 	}
 	return false;

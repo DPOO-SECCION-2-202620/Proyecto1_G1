@@ -6,12 +6,10 @@ public class RankingJugadorDisciplina {
 	private Socio jugador;
 	private DisciplinaIndividual disciplina;
 	
-	public RankingJugadorDisciplina(double puntajeElo, Socio jugador, DisciplinaIndividual disciplina) {
-		this.puntajeElo = puntajeElo;
+	public RankingJugadorDisciplina(Socio jugador, DisciplinaIndividual disciplina) {
 		this.jugador = jugador;
 		this.disciplina = disciplina;
 	}
-	
 	
 
 	public double getPuntajeElo() {
@@ -22,5 +20,7 @@ public class RankingJugadorDisciplina {
 		return jugador;
 	}
 	
-		
+	public DisciplinaIndividual getDisciplina() {
+		return disciplina;
+	}
 }

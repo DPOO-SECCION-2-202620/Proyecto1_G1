@@ -14,7 +14,7 @@ public class PartidoPractica {
 	private List<EstadisticaPractica> estadisticas;
 	
 	
-	public PartidoPractica(LocalDate fecha, boolean finalizado, DisciplinaIndividual disciplina, List<Socio> jugadores,
+	public PartidoPractica(LocalDate fecha, DisciplinaIndividual disciplina, List<Socio> jugadores,
 			InstalacionIndividual instalacion) {
 		if (jugadores.size() != 2 && jugadores.size() != 4) {
 			throw new IllegalArgumentException("Un partido de práctica tiene 2 o 4 jugadores");

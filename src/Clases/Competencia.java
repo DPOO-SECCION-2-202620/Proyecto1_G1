@@ -106,7 +106,7 @@ public abstract class Competencia {
 	public Socio getGoleador() {
 		Map<Socio, Integer> anotaciones = new HashMap<>();
 		for (PartidoExterno partido : listaPartidos) {
-	        for (EstadisticaConjunto estadistica : partido.getEstadisticaConjunto()) {
+	        for (EstadisticaConjunto estadistica : partido.getEstadisticas()) {
 	            int valor = 0;
 	            if (estadistica instanceof EstadisticaFutbol) {
 	                EstadisticaFutbol futbol = (EstadisticaFutbol) estadistica;
@@ -135,7 +135,7 @@ public abstract class Competencia {
 	public Socio getJugadorDestacado() {
 		Map<Socio, Integer> aportes = new HashMap<>();
 		for (PartidoExterno partido : listaPartidos) {
-	        for (EstadisticaConjunto estadistica : partido.getEstadisticaConjunto()) {
+	        for (EstadisticaConjunto estadistica : partido.getEstadisticas()) {
 	            Socio socio = estadistica.getJugador().getJugador();
 	            aportes.put(socio, aportes.getOrDefault(socio, 0) + estadistica.calcularAporte());
 	        }

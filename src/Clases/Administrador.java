@@ -1,6 +1,6 @@
 package Clases;
 
-public class Administrador {
+public class Administrador extends Usuario{
 
 	private ClubSeneca club;
 	

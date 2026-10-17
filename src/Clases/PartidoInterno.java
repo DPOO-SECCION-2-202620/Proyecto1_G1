@@ -9,8 +9,8 @@ public class PartidoInterno extends Partido{
 	private Equipo equipoVisitante;
 	private Equipo equipoLocal;
 	
-	public PartidoInterno(LocalDate fecha, int marcadorLocal, int marcadorVisitante, Equipo equipoVisitante,
-			Equipo equipoLocal) {
+	public PartidoInterno(LocalDate fecha, Equipo equipoLocal, Equipo equipoVisitante, int marcadorLocal,
+			int marcadorVisitante) {
 		super(fecha);
 		this.marcadorLocal = marcadorLocal;
 		this.marcadorVisitante = marcadorVisitante;

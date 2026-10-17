@@ -22,5 +22,9 @@ public abstract class DeporteConjunto {
 		return nombre;
 	}
 	
+	@Override
+	public String toString() {
+		return nombre;
+	}
 	
 }

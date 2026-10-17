@@ -17,7 +17,7 @@ public abstract class Partido {
 		return fecha;
 	}
 
-	public List<EstadisticaConjunto> getEstadisticaConjunto() {
+	public List<EstadisticaConjunto> getEstadisticas() {
 		return estadisticasConjunto;
 	}
 		
