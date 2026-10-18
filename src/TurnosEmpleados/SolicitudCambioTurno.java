@@ -1,4 +1,4 @@
-package Tienda_Cafeteria_Inventario;
+package TurnosEmpleados;
 
 public class SolicitudCambioTurno {
 

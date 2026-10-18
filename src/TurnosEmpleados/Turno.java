@@ -1,5 +1,5 @@
 package TurnosEmpleados;
 
-public class Tienda {
+public class Turno {
 
 }

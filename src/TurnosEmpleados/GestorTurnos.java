@@ -1,5 +1,5 @@
 package TurnosEmpleados;
 
-public enum Rubro {
+public class GestorTurnos {
 
 }
