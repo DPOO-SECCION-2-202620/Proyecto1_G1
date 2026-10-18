@@ -1,6 +1,7 @@
 package NucleoSistema;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,10 +17,13 @@ import DeportesIndividuales.PartidoPractica;
 import DeportesIndividuales.RankingJugadorDisciplina;
 import DeportesIndividuales.Reserva;
 import Entrenamiento.SesionEntrenamiento;
+import Instalaciones.Instalacion;
+import Instalaciones.InstalacionIndividual;
 import PartidosEquipo_Estadisticas.PartidoExterno;
 import PartidosEquipo_Estadisticas.PartidoInterno;
 import Tienda_Cafeteria_Inventario.CafeteriaSocios;
 import Tienda_Cafeteria_Inventario.Inventario;
+import Tienda_Cafeteria_Inventario.Producto;
 import Tienda_Cafeteria_Inventario.Rubro;
 import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
 import Tienda_Cafeteria_Inventario.Tienda;
@@ -58,7 +62,7 @@ public class ClubSeneca {
 	
 	private Tienda tienda;
 	
-	private List<Empleado> empleado;
+	private List<Empleado> empleados;
 	
 	private List<Venta> ventas;
 	
@@ -219,6 +223,10 @@ public class ClubSeneca {
 		
 	}
 	
+	public void setPersistencia(Persistencia persistencia) {
+		this.persistencia = persistencia;
+	}
+
 	public JSONObject toJSON() {
 		
 	    JSONObject json = new JSONObject();
@@ -291,6 +299,101 @@ public class ClubSeneca {
 	    json.put("historial", historial.toJSON());
 	    
 	    return json;
+	}
+	
+	public static ClubSeneca fromJSON(JSONObject json) {
+		ClubSeneca club = new ClubSeneca(json.getString("nombre"));
+
+		Map<String, Usuario> mapaUsuarios = new HashMap<>();
+		Map<String, DeporteConjunto> mapaDeportes = new HashMap<>();
+		Map<String, DisciplinaIndividual> mapaDisciplinas = new HashMap<>();
+		Map<String, Instalacion> mapaInstalaciones = new HashMap<>();
+		Map<String, Producto> mapaProductos = new HashMap<>();
+		Map<String, Equipo> mapaEquipos = new HashMap<>();
+
+		JSONArray jsonDisciplinas = leerLista(json, "disciplinas");
+		for (int indice = 0; indice < jsonDisciplinas.length(); indice++) {
+			DisciplinaIndividual disciplina = DisciplinaIndividual.fromJSON(jsonDisciplinas.getJSONObject(indice));
+			club.disciplinas.add(disciplina);
+			mapaDisciplinas.put(disciplina.getNombre(), disciplina);
+			for (InstalacionIndividual instalacion : disciplina.getInstalaciones()) {
+				mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+			}
+		}
+		
+		JSONArray jsonUsuarios = leerLista(json, "usuarios");
+		for (int indice = 0; indice < jsonUsuarios.length(); indice++) {
+			Usuario usuario = Usuario.fromJSON(jsonUsuarios.getJSONObject(indice), mapaDisciplinas);
+			club.usuarios.add(usuario);
+			mapaUsuarios.put(usuario.getLogin(), usuario);
+		}
+
+		JSONArray jsonDeportes = leerLista(json, "deportes");
+		for (int indice = 0; indice < jsonDeportes.length(); indice++) {
+			DeporteConjunto deporte = DeporteConjunto.fromJSON(jsonDeportes.getJSONObject(indice), mapaDeportes);
+			club.deportes.add(deporte);
+			mapaDeportes.put(deporte.getNombre(), deporte);
+		}
+
+		JSONArray jsonRankings = leerLista(json, "rankings");
+		for (int indice = 0; indice < jsonRankings.length(); indice++) {
+			club.rankings.add(RankingJugadorDisciplina.fromJSON(jsonRankings.getJSONObject(indice), mapaUsuarios, mapaDisciplinas));
+		}
+
+		if (json.has("tienda")) {
+			club.tienda = Tienda.fromJSON(json.getJSONObject("tienda"), mapaProductos);
+		}
+		if (json.has("cafeteria")) {
+			club.cafeteria = CafeteriaSocios.fromJSON(json.getJSONObject("cafeteria"), mapaProductos);
+		}
+
+		JSONArray jsonInventarios = leerLista(json, "inventarios");
+		for (int indice = 0; indice < jsonInventarios.length(); indice++) {
+			Inventario inventario = Inventario.fromJSON(jsonInventarios.getJSONObject(indice), mapaProductos, mapaInstalaciones);
+			club.inventarios.add(inventario);
+			Instalacion instalacion = inventario.getInstalacion();
+			mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+		}
+
+		JSONArray jsonEquipos = leerLista(json, "equipos");
+		for (int indice = 0; indice < jsonEquipos.length(); indice++) {
+			Equipo equipo = Equipo.fromJSON(jsonEquipos.getJSONObject(indice), mapaDeportes, mapaUsuarios);
+			club.equipos.add(equipo);
+			mapaEquipos.put(equipo.getNombre(), equipo);
+		}
+
+		JSONArray jsonCompetencias = leerLista(json, "competencias");
+		for (int indice = 0; indice < jsonCompetencias.length(); indice++) {
+			club.competencias.add(Competencia.fromJSON(
+					jsonCompetencias.getJSONObject(indice), mapaDeportes, mapaEquipos));
+		}
+
+		JSONArray jsonVentas = leerLista(json, "ventas");
+		for (int indice = 0; indice < jsonVentas.length(); indice++) {
+			club.ventas.add(Venta.fromJSON(jsonVentas.getJSONObject(indice), mapaUsuarios, mapaProductos));
+		}
+
+		JSONArray jsonSolicitudes = leerLista(json, "solicitudes");
+		for (int indice = 0; indice < jsonSolicitudes.length(); indice++) {
+			club.solicitudes.add(SolicitudCambioTurno.fromJSON(jsonSolicitudes.getJSONObject(indice), mapaUsuarios));
+		}
+
+		JSONArray jsonSugerencias = leerLista(json, "sugerencias");
+		for (int indice = 0; indice < jsonSugerencias.length(); indice++) {
+			club.sugerencias.add(SugerenciaArticulo.fromJSON(jsonSugerencias.getJSONObject(indice)));
+		}
+
+		if (json.has("historial")) {
+			club.historial = Historial.fromJSON(json.getJSONObject("historial"),
+					mapaUsuarios, mapaEquipos, mapaDisciplinas, mapaInstalaciones);
+		}
+
+		return club;
+	}
+	
+	private static JSONArray leerLista(JSONObject json, String clave) {
+		JSONArray lista = json.optJSONArray(clave);         
+		return lista != null ? lista : new JSONArray();    
 	}
 	
 }

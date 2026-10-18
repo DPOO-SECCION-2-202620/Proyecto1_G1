@@ -6,6 +6,9 @@ import org.json.JSONObject;
 
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Modalidad;
+import DeportesIndividuales.Padel;
+import DeportesIndividuales.Tenis;
+import DeportesIndividuales.TenisDeMesa;
 import Usuarios.Socio;
 
 public abstract class InstalacionIndividual extends Instalacion{
@@ -53,12 +56,25 @@ public abstract class InstalacionIndividual extends Instalacion{
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-		json.put("tipo", "InstalacionIndividual");
-	    json.put("techado", techado);
-	    json.put("salon", salon);
-	    json.put("disciplina", disciplina);
+		JSONObject json = super.toJSON();  
+		json.put("techado", techado);
+		json.put("salon", salon);
 		return json;
+	}
+	
+	public static InstalacionIndividual fromJSON(JSONObject json, DisciplinaIndividual disciplina) {
+		String tipo = json.getString("tipo");
+
+		switch (tipo) {
+			case "CanchaTenis":
+				return CanchaTenis.fromJSON(json, (Tenis)disciplina);
+			case "CanchaPadel":
+				return CanchaPadel.fromJSON(json, (Padel)disciplina);
+			case "MESA_TENIS_DE_MESA":
+				return MesaTenisDeMesa.fromJSON(json, (TenisDeMesa)disciplina);
+			default:
+				throw new IllegalArgumentException("Instalación desconocida: " + tipo);
+		}
 	}
 	
 }

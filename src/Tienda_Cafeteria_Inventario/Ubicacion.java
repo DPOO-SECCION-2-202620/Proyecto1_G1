@@ -20,4 +20,8 @@ public class Ubicacion {
 		json.put("nombre", nombre);
 		return json;
 	}
+	
+	public static Ubicacion fromJSON(JSONObject json) {
+		return new Ubicacion(json.getString("nombre"));
+	}
 }

@@ -3,6 +3,7 @@ package DeportesConjunto_Competencias;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import PartidosEquipo_Estadisticas.PartidoExterno;
@@ -44,8 +45,43 @@ public class TorneoCerros extends Competencia{
 
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-	    json.put("tipo", "TorneoCerros");
+		JSONObject json = super.toJSON();
+		json.put("tipo", "TorneoCerros");
+		JSONArray jsonTabla = new JSONArray();
+		for (Map.Entry<Equipo, Integer> fila : tablaPosiciones.entrySet()) {
+			JSONObject jsonFila = new JSONObject();
+			jsonFila.put("equipo", fila.getKey().getNombre());
+			jsonFila.put("puntos", fila.getValue());
+			jsonTabla.put(jsonFila);
+		}
+		json.put("tablaPosiciones", jsonTabla);
 		return json;
+	}
+
+	public static TorneoCerros fromJSON(JSONObject json, Categoria categoria,
+			DeporteConjunto deporte, Map<String, Equipo> mapaEquipos) {
+
+		TorneoCerros torneo = new TorneoCerros(
+				json.getString("nombre"),
+				json.getString("entidadOrganizadora"),
+				json.getInt("anio"),
+				json.getString("formatoJuego"),
+				json.getInt("nominaMinima"),
+				categoria,
+				deporte);
+
+		JSONArray jsonTabla = json.optJSONArray("tablaPosiciones");
+		if (jsonTabla != null) {
+			for (int indice = 0; indice < jsonTabla.length(); indice++) {
+				JSONObject jsonFila = jsonTabla.getJSONObject(indice);
+				String nombreEquipo = jsonFila.getString("equipo");
+				Equipo equipo = mapaEquipos.get(nombreEquipo);
+				if (equipo == null) {
+					throw new IllegalArgumentException("Equipo desconocido en la tabla: " + nombreEquipo);
+				}
+				torneo.tablaPosiciones.put(equipo, jsonFila.getInt("puntos"));
+			}
+		}
+		return torneo;
 	}
 }

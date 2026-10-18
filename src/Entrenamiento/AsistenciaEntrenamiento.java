@@ -1,8 +1,11 @@
 package Entrenamiento;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class AsistenciaEntrenamiento {
 
@@ -57,10 +60,32 @@ public class AsistenciaEntrenamiento {
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("comentario", comentario);
-	    json.put("estado", estado.name());
-	    json.put("jugador", jugador.getLogin());
+		json.put("jugador", jugador.getLogin());
+		json.put("estado", estado.name());
+		json.put("evaluacion", evaluacion);
+		if (comentario != null) {
+			json.put("comentario", comentario);
+		}
 		return json;
+	}
+
+	public static AsistenciaEntrenamiento fromJSON(JSONObject json, Map<String, Usuario> mapaUsuarios) {
+		String loginJugador = json.getString("jugador");
+		Usuario usuario = mapaUsuarios.get(loginJugador);
+		if (!(usuario instanceof Socio)) {
+			throw new IllegalArgumentException("Jugador de asistencia no válido: " + loginJugador);
+		}
+
+		String comentario = null;
+		if (json.has("comentario")) {
+			comentario = json.getString("comentario");
+		}
+
+		return new AsistenciaEntrenamiento(
+				json.getInt("evaluacion"),
+				comentario,
+				EstadoAsistencia.valueOf(json.getString("estado")),
+				(Socio) usuario);
 	}
 
 	

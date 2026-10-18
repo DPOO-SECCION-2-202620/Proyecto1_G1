@@ -1,8 +1,11 @@
 package DeportesIndividuales;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class RankingJugadorDisciplina {
 
@@ -34,5 +37,28 @@ public class RankingJugadorDisciplina {
 	    json.put("jugador", jugador.getLogin());
 	    json.put("disciplina", disciplina.getNombre());
 		return json;
+	}
+	
+	public static RankingJugadorDisciplina fromJSON(
+			JSONObject json,
+			Map<String, Usuario> mapaUsuarios,
+			Map<String, DisciplinaIndividual> mapaDisciplinas) {
+
+		String login = json.getString("jugador");
+		String nombreDisciplina = json.getString("disciplina");
+
+		Usuario usuario = mapaUsuarios.get(login);
+		if (!(usuario instanceof Socio)) {
+			throw new IllegalArgumentException("El jugador del ranking no es un socio válido: " + login);
+		}
+
+		DisciplinaIndividual disciplina = mapaDisciplinas.get(nombreDisciplina);
+		if (disciplina == null) {
+			throw new IllegalArgumentException("Disciplina desconocida en ranking: " + nombreDisciplina);
+		}
+
+		RankingJugadorDisciplina ranking = new RankingJugadorDisciplina((Socio) usuario, disciplina);
+		ranking.puntajeElo = json.getDouble("puntajeElo");
+		return ranking;
 	}
 }

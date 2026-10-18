@@ -1,8 +1,11 @@
 package DeportesIndividuales;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public abstract class EstadisticaPractica {
 
@@ -27,5 +30,18 @@ public abstract class EstadisticaPractica {
 	    json.put("setsGanados", setsGanados);
 	    json.put("jugador", jugador.getLogin());
 		return json;
+	}
+
+	public static EstadisticaPractica fromJSON(JSONObject json, Map<String, Usuario> mapaUsuarios) {
+		String tipo = json.getString("tipo");
+
+		switch (tipo) {
+			case "EstadisticaRaqueta":
+				return EstadisticaRaqueta.fromJSON(json, mapaUsuarios);
+			case "EstadisticaTenisDeMesa":
+				return EstadisticaTenisDeMesa.fromJSON(json, mapaUsuarios);
+			default:
+				throw new IllegalArgumentException("Tipo de estadística de práctica desconocido: " + tipo);
+		}
 	}
 }

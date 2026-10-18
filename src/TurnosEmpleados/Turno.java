@@ -43,9 +43,16 @@ public class Turno {
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("diaSemana", diaSemana);
-	    json.put("horaInicio", horaInicio);
-	    json.put("horaFinal", horaFinal);
+		json.put("diaSemana", diaSemana);
+		json.put("horaInicio", horaInicio.toString());
+		json.put("horaFinal", horaFinal.toString());
 		return json;
+	}
+	
+	public static Turno fromJSON(JSONObject json) {
+		return new Turno(
+				json.getString("diaSemana"),
+				LocalTime.parse(json.getString("horaInicio")),
+				LocalTime.parse(json.getString("horaFinal")));
 	}
 }

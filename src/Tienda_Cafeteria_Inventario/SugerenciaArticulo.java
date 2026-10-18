@@ -51,4 +51,13 @@ public class SugerenciaArticulo {
 	    json.put("estado", estado.name());
 		return json;
 	}
+	
+	public static SugerenciaArticulo fromJSON(JSONObject json) {
+		SugerenciaArticulo sugerencia = new SugerenciaArticulo(
+				json.getString("nombrePropuesto"),
+				json.getString("categoria"),
+				json.getDouble("precioSugerido"));
+		sugerencia.estado = EstadoSugerencia.valueOf(json.getString("estado"));
+		return sugerencia;
+	}
 }

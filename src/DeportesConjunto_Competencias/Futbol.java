@@ -22,5 +22,4 @@ public class Futbol extends DeporteConjunto{
 		return true;
 	}
 
-	
 }

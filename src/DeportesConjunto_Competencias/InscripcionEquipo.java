@@ -1,8 +1,11 @@
 package DeportesConjunto_Competencias;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class InscripcionEquipo {
 
@@ -62,14 +65,28 @@ public class InscripcionEquipo {
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("jugador", jugador);
-	    json.put("equipo", equipo);
-	    json.put("posicion", posicion);
-	    json.put("numeroCamiseta", numeroCamiseta);
-	    json.put("controlSanciones", controlSanciones);
+		json.put("jugador", jugador.getLogin());
+		json.put("posicion", posicion);
+		json.put("numeroCamiseta", numeroCamiseta);
+		json.put("controlSanciones", controlSanciones.toJSON());
 		return json;
 	}
 
-	
+	public static InscripcionEquipo fromJSON(JSONObject json, Equipo equipo, Map<String, Usuario> mapaUsuarios) {
+		String loginJugador = json.getString("jugador");
+		Usuario usuario = mapaUsuarios.get(loginJugador);
+		if (!(usuario instanceof Socio)) {
+			throw new IllegalArgumentException("El jugador de la inscripción no es un socio válido: " + loginJugador);
+		}
+
+		InscripcionEquipo inscripcion = new InscripcionEquipo(
+				(Socio) usuario,
+				equipo,
+				json.getString("posicion"),
+				json.getInt("numeroCamiseta"));
+
+		inscripcion.controlSanciones = ControlSanciones.fromJSON(json.getJSONObject("controlSanciones"));
+		return inscripcion;
+	}
 	
 }

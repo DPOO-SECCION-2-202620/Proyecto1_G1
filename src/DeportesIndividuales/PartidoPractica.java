@@ -3,13 +3,16 @@ package DeportesIndividuales;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Excepciones.ReglaNegocioException;
+import Instalaciones.Instalacion;
 import Instalaciones.InstalacionIndividual;
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class PartidoPractica {
 
@@ -130,4 +133,47 @@ public class PartidoPractica {
 		return json;
 	}
 	
+	public static PartidoPractica fromJSON(JSONObject json,
+			Map<String, Usuario> mapaUsuarios,
+			Map<String, DisciplinaIndividual> mapaDisciplinas,
+			Map<String, Instalacion> mapaInstalaciones) {
+
+		String nombreDisciplina = json.getString("disciplina");
+		DisciplinaIndividual disciplina = mapaDisciplinas.get(nombreDisciplina);
+		if (disciplina == null) {
+			throw new IllegalArgumentException("Disciplina desconocida en el partido: " + nombreDisciplina);
+		}
+
+		String nombreInstalacion = json.getString("instalacion");
+		Instalacion instalacion = mapaInstalaciones.get(nombreInstalacion);
+		if (!(instalacion instanceof InstalacionIndividual)) {
+			throw new IllegalArgumentException("Instalación individual desconocida: " + nombreInstalacion);
+		}
+
+		List<Socio> jugadores = new ArrayList<>();
+		JSONArray jsonJugadores = json.getJSONArray("jugadores");
+		for (int indice = 0; indice < jsonJugadores.length(); indice++) {
+			String loginJugador = jsonJugadores.getString(indice);
+			Usuario usuario = mapaUsuarios.get(loginJugador);
+			if (!(usuario instanceof Socio)) {
+				throw new IllegalArgumentException("Jugador no válido en el partido: " + loginJugador);
+			}
+			jugadores.add((Socio) usuario);
+		}
+
+		PartidoPractica partido = new PartidoPractica(
+				LocalDate.parse(json.getString("fecha")),
+				disciplina,
+				jugadores,
+				(InstalacionIndividual) instalacion);
+		partido.finalizado = json.getBoolean("finalizado");
+
+		JSONArray jsonEstadisticas = json.optJSONArray("estadisticas");
+		if (jsonEstadisticas != null) {
+			for (int indice = 0; indice < jsonEstadisticas.length(); indice++) {
+				partido.estadisticas.add(EstadisticaPractica.fromJSON(jsonEstadisticas.getJSONObject(indice), mapaUsuarios));
+			}
+		}
+		return partido;
+	}
 }

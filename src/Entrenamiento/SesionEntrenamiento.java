@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import Instalaciones.Instalacion;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 
 public class SesionEntrenamiento {
@@ -116,4 +118,38 @@ public class SesionEntrenamiento {
 		return json;
 	}
 	
+	public static SesionEntrenamiento fromJSON(JSONObject sesionJson,
+			Map<String, Usuario> mapaUsuarios, Map<String, Instalacion> mapaInstalaciones) {
+
+		Entrenador entrenador = (Entrenador) mapaUsuarios.get(sesionJson.getString("entrenador"));
+		Instalacion instalacion = mapaInstalaciones.get(sesionJson.getString("instalacion"));
+		if (entrenador == null || instalacion == null) {
+			throw new IllegalStateException("Sesión con referencia inexistente");
+		}
+
+		List<Socio> convocados = new ArrayList<>();
+		JSONArray jsonConvocados = sesionJson.getJSONArray("convocados");
+		for (int indice = 0; indice < jsonConvocados.length(); indice++) {
+			Socio convocado = (Socio) mapaUsuarios.get(jsonConvocados.getString(indice));
+			if (convocado == null) {
+				throw new IllegalStateException("Convocado inexistente: " + jsonConvocados.getString(indice));
+			}
+			convocados.add(convocado);
+		}
+
+		SesionEntrenamiento sesion = new SesionEntrenamiento(
+				LocalDate.parse(sesionJson.getString("fecha")),
+				LocalTime.parse(sesionJson.getString("hora")),
+				sesionJson.getInt("duracionMinutos"),
+				entrenador,
+				instalacion,
+				convocados);
+
+		JSONArray jsonAsistencias = sesionJson.getJSONArray("asistencias");
+		for (int indice = 0; indice < jsonAsistencias.length(); indice++) {
+			sesion.asistencias.add(AsistenciaEntrenamiento.fromJSON(
+					jsonAsistencias.getJSONObject(indice), mapaUsuarios));
+		}
+		return sesion;
+	}
 }

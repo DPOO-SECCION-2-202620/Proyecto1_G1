@@ -50,4 +50,11 @@ public class ControlSanciones {
 	    json.put("estado", estado.name());
 		return json;
 	}
+	
+	public static ControlSanciones fromJSON(JSONObject json) {
+		ControlSanciones controlSanciones = new ControlSanciones();
+		controlSanciones.amarillasAcumuladas = json.getInt("amarillasAcumuladas");
+		controlSanciones.estado = EstadoJugador.valueOf(json.getString("estado"));
+		return controlSanciones;
+	}
 }

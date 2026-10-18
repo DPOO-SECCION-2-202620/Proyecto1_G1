@@ -1,5 +1,7 @@
 package DeportesIndividuales;
 
+import org.json.JSONObject;
+
 public class InscripcionIndividual {
 
 	private DisciplinaIndividual disciplina;
@@ -25,8 +27,16 @@ public class InscripcionIndividual {
 		return nivel;
 	}
 	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("disciplina", disciplina.getNombre());
+	    json.put("nivel", nivel.name());
+		return json;
+	}
 	
-	
-	
-	
+	public static InscripcionIndividual fromJSON(JSONObject json, DisciplinaIndividual disciplina) {
+		return new InscripcionIndividual(
+				disciplina,
+				NivelJugador.valueOf(json.getString("nivel")));
+	}
 }

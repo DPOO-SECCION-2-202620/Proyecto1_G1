@@ -6,8 +6,7 @@ import DeportesIndividuales.TenisDeMesa;
 
 public class MesaTenisDeMesa extends InstalacionIndividual{
 
-	public MesaTenisDeMesa(String nombre, int capacidadMaxima, boolean techado, int salon,
-			TenisDeMesa tenisDeMesa) {
+	public MesaTenisDeMesa(String nombre, boolean techado, int salon, TenisDeMesa tenisDeMesa) {
 		super(nombre, 4, techado, salon, tenisDeMesa);
 	}
 
@@ -18,8 +17,17 @@ public class MesaTenisDeMesa extends InstalacionIndividual{
 
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
+		JSONObject json = super.toJSON();
 		json.put("tipo", "MesaTenisDeMesa");
 		return json;
+	}
+	
+	public static MesaTenisDeMesa fromJSON(JSONObject json, TenisDeMesa TenisDeMesa) {
+		MesaTenisDeMesa cancha = new MesaTenisDeMesa(
+				json.getString("nombre"),
+				json.getBoolean("techado"),
+				json.getInt("salon"),
+				TenisDeMesa);
+		return cancha;
 	}
 }

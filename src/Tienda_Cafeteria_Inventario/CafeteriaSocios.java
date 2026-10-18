@@ -2,6 +2,7 @@ package Tienda_Cafeteria_Inventario;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -69,12 +70,48 @@ public class CafeteriaSocios {
 	    for (Bebida bebida : bebidas) {
 	    	jsonBebidas.put(bebida.toJSON());
 	    }
-	    json.put("articulo", jsonBebidas);
+	    json.put("bebidas", jsonBebidas);
 	    JSONArray jsonSnacks = new JSONArray();
 	    for (Snack snack : snacks) {
 	    	jsonSnacks.put(snack.toJSON());
 	    }
-	    json.put("articulo", jsonSnacks);
+	    json.put("snacks", jsonSnacks);
 		return json;
+	}
+	
+	public static CafeteriaSocios fromJSON(JSONObject json, Map<String, Producto> mapaProductos) {
+		CafeteriaSocios cafeteria = new CafeteriaSocios();
+
+		JSONArray jsonBebidas = json.optJSONArray("bebidas");
+		if (jsonBebidas != null) {
+			for (int indice = 0; indice < jsonBebidas.length(); indice++) {
+				JSONObject jsonBebida = jsonBebidas.getJSONObject(indice);
+				String nombre = jsonBebida.getString("nombre");
+
+				Bebida bebida = (Bebida) mapaProductos.get(nombre);
+				if (bebida == null) {
+					bebida = Bebida.fromJSON(jsonBebida);
+					mapaProductos.put(nombre, bebida);
+				}
+				cafeteria.agregarProducto(bebida);
+			}
+		}
+
+		JSONArray jsonSnacks = json.optJSONArray("snacks");
+		if (jsonSnacks != null) {
+			for (int indice = 0; indice < jsonSnacks.length(); indice++) {
+				JSONObject jsonSnack = jsonSnacks.getJSONObject(indice);
+				String nombre = jsonSnack.getString("nombre");
+
+				Snack snack = (Snack) mapaProductos.get(nombre);
+				if (snack == null) {
+					snack = Snack.fromJSON(jsonSnack);
+					mapaProductos.put(nombre, snack);
+				}
+				cafeteria.agregarProducto(snack);
+			}
+		}
+
+		return cafeteria;
 	}
 }

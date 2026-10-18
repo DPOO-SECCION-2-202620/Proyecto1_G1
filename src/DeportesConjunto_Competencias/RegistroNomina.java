@@ -30,9 +30,28 @@ public class RegistroNomina {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("inscripcionEquipo", inscripcionEquipo.getEquipo());
-	    json.put("controlSanciones", controlSanciones.toJSON());
+		json.put("jugador", inscripcionEquipo.getJugador().getLogin());
+		json.put("controlSanciones", controlSanciones.toJSON());
 		return json;
+	}
+
+	public static RegistroNomina fromJSON(JSONObject json, Equipo equipo) {
+		String loginJugador = json.getString("jugador");
+
+		InscripcionEquipo inscripcionEquipo = null;
+		for (InscripcionEquipo inscripcion : equipo.getInscripciones()) {
+			if (inscripcion.getJugador().getLogin().equals(loginJugador)) {
+				inscripcionEquipo = inscripcion;
+				break;
+			}
+		}
+		if (inscripcionEquipo == null) {
+			throw new IllegalArgumentException("El jugador no pertenece al equipo: " + loginJugador);
+		}
+
+		RegistroNomina registro = new RegistroNomina(inscripcionEquipo);
+		registro.controlSanciones = ControlSanciones.fromJSON(json.getJSONObject("controlSanciones"));
+		return registro;
 	}
 	
 }

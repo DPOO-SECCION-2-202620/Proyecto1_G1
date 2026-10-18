@@ -65,7 +65,29 @@ public abstract class DisciplinaIndividual {
 	    for (InstalacionIndividual instalacion : instalaciones) {
 	    	jsonInstalaciones.put(instalacion.toJSON());
 	    }
-	    json.put("turnos", jsonInstalaciones);
+	    json.put("instalaciones", jsonInstalaciones);
 		return json;
+	}
+	
+	public static DisciplinaIndividual fromJSON(JSONObject json) {
+		String nombre = json.getString("nombre");
+
+		switch (nombre) {
+			case "Padel":
+				return Padel.fromJSON(json);
+			case "Tenis":
+				return Tenis.fromJSON(json);
+			case "TenisDeMesa":
+				return TenisDeMesa.fromJSON(json);
+			default:
+				throw new IllegalArgumentException("Tipo de usuario desconocido: " + nombre);
+		}
+	}
+	
+	protected void restaurarEstadoDisciplinaIndividual(JSONObject disciplinaIndividualJson, DisciplinaIndividual disciplina) {
+		JSONArray jsonInstalaciones = disciplinaIndividualJson.getJSONArray("instalaciones");
+		for (int indice = 0; indice < jsonInstalaciones.length(); indice++) {
+			this.instalaciones.add(InstalacionIndividual.fromJSON(jsonInstalaciones.getJSONObject(indice), disciplina));
+		}
 	}
 }

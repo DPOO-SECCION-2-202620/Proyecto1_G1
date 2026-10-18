@@ -2,13 +2,16 @@
   "deportes": [],
   "inventarios": [],
   "usuarios": [],
-  "cafeteria": {"articulo": []},
+  "cafeteria": {
+    "snacks": [],
+    "bebidas": []
+  },
   "nombre": "Club Seneca",
   "competencias": [],
   "solicitudes": [],
   "disciplinas": [],
   "rankings": [],
-  "tienda": {"articulo": []},
+  "tienda": {"articulos": []},
   "historial": {
     "sesiones": [],
     "reservas": [],

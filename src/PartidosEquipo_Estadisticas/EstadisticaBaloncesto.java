@@ -1,10 +1,10 @@
 package PartidosEquipo_Estadisticas;
 
+import java.util.Map;
 import org.json.JSONObject;
-
 import DeportesConjunto_Competencias.InscripcionEquipo;
 
-public class EstadisticaBaloncesto extends EstadisticaConjunto{
+public class EstadisticaBaloncesto extends EstadisticaConjunto {
 	
 	private int puntos;
 	private int rebotes;
@@ -25,16 +25,29 @@ public class EstadisticaBaloncesto extends EstadisticaConjunto{
 
 	@Override
 	public int calcularAporte() {
-		return puntos*2 + rebotes;
+		return (puntos * 2) + rebotes;
 	}
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-	    json.put("puntos", puntos);
-	    json.put("rebotes", rebotes);
+		JSONObject json = super.toJSON();
+		json.put("tipo", "EstadisticaBaloncesto");
+		json.put("puntos", puntos);
+		json.put("rebotes", rebotes);
 		return json;
 	}
 	
+	public static EstadisticaBaloncesto fromJSON(JSONObject json, Map<String, InscripcionEquipo> mapaInscripciones) {
+		if (json == null) {
+			return null;
+		}
 
+		String claveJugador = json.getString("jugador");
+		InscripcionEquipo jugador = mapaInscripciones.get(claveJugador);
+	
+		int puntos = json.getInt("puntos");
+		int rebotes = json.getInt("rebotes");
+		
+		return new EstadisticaBaloncesto(jugador, puntos, rebotes);
+	}
 }

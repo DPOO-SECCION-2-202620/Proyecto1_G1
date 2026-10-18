@@ -14,4 +14,12 @@ public class Articulo extends Producto{
 		json.put("tipo", "Articulo");
 		return json;
 	}
+	
+	public static Articulo fromJSON(JSONObject json) {
+		return new Articulo(
+				json.getString("nombre"),
+				json.getString("categoria"),
+				json.getDouble("precio"),
+				json.getInt("cantidad"));
+	}
 }

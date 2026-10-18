@@ -55,8 +55,24 @@ public class ASCUN extends Competencia{
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-	    json.put("tipo", "ASCUN");
+		JSONObject json = super.toJSON();
+		json.put("tipo", "ASCUN");
+		json.put("fase", fase.name());
 		return json;
+	}
+
+	public static ASCUN fromJSON(JSONObject json, Categoria categoria, DeporteConjunto deporte) {
+		FaseASCUN fase = FaseASCUN.valueOf(json.getString("fase"));
+		ASCUN ascun = new ASCUN(
+				json.getString("nombre"),
+				json.getString("entidadOrganizadora"),
+				json.getInt("anio"),
+				json.getString("formatoJuego"),
+				json.getInt("nominaMinima"),
+				categoria,
+				deporte,
+				fase);
+		ascun.fase = fase;
+		return ascun;
 	}
 }

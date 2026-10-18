@@ -1,8 +1,10 @@
 package NucleoSistema;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.IOException;
+
+import org.json.JSONObject;
 
 public class Persistencia {
 
@@ -20,8 +22,14 @@ public class Persistencia {
 		Files.writeString(carpeta.resolve("club.json"), club.toJSON().toString(2));
 	}
 	
-	public void cargar(ClubSeneca club) {
-		
-	}
+	public ClubSeneca cargar() throws IOException {
+		Path archivo = Path.of(rutaCarpeta, "club.json");
+		if (!Files.exists(archivo)) {
+			return null;   
+		}
+		JSONObject json = new JSONObject(Files.readString(archivo));
+		ClubSeneca club = ClubSeneca.fromJSON(json);
+		club.setPersistencia(this);
+		return club;
 	
 }

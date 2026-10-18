@@ -1,8 +1,11 @@
 package DeportesIndividuales;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class EstadisticaRaqueta extends EstadisticaPractica {
 
@@ -31,11 +34,28 @@ public class EstadisticaRaqueta extends EstadisticaPractica {
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-	    json.put("gamesGanados", gamesGanados);
-	    json.put("aces", aces);
-	    json.put("erroresNoForzados", erroresNoForzados);
+		JSONObject json = super.toJSON();
+		json.put("tipo", "EstadisticaRaqueta");
+		json.put("gamesGanados", gamesGanados);
+		json.put("aces", aces);
+		json.put("erroresNoForzados", erroresNoForzados);
 		return json;
 	}
-	
+
+	public static EstadisticaRaqueta fromJSON(JSONObject json, Map<String, Usuario> mapaUsuarios) {
+	    if (json == null) {
+	        return null;
+	    }
+
+	    int setsGanados = json.getInt("setsGanados");
+	    String loginSocio = json.getString("jugador");
+	    
+	    Socio jugador = (Socio) mapaUsuarios.get(loginSocio);
+
+	    int gamesGanados = json.getInt("gamesGanados");
+	    int aces = json.getInt("aces");
+	    int erroresNoForzados = json.getInt("erroresNoForzados");
+
+	    return new EstadisticaRaqueta(setsGanados, jugador, gamesGanados, aces, erroresNoForzados);
+	}
 }

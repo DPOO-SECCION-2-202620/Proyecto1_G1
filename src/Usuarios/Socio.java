@@ -4,7 +4,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import DeportesConjunto_Competencias.DeporteConjunto;
@@ -19,7 +21,7 @@ private int edad;
 private int puntosFidelidad;
 public static final int MINUTOS_BEBIDA_CALIENTE = 30;
 private LocalDateTime horaUltimaBebidaCaliente;
-private List<InscripcionEquipo> inscripcionesEquipo;
+private List<InscripcionEquipo> inscripcionesEquipos;
 private List<InscripcionIndividual> inscripcionesIndividuales;
 
 
@@ -28,12 +30,12 @@ public Socio(int edad, String nombre, String login, String password) {
 	this.edad = edad;
 	this.puntosFidelidad = 0;
 	this.horaUltimaBebidaCaliente = null;
-	this.inscripcionesEquipo = new ArrayList<>();
+	this.inscripcionesEquipos = new ArrayList<>();
 	this.inscripcionesIndividuales = new ArrayList<>();
 }
 
 public boolean tieneEquipoEn(DeporteConjunto deporte) {
-	for (InscripcionEquipo inscripcion : inscripcionesEquipo) {
+	for (InscripcionEquipo inscripcion : inscripcionesEquipos) {
 		Equipo equipo = inscripcion.getEquipo();
 		DeporteConjunto deporteDelEquipo = equipo.getDeporte();
 		if (deporteDelEquipo.equals(deporte)) {
@@ -83,7 +85,7 @@ public boolean llevaBebidaCaliente(LocalDateTime momento) {
 
 
 public void agregarInscripcionEquipo(InscripcionEquipo inscripcion) {
-    inscripcionesEquipo.add(inscripcion);
+    inscripcionesEquipos.add(inscripcion);
 }
 
 public void agregarInscripcionIndividual(InscripcionIndividual inscripcion) {
@@ -108,7 +110,7 @@ public LocalDateTime getHoraUltimaBebidaCaliente() {
 }
 
 public List<InscripcionEquipo> getInscripcionesEquipo() {
-	return inscripcionesEquipo;
+	return inscripcionesEquipos;
 }
 
 public List<InscripcionIndividual> getInscripcionesIndividuales() {
@@ -121,8 +123,45 @@ public JSONObject toJSON() {
 	json.put("tipo", "Socio");
 	json.put("edad", edad);
 	json.put("puntosFidelidad", puntosFidelidad);
-	json.put("horaUltimaBebidaCaliente", horaUltimaBebidaCaliente);
+	if (horaUltimaBebidaCaliente != null) {     
+		json.put("horaUltimaBebidaCaliente", horaUltimaBebidaCaliente.toString());
+	}
+
+	JSONArray jsonInscripcionesIndividuales = new JSONArray();
+	for (InscripcionIndividual inscripcion : inscripcionesIndividuales) {
+		jsonInscripcionesIndividuales.put(inscripcion.toJSON());
+	}
+	json.put("inscripcionesIndividuales", jsonInscripcionesIndividuales);
 	return json;
+}
+
+public static Socio fromJSON(JSONObject usuarioJson, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+	Socio socio = new Socio(
+			usuarioJson.getInt("edad"),
+			usuarioJson.getString("nombre"),
+			usuarioJson.getString("login"),
+			usuarioJson.getString("password"));
+	socio.restaurarEstadoSocio(usuarioJson, mapaDisciplinas);
+	return socio;
+}
+
+protected void restaurarEstadoSocio(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+	this.puntosFidelidad = json.getInt("puntosFidelidad");
+
+	if (json.has("horaUltimaBebidaCaliente")) {
+		this.horaUltimaBebidaCaliente = LocalDateTime.parse(json.getString("horaUltimaBebidaCaliente"));
+	}
+
+	JSONArray jsonInscripciones = json.getJSONArray("inscripcionesIndividuales");
+	for (int indice = 0; indice < jsonInscripciones.length(); indice++) {
+		JSONObject jsonInscripcion = jsonInscripciones.getJSONObject(indice);
+		DisciplinaIndividual disciplina = mapaDisciplinas.get(jsonInscripcion.getString("disciplina"));
+		if (disciplina == null) {
+			throw new IllegalStateException("Disciplina inexistente: " + jsonInscripcion.getString("disciplina"));
+		}
+		NivelJugador nivel = NivelJugador.valueOf(jsonInscripcion.getString("nivel"));
+		this.inscripcionesIndividuales.add(new InscripcionIndividual(disciplina, nivel));
+	}
 }
 
 }

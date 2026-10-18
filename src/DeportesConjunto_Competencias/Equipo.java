@@ -2,11 +2,13 @@ package DeportesConjunto_Competencias;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class Equipo {
 	
@@ -127,17 +129,39 @@ public String toString() {
 
 public JSONObject toJSON() {
 	JSONObject json = new JSONObject();
-    json.put("nombre", nombre);
-    json.put("cupoMaximo", cupoMaximo);
-    JSONArray jsonInscripciones = new JSONArray();
-    for (InscripcionEquipo inscripcion : inscripciones) {
-    	jsonInscripciones.put(inscripcion.toJSON());
-    }
-    json.put("inscripciones", jsonInscripciones);
+	json.put("nombre", nombre);
+	json.put("cupoMaximo", cupoMaximo);
+	JSONArray jsonInscripciones = new JSONArray();
+	for (InscripcionEquipo inscripcion : inscripciones) {
+		jsonInscripciones.put(inscripcion.toJSON());
+	}
+	json.put("inscripciones", jsonInscripciones);
 	json.put("deporte", deporte.toJSON());
 	json.put("categoria", categoria.name());
 	return json;
 }
 
+public static Equipo fromJSON(JSONObject json,
+		Map<String, DeporteConjunto> mapaDeportes,
+		Map<String, Usuario> mapaUsuarios) {
+
+	DeporteConjunto deporte = DeporteConjunto.fromJSON(json.getJSONObject("deporte"), mapaDeportes);
+
+	Equipo equipo = new Equipo(
+			json.getString("nombre"),
+			json.getInt("cupoMaximo"),
+			deporte,
+			Categoria.valueOf(json.getString("categoria")));
+
+	JSONArray jsonInscripciones = json.optJSONArray("inscripciones");
+	if (jsonInscripciones != null) {
+		for (int indice = 0; indice < jsonInscripciones.length(); indice++) {
+			InscripcionEquipo inscripcion = InscripcionEquipo.fromJSON(jsonInscripciones.getJSONObject(indice), equipo, mapaUsuarios);
+			equipo.inscripciones.add(inscripcion);
+			inscripcion.getJugador().agregarInscripcionEquipo(inscripcion);
+		}
+	}
+	return equipo;
+}
 }
 

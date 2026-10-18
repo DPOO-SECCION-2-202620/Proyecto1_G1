@@ -1,5 +1,7 @@
 package Instalaciones;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
 public abstract class Instalacion {
@@ -29,5 +31,26 @@ public abstract class Instalacion {
 	    json.put("nombre", nombre);
 	    json.put("capacidadMaxima", capacidadMaxima);
 		return json;
+	}
+	
+	public static Instalacion fromJSON(JSONObject json, Map<String, Instalacion> mapaInstalaciones) {
+		String tipo = json.getString("tipo");
+
+		switch (tipo) {
+			case "CanchaTenis":
+				return CanchaTenis.fromJSON(json, mapaInstalaciones);
+			case "CanchaPadel":
+				return CanchaPadel.fromJSON(json, mapaInstalaciones);
+			case "MESA_TENIS_DE_MESA":
+				return MesaTenisDeMesa.fromJSON(json, mapaInstalaciones);
+			case "CanchaFutbol":
+				return CanchaFutbol.fromJSON(json);
+			case "CanchaBaloncesto":
+				return CanchaBaloncesto.fromJSON(json);
+			case "CanchaVoleibol":
+				return CanchaVoleibol.fromJSON(json);
+			default:
+				throw new IllegalArgumentException("Tipo de Instalacion desconocido: " + tipo);
+		}
 	}
 }

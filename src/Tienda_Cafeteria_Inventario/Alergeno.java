@@ -1,6 +1,6 @@
 package Tienda_Cafeteria_Inventario;
 
-public enum Alergenos {
+public enum Alergeno {
 
 	Mani,
     Gluten,

@@ -1,13 +1,16 @@
 package Tienda_Cafeteria_Inventario;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import Usuarios.Empleado;
 import Usuarios.Socio;
+import Usuarios.Usuario;
 
 public class Venta {
 	
@@ -44,6 +47,20 @@ public class Venta {
 		
 		this.total = calcularTotal(codigoDescuento);
 		this.puntosGenerados = (int) Math.round(total * VALOR_PUNTOS);
+	}
+	
+	public Venta(LocalDate fecha, double propina, double total, int puntosRedimidos, int puntosGenerados,
+			Rubro rubro, Socio comprador, List<LineaVenta> lineas, double tasaImpuestos) {
+		super();
+		this.fecha = fecha;
+		this.propina = propina;
+		this.total = total;
+		this.puntosRedimidos = puntosRedimidos;
+		this.puntosGenerados = puntosGenerados;
+		this.rubro = rubro;
+		this.comprador = comprador;
+		this.lineas = lineas;
+		this.tasaImpuestos = tasaImpuestos;
 	}
 
 	public LocalDate getFecha() {
@@ -109,19 +126,50 @@ public class Venta {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("fecha", fecha.toString());
-	    json.put("propina", propina);
-	    json.put("total", total);
-	    json.put("puntosRedimidos", puntosRedimidos);
-	    json.put("rubro", rubro.name());
-	    json.put("tasaImpuestos", tasaImpuestos);
-	    json.put("comprador", comprador.getNombre());
-	    JSONArray jsonLineas = new JSONArray();
-	    for (LineaVenta linea : lineas) {
-	    	jsonLineas.put(linea.toJSON());
-	    }
-	    json.put("turnos", jsonLineas);
+		json.put("fecha", fecha.toString());
+		json.put("propina", propina);
+		json.put("total", total);
+		json.put("puntosRedimidos", puntosRedimidos);
+		json.put("puntosGenerados", puntosGenerados);
+		json.put("rubro", rubro.name());
+		json.put("tasaImpuestos", tasaImpuestos);
+		json.put("comprador", comprador.getLogin());
+		JSONArray jsonLineas = new JSONArray();
+		for (LineaVenta linea : lineas) {
+			jsonLineas.put(linea.toJSON());
+		}
+		json.put("lineas", jsonLineas);
 		return json;
+	}
+	
+	public static Venta fromJSON(JSONObject json,
+			Map<String, Usuario> mapaUsuarios,
+			Map<String, Producto> mapaProductos) {
+
+		String loginComprador = json.getString("comprador");
+		Usuario usuario = mapaUsuarios.get(loginComprador);
+		if (!(usuario instanceof Socio)) {
+			throw new IllegalArgumentException("El comprador no es un socio válido: " + loginComprador);
+		}
+
+		List<LineaVenta> lineas = new ArrayList<>();
+		JSONArray jsonLineas = json.optJSONArray("lineas");
+		if (jsonLineas != null) {
+			for (int indice = 0; indice < jsonLineas.length(); indice++) {
+				lineas.add(LineaVenta.fromJSON(jsonLineas.getJSONObject(indice), mapaProductos));
+			}
+		}
+
+		return new Venta(
+				LocalDate.parse(json.getString("fecha")),
+				json.getDouble("propina"),
+				json.getDouble("total"),
+				json.getInt("puntosRedimidos"),
+				json.getInt("puntosGenerados"),
+				Rubro.valueOf(json.getString("rubro")),
+				(Socio) usuario,
+				lineas,
+				json.getDouble("tasaImpuestos"));
 	}
 	
 }

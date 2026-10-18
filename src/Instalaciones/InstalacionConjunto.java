@@ -10,9 +10,22 @@ public abstract class InstalacionConjunto extends Instalacion{
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-		json.put("tipo", "InstalacionConjunto");
+		JSONObject json = super.toJSON();  
 		return json;
 	}
 	
+	public static Instalacion fromJSON(JSONObject json) {
+		String tipo = json.getString("tipo");
+
+		switch (tipo) {
+			case "CanchaFutbol":
+				return CanchaFutbol.fromJSON(json);
+			case "CanchaBaloncesto":
+				return CanchaBaloncesto.fromJSON(json);
+			case "CanchaVoleibol":
+				return CanchaVoleibol.fromJSON(json);
+			default:
+				throw new IllegalArgumentException("Tipo de usuario desconocido: " + tipo);
+		}
+	}
 }

@@ -65,4 +65,11 @@ public class Administrador extends Usuario{
 		return json;
 	}
 	
+	public static Administrador fromJSON(JSONObject json) {
+		return new Administrador(
+				json.getString("nombre"),
+				json.getString("login"),
+				json.getString("password"));
+	}
+	
 }

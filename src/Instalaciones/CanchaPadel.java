@@ -7,8 +7,7 @@ import DeportesIndividuales.Padel;
 
 public class CanchaPadel extends InstalacionIndividual{
 	
-	public CanchaPadel(String nombre, int capacidadMaxima, boolean techado, int salon,
-			Padel padel) {
+	public CanchaPadel(String nombre, boolean techado, int salon, Padel padel) {
 		super(nombre, 4, techado, salon, padel);
 	}
 
@@ -27,8 +26,17 @@ public class CanchaPadel extends InstalacionIndividual{
 
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
+		JSONObject json = super.toJSON();
 		json.put("tipo", "CanchaPadel");
 		return json;
+	}
+	
+	public static CanchaPadel fromJSON(JSONObject json, Padel padel) {
+		CanchaPadel cancha = new CanchaPadel(
+				json.getString("nombre"),
+				json.getBoolean("techado"),
+				json.getInt("salon"),
+				padel);
+		return cancha;
 	}
 }

@@ -57,4 +57,19 @@ public abstract class Producto {
 		return json;
 	}
 	
+	public static Producto fromJSON(JSONObject json) {
+	    String tipo = json.getString("tipo");
+
+	    switch (tipo) {
+	        case "Articulo":
+	        	return Articulo.fromJSON(json);
+	        case "Bebida":
+	        	return Bebida.fromJSON(json);
+	        case "Snack": {
+	            return Snack.fromJSON(json);
+	        }
+	        default:throw new IllegalArgumentException("Tipo de producto desconocido");
+	    }
+	}
+	
 }

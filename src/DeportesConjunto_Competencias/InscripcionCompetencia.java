@@ -2,6 +2,7 @@ package DeportesConjunto_Competencias;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,14 +60,33 @@ public class InscripcionCompetencia {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("equipo", equipo.getNombre());
-	    json.put("competencia", competencia.getNombre());
-	    JSONArray jsonNomina = new JSONArray();
-	    for (RegistroNomina nomina : nomina) {
-	    	jsonNomina.put(nomina.toJSON());
-	    }
-	    json.put("nomina", jsonNomina);
+		json.put("equipo", equipo.getNombre());
+		JSONArray jsonNomina = new JSONArray();
+		for (RegistroNomina registro : nomina) {
+			jsonNomina.put(registro.toJSON());
+		}
+		json.put("nomina", jsonNomina);
 		return json;
+	}
+
+	public static InscripcionCompetencia fromJSON(JSONObject json,
+			Competencia competencia, Map<String, Equipo> mapaEquipos) {
+
+		String nombreEquipo = json.getString("equipo");
+		Equipo equipo = mapaEquipos.get(nombreEquipo);
+		if (equipo == null) {
+			throw new IllegalArgumentException("Equipo desconocido en la inscripción: " + nombreEquipo);
+		}
+
+		InscripcionCompetencia inscripcion = new InscripcionCompetencia(equipo, competencia);
+
+		JSONArray jsonNomina = json.optJSONArray("nomina");
+		if (jsonNomina != null) {
+			for (int indice = 0; indice < jsonNomina.length(); indice++) {
+				inscripcion.nomina.add(RegistroNomina.fromJSON(jsonNomina.getJSONObject(indice), equipo));
+			}
+		}
+		return inscripcion;
 	}
 	
 }

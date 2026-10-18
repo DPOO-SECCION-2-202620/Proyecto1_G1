@@ -17,8 +17,18 @@ public class Bebida extends Producto{
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
-		json.put("tipo", "Bebida");
-		return json;
+	    JSONObject json = super.toJSON();
+	    json.put("tipo", "BEBIDA");
+	    json.put("caliente", caliente);
+	    return json;
+	}
+	
+	public static Bebida fromJSON(JSONObject json) {
+	    return new Bebida(
+	            json.getString("nombre"),
+	            json.getString("categoria"),
+	            json.getDouble("precio"),
+	            json.getInt("cantidad"),
+	            json.getBoolean("caliente"));
 	}
 }

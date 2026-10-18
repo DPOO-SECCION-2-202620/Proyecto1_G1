@@ -2,9 +2,12 @@ package PartidosEquipo_Estadisticas;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import DeportesConjunto_Competencias.Equipo;
 
 public abstract class Partido {
 
@@ -39,6 +42,18 @@ public abstract class Partido {
 	    }
 	    json.put("estadisticasConjunto", jsonEstadisticaConjunto);
 		return json;
+	}
+	
+	public static Partido fromJSON(JSONObject json, Map<String, Equipo> mapaEquipos) {
+		String tipo = json.getString("tipo");
+		switch (tipo) {
+			case "PartidoInterno":
+				return PartidoInterno.fromJSON(json, mapaEquipos);
+			case "PartidoExterno":
+				return PartidoExterno.fromJSON(json, mapaEquipos);
+			default:
+				throw new IllegalArgumentException("Tipo de partido desconocido: " + tipo);
+		}
 	}
 	
 }

@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public class CodigoDescuento {
 
 	private String codigo;
@@ -21,4 +23,13 @@ public class CodigoDescuento {
 		return esDueno ? PORCENTAJE_DUENO : PORCENTAJE_COMPARTIDO;
 	}
 	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("codigo", codigo);
+		return json;
+	}
+	
+	public static CodigoDescuento fromJSON(JSONObject json) {
+		return new CodigoDescuento(json.getString("codigo"));
+	}
 }

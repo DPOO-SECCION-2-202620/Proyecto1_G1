@@ -161,23 +161,61 @@ public abstract class Competencia {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("nombre", nombre);
-	    json.put("entidadOrganizadora", entidadOrganizadora);
-	    json.put("anio", anio);
-	    json.put("formatoJuego", formatoJuego);
-	    json.put("nominaMinima", nominaMinima);
-	    json.put("categoria", categoria);
-	    json.put("deporte", deporte);
-	    JSONArray jsonInscripciones = new JSONArray();
-	    for (InscripcionCompetencia inscripcion : inscripciones) {
-	    	jsonInscripciones.put(inscripcion.toJSON());
-	    }
-	    json.put("inscripciones", jsonInscripciones);
-	    JSONArray jsonListaPartidos = new JSONArray();
-	    for (PartidoExterno listaPartido : listaPartidos) {
-	    	jsonListaPartidos.put(listaPartido.toJSON());
-	    }
-	    json.put("listaPartidos", jsonListaPartidos);
+		json.put("nombre", nombre);
+		json.put("entidadOrganizadora", entidadOrganizadora);
+		json.put("anio", anio);
+		json.put("formatoJuego", formatoJuego);
+		json.put("nominaMinima", nominaMinima);
+		json.put("categoria", categoria.name());
+		json.put("deporte", deporte.toJSON());
+		JSONArray jsonInscripciones = new JSONArray();
+		for (InscripcionCompetencia inscripcion : inscripciones) {
+			jsonInscripciones.put(inscripcion.toJSON());
+		}
+		json.put("inscripciones", jsonInscripciones);
+		JSONArray jsonListaPartidos = new JSONArray();
+		for (PartidoExterno partido : listaPartidos) {
+			jsonListaPartidos.put(partido.toJSON());
+		}
+		json.put("listaPartidos", jsonListaPartidos);
 		return json;
+	}
+
+	public static Competencia fromJSON(JSONObject json,
+			Map<String, DeporteConjunto> mapaDeportes,
+			Map<String, Equipo> mapaEquipos) {
+
+		DeporteConjunto deporte = DeporteConjunto.fromJSON(json.getJSONObject("deporte"), mapaDeportes);
+		Categoria categoria = Categoria.valueOf(json.getString("categoria"));
+
+		Competencia competencia;
+		String tipo = json.getString("tipo");
+		switch (tipo) {
+			case "ASCUN":
+				competencia = ASCUN.fromJSON(json, categoria, deporte);
+				break;
+			case "TorneoCerros":
+				competencia = TorneoCerros.fromJSON(json, categoria, deporte, mapaEquipos);
+				break;
+			default:
+				throw new IllegalArgumentException("Tipo de competencia desconocido: " + tipo);
+		}
+
+		JSONArray jsonInscripciones = json.optJSONArray("inscripciones");
+		if (jsonInscripciones != null) {
+			for (int indice = 0; indice < jsonInscripciones.length(); indice++) {
+				competencia.inscripciones.add(InscripcionCompetencia.fromJSON(
+						jsonInscripciones.getJSONObject(indice), competencia, mapaEquipos));
+			}
+		}
+
+		JSONArray jsonPartidos = json.optJSONArray("listaPartidos");
+		if (jsonPartidos != null) {
+			for (int indice = 0; indice < jsonPartidos.length(); indice++) {
+				PartidoExterno partido = PartidoExterno.fromJSON(jsonPartidos.getJSONObject(indice), mapaEquipos);
+				competencia.listaPartidos.add(partido);
+			}
+		}
+		return competencia;
 	}
 }
