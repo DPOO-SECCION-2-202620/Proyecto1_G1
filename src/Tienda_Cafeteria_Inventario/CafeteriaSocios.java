@@ -1,6 +1,10 @@
 package Tienda_Cafeteria_Inventario;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import Instalaciones.Instalacion;
 import Instalaciones.InstalacionIndividual;
@@ -18,6 +22,8 @@ public class CafeteriaSocios {
 
 	public CafeteriaSocios() {
 		super();
+		this.bebidas = new ArrayList<>();
+		this.snacks = new ArrayList<>();
 	}
 	
 	public static double getPropinaSugerida() {
@@ -55,5 +61,20 @@ public class CafeteriaSocios {
 		}
 		Venta venta = new Venta(propina, puntosARedimir, Rubro.Cafeteria, codigoDescuento, comprador, lineas, IMPUESTO_CONSUMO);
 		return venta;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		JSONArray jsonBebidas = new JSONArray();
+	    for (Bebida bebida : bebidas) {
+	    	jsonBebidas.put(bebida.toJSON());
+	    }
+	    json.put("articulo", jsonBebidas);
+	    JSONArray jsonSnacks = new JSONArray();
+	    for (Snack snack : snacks) {
+	    	jsonSnacks.put(snack.toJSON());
+	    }
+	    json.put("articulo", jsonSnacks);
+		return json;
 	}
 }

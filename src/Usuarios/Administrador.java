@@ -1,5 +1,7 @@
 package Usuarios;
 
+import org.json.JSONObject;
+
 import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Competencia;
 import DeportesConjunto_Competencias.DeporteConjunto;
@@ -56,4 +58,11 @@ public class Administrador extends Usuario{
 		club.reabastecerTienda(articulo, cantidad);
 	}
 
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = super.toJSON();
+		json.put("tipo", "Administrador");
+		return json;
+	}
+	
 }

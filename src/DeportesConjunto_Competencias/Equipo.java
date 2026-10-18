@@ -3,6 +3,9 @@ package DeportesConjunto_Competencias;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class Equipo {
@@ -121,5 +124,20 @@ public String toString() {
 	return nombre + " (" + deporte + ", " + categoria + ")";
 
 }
+
+public JSONObject toJSON() {
+	JSONObject json = new JSONObject();
+    json.put("nombre", nombre);
+    json.put("cupoMaximo", cupoMaximo);
+    JSONArray jsonInscripciones = new JSONArray();
+    for (InscripcionEquipo inscripcion : inscripciones) {
+    	jsonInscripciones.put(inscripcion.toJSON());
+    }
+    json.put("inscripciones", jsonInscripciones);
+	json.put("deporte", deporte.toJSON());
+	json.put("categoria", categoria.name());
+	return json;
+}
+
 }
 

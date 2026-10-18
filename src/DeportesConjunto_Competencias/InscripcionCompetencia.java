@@ -3,6 +3,9 @@ package DeportesConjunto_Competencias;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class InscripcionCompetencia {
@@ -52,6 +55,18 @@ public class InscripcionCompetencia {
 	        return false;
 	    }
 	    return registro.estaHabilitado();
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("equipo", equipo.getNombre());
+	    json.put("competencia", competencia.getNombre());
+	    JSONArray jsonNomina = new JSONArray();
+	    for (RegistroNomina nomina : nomina) {
+	    	jsonNomina.put(nomina.toJSON());
+	    }
+	    json.put("nomina", jsonNomina);
+		return json;
 	}
 	
 }

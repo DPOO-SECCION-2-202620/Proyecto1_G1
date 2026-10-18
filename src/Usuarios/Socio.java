@@ -1,7 +1,11 @@
 package Usuarios;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
@@ -9,9 +13,6 @@ import DeportesConjunto_Competencias.InscripcionEquipo;
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.InscripcionIndividual;
 import DeportesIndividuales.NivelJugador;
-
-import java.util.ArrayList;
-import java.time.Duration;
 
 public class Socio extends Usuario{
 private int edad;
@@ -114,10 +115,14 @@ public List<InscripcionIndividual> getInscripcionesIndividuales() {
 	return inscripcionesIndividuales;
 }
 
+@Override
+public JSONObject toJSON() {
+	JSONObject json = super.toJSON();
+	json.put("tipo", "Socio");
+	json.put("edad", edad);
+	json.put("puntosFidelidad", puntosFidelidad);
+	json.put("horaUltimaBebidaCaliente", horaUltimaBebidaCaliente);
+	return json;
+}
 
-
-
-
-
-	
 }

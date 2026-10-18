@@ -3,6 +3,8 @@ package DeportesConjunto_Competencias;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import PartidosEquipo_Estadisticas.PartidoExterno;
 
 public class TorneoCerros extends Competencia{
@@ -40,4 +42,10 @@ public class TorneoCerros extends Competencia{
 		actualizarTabla(partido);
 	}
 
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("tipo", "TorneoCerros");
+		return json;
+	}
 }

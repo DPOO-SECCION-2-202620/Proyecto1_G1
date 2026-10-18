@@ -1,5 +1,7 @@
 package DeportesConjunto_Competencias;
 
+import org.json.JSONObject;
+
 public class RegistroNomina {
 
 	private InscripcionEquipo inscripcionEquipo;
@@ -24,6 +26,13 @@ public class RegistroNomina {
 
 	public void cumplirSuspension() {
 		controlSanciones.habilitar();
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("inscripcionEquipo", inscripcionEquipo.getEquipo());
+	    json.put("controlSanciones", controlSanciones.toJSON());
+		return json;
 	}
 	
 }

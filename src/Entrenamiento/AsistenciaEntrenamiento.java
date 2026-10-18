@@ -1,5 +1,7 @@
 package Entrenamiento;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class AsistenciaEntrenamiento {
@@ -53,7 +55,13 @@ public class AsistenciaEntrenamiento {
 		return texto;
 	}
 
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("comentario", comentario);
+	    json.put("estado", estado.name());
+	    json.put("jugador", jugador.getLogin());
+		return json;
+	}
 
 	
 

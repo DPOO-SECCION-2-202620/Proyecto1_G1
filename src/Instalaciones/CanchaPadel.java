@@ -1,5 +1,7 @@
 package Instalaciones;
 
+import org.json.JSONObject;
+
 import DeportesIndividuales.Modalidad;
 import DeportesIndividuales.Padel;
 
@@ -23,4 +25,10 @@ public class CanchaPadel extends InstalacionIndividual{
 		return false;
 	}
 
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "CanchaPadel");
+		return json;
+	}
 }

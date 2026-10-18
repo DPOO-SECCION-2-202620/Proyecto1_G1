@@ -3,6 +3,8 @@ package DeportesConjunto_Competencias;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import PartidosEquipo_Estadisticas.PartidoExterno;
 
 public class ASCUN extends Competencia{
@@ -49,5 +51,12 @@ public class ASCUN extends Competencia{
 	@Override
 	public void registrarPartido(PartidoExterno partido) {
 		agregarALista(partido);
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("tipo", "ASCUN");
+		return json;
 	}
 }

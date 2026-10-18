@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public class SugerenciaArticulo {
 
 	private String nombrePropuesto;
@@ -39,5 +41,14 @@ public class SugerenciaArticulo {
 	
 	public void rechazar() {
 		this.estado = EstadoSugerencia.Rechazada;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("nombrePropuesto", nombrePropuesto);
+	    json.put("categoria", categoria);
+	    json.put("precioSugerido", precioSugerido);
+	    json.put("estado", estado.name());
+		return json;
 	}
 }

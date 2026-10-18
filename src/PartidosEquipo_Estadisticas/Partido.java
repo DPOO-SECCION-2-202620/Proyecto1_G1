@@ -3,6 +3,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public abstract class Partido {
 
 	private LocalDate fecha;
@@ -27,4 +30,15 @@ public abstract class Partido {
 	
 	public abstract boolean puedeJugarse();
 
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("fecha", fecha.toString());
+	    JSONArray jsonEstadisticaConjunto = new JSONArray();
+	    for (EstadisticaConjunto estadisticaConjunto : estadisticasConjunto) {
+	    	jsonEstadisticaConjunto.put(estadisticaConjunto.toJSON());
+	    }
+	    json.put("estadisticasConjunto", jsonEstadisticaConjunto);
+		return json;
+	}
+	
 }

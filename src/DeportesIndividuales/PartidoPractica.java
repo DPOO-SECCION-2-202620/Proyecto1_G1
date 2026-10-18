@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Excepciones.ReglaNegocioException;
 import Instalaciones.InstalacionIndividual;
 import Usuarios.Socio;
@@ -108,6 +111,23 @@ public class PartidoPractica {
 	    return mejor.getJugador();
 	}
 	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("fecha", fecha);
+	    json.put("finalizado", finalizado);
+	    json.put("disciplina", disciplina.getNombre());
+	    JSONArray jsonJugadores = new JSONArray();
+	    for (Socio jugador : jugadores) {
+	    	jsonJugadores.put(jugador.getLogin());
+	    }
+	    json.put("jugadores", jsonJugadores);
+	    json.put("instalacion", instalacion.getNombre());
+	    JSONArray jsonEstadisticas = new JSONArray();
+	    for (EstadisticaPractica estadistica : estadisticas) {
+	    	jsonEstadisticas.put(estadistica.toJSON());
+	    }
+	    json.put("estadisticas", jsonEstadisticas);
+		return json;
+	}
 	
 }

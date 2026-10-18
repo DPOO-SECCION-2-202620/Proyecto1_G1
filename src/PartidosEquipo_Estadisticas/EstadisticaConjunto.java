@@ -1,5 +1,7 @@
 package PartidosEquipo_Estadisticas;
 
+import org.json.JSONObject;
+
 import DeportesConjunto_Competencias.InscripcionEquipo;
 
 public abstract class EstadisticaConjunto {
@@ -14,5 +16,11 @@ public abstract class EstadisticaConjunto {
 	
 	public InscripcionEquipo getJugador() {
 		return jugador;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("jugador", jugador.getJugador());
+		return json;
 	}
 }

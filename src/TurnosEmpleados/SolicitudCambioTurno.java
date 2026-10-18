@@ -1,5 +1,7 @@
 package TurnosEmpleados;
 
+import org.json.JSONObject;
+
 import Usuarios.Empleado;
 
 public class SolicitudCambioTurno {
@@ -41,5 +43,18 @@ public class SolicitudCambioTurno {
 	
 	public void rechazar() {
 		this.estado = EstadoSolicitud.Rechazada;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("estado", estado.name());
+	    if (estado == EstadoSolicitud.Pendiente) {
+			json.put("turnoActual", solicitante.getTurnos().indexOf(turnoActual));
+		} else {
+			json.put("turnoActual", turnoActual.toJSON());
+		}
+	    json.put("turnoNuevo", turnoNuevo.toJSON());
+	    json.put("solicitante", solicitante.getLogin());
+		return json;
 	}
 }

@@ -3,6 +3,10 @@ package Usuarios;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import DeportesConjunto_Competencias.Equipo;
 import Excepciones.ReglaNegocioException;
 import Tienda_Cafeteria_Inventario.CodigoDescuento;
 import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
@@ -57,5 +61,17 @@ public class Empleado extends Socio{
 		}
 	}
 	
-	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = super.toJSON();
+		json.put("tipo", "Empleado");
+		json.put("codigoEmpleado", codigoEmpleado);
+		json.put("codigoDescuento", codigoDescuento.toJSON());
+		JSONArray jsonTurnos = new JSONArray();
+	    for (Turno turno : turnos) {
+	    	jsonTurnos.put(turno.toJSON());
+	    }
+	    json.put("turnos", jsonTurnos);
+		return json;
+	}
 }

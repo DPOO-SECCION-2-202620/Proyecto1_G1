@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public class Bebida extends Producto{
 
 	private Boolean caliente;
@@ -13,4 +15,10 @@ public class Bebida extends Producto{
 		return caliente;
 	}
 	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "Bebida");
+		return json;
+	}
 }

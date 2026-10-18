@@ -1,5 +1,7 @@
 package Instalaciones;
 
+import org.json.JSONObject;
+
 import DeportesIndividuales.Tenis;
 
 public class CanchaTenis extends InstalacionIndividual{
@@ -12,6 +14,13 @@ public class CanchaTenis extends InstalacionIndividual{
 	@Override
 	public boolean permiteBebidaCaliente() {
 		return true;
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "CanchaTenis");
+		return json;
 	}
 	
 }

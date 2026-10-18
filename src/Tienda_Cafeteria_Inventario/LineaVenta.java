@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public class LineaVenta {
 
 	private int cantidad;
@@ -18,6 +20,13 @@ public class LineaVenta {
 
 	public Producto getProducto() {
 		return producto;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("cantidad", cantidad);
+	    json.put("login", producto.getNombre());
+		return json;
 	}
 	
 }

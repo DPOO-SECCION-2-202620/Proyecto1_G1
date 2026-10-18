@@ -1,5 +1,7 @@
 package DeportesIndividuales;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class RankingJugadorDisciplina {
@@ -24,5 +26,13 @@ public class RankingJugadorDisciplina {
 	
 	public DisciplinaIndividual getDisciplina() {
 		return disciplina;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("puntajeElo", puntajeElo);
+	    json.put("jugador", jugador.getLogin());
+	    json.put("disciplina", disciplina.getNombre());
+		return json;
 	}
 }

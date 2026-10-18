@@ -1,5 +1,7 @@
 package DeportesIndividuales;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public abstract class EstadisticaPractica {
@@ -20,5 +22,10 @@ public abstract class EstadisticaPractica {
 		return jugador;
 	}
 	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("setsGanados", setsGanados);
+	    json.put("jugador", jugador.getLogin());
+		return json;
+	}
 }

@@ -2,6 +2,8 @@ package Instalaciones;
 
 import java.time.LocalDateTime;
 
+import org.json.JSONObject;
+
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Modalidad;
 import Usuarios.Socio;
@@ -49,6 +51,14 @@ public abstract class InstalacionIndividual extends Instalacion{
 		return salon;
 	}
 	
-	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "InstalacionIndividual");
+	    json.put("techado", techado);
+	    json.put("salon", salon);
+	    json.put("disciplina", disciplina);
+		return json;
+	}
 	
 }

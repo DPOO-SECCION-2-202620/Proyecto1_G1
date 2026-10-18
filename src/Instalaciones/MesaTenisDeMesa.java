@@ -1,5 +1,7 @@
 package Instalaciones;
 
+import org.json.JSONObject;
+
 import DeportesIndividuales.TenisDeMesa;
 
 public class MesaTenisDeMesa extends InstalacionIndividual{
@@ -14,4 +16,10 @@ public class MesaTenisDeMesa extends InstalacionIndividual{
 		return !isTechado();
 	}
 
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "MesaTenisDeMesa");
+		return json;
+	}
 }

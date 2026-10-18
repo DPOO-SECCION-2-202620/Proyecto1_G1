@@ -1,5 +1,7 @@
 package DeportesIndividuales;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class EstadisticaTenisDeMesa extends EstadisticaPractica{
@@ -15,6 +17,11 @@ public class EstadisticaTenisDeMesa extends EstadisticaPractica{
 		return puntosTotales;
 	}
 	
-	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("puntosTotales", puntosTotales);
+		return json;
+	}
 	
 }

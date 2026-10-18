@@ -1,5 +1,7 @@
 package PartidosEquipo_Estadisticas;
 
+import org.json.JSONObject;
+
 import DeportesConjunto_Competencias.InscripcionEquipo;
 
 public class EstadisticaBaloncesto extends EstadisticaConjunto{
@@ -26,7 +28,13 @@ public class EstadisticaBaloncesto extends EstadisticaConjunto{
 		return puntos*2 + rebotes;
 	}
 	
-	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("puntos", puntos);
+	    json.put("rebotes", rebotes);
+		return json;
+	}
 	
 
 }

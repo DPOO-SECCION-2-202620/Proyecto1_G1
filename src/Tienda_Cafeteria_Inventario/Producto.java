@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public abstract class Producto {
 
 	public String nombre;
@@ -46,4 +48,13 @@ public abstract class Producto {
 	    this.cantidad += cantidad;
 	}
 		
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+	    json.put("categoria", categoria);
+	    json.put("precio", precio);
+	    json.put("cantidad", cantidad);
+		return json;
+	}
+	
 }

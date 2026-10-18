@@ -3,6 +3,8 @@ package DeportesIndividuales;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.json.JSONObject;
+
 import Instalaciones.InstalacionIndividual;
 import Usuarios.Socio;
 
@@ -57,16 +59,19 @@ public class Reserva {
 	
 	
 	public boolean seSolapaCon (LocalDate fecha,LocalTime horaInicio,LocalTime horaFinal) {
-		
-		
 		return false;
 	}
-
 	
-
-	
-	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("horaInicio", horaInicio.toString());
+	    json.put("horaFinal", horaFinal.toString());
+	    json.put("fecha", fecha.toString());
+	    json.put("modalidad", modalidad.name());
+	    json.put("jugador", jugador.getLogin());
+	    json.put("instalacion", instalacion.getNombre());
+		return json;
+	}
 	
 }
 

@@ -1,5 +1,7 @@
 package DeportesConjunto_Competencias;
 
+import org.json.JSONObject;
+
 public abstract class DeporteConjunto {
 	
 	private String nombre;
@@ -25,6 +27,13 @@ public abstract class DeporteConjunto {
 	@Override
 	public String toString() {
 		return nombre;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+	    json.put("minimoJugadores", minimoJugadores);
+		return json;
 	}
 	
 }

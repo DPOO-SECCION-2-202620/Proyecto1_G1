@@ -1,5 +1,7 @@
 package DeportesConjunto_Competencias;
 
+import org.json.JSONObject;
+
 public class ControlSanciones {
 
 	private int amarillasAcumuladas;
@@ -42,5 +44,10 @@ public class ControlSanciones {
 		return estado;
 	}
 	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("amarillasAcumuladas", amarillasAcumuladas);
+	    json.put("estado", estado.name());
+		return json;
+	}
 }

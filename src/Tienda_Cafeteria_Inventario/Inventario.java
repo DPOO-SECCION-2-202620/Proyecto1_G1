@@ -2,6 +2,9 @@ package Tienda_Cafeteria_Inventario;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Instalaciones.Instalacion;
 
 public class Inventario {
@@ -34,5 +37,17 @@ public class Inventario {
 
 	public Ubicacion getUbicacion() {
 		return ubicacion;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("instalacion", instalacion.toJSON());
+	    json.put("ubicacion", ubicacion.toJSON());
+	    JSONArray jsonArticulos = new JSONArray();
+	    for (Articulo articulo : articulos) {
+	    	jsonArticulos.put(articulo.toJSON());
+	    }
+	    json.put("articulos", jsonArticulos);
+		return json;
 	}
 }

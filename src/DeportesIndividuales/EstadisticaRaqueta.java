@@ -1,5 +1,7 @@
 package DeportesIndividuales;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class EstadisticaRaqueta extends EstadisticaPractica {
@@ -27,6 +29,13 @@ public class EstadisticaRaqueta extends EstadisticaPractica {
 		return erroresNoForzados;
 	}
 	
-	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("gamesGanados", gamesGanados);
+	    json.put("aces", aces);
+	    json.put("erroresNoForzados", erroresNoForzados);
+		return json;
+	}
 	
 }

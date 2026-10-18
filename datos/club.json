@@ -1,0 +1,21 @@
+{
+  "deportes": [],
+  "inventarios": [],
+  "usuarios": [],
+  "cafeteria": {"articulo": []},
+  "nombre": "Club Seneca",
+  "competencias": [],
+  "solicitudes": [],
+  "disciplinas": [],
+  "rankings": [],
+  "tienda": {"articulo": []},
+  "historial": {
+    "sesiones": [],
+    "reservas": [],
+    "partidosPractica": [],
+    "partidos": []
+  },
+  "ventas": [],
+  "sugerencias": [],
+  "equipos": []
+}

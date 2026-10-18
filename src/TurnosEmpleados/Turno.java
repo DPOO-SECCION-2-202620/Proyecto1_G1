@@ -2,6 +2,8 @@ package TurnosEmpleados;
 
 import java.time.LocalTime;
 
+import org.json.JSONObject;
+
 public class Turno {
 
 	private String diaSemana;
@@ -39,4 +41,11 @@ public class Turno {
 	    return mismoDia && horaEnRango;
 	}
 
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("diaSemana", diaSemana);
+	    json.put("horaInicio", horaInicio);
+	    json.put("horaFinal", horaFinal);
+		return json;
+	}
 }

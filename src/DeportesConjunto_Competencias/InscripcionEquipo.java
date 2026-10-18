@@ -1,5 +1,7 @@
 package DeportesConjunto_Competencias;
 
+import org.json.JSONObject;
+
 import Usuarios.Socio;
 
 public class InscripcionEquipo {
@@ -58,8 +60,16 @@ public class InscripcionEquipo {
 		return controlSanciones;
 	}
 
-	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("jugador", jugador);
+	    json.put("equipo", equipo);
+	    json.put("posicion", posicion);
+	    json.put("numeroCamiseta", numeroCamiseta);
+	    json.put("controlSanciones", controlSanciones);
+		return json;
+	}
+
 	
 	
 }

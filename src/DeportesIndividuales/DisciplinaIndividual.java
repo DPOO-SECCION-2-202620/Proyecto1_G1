@@ -5,6 +5,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Instalaciones.InstalacionIndividual;
 
 public abstract class DisciplinaIndividual {
@@ -54,9 +57,15 @@ public abstract class DisciplinaIndividual {
 		return nombre;
 	}
 	
-	
-	
-	
-	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+	    json.put("maxInstalacionesSimultaneas", maxInstalacionesSimultaneas);
+	    JSONArray jsonInstalaciones = new JSONArray();
+	    for (InstalacionIndividual instalacion : instalaciones) {
+	    	jsonInstalaciones.put(instalacion.toJSON());
+	    }
+	    json.put("turnos", jsonInstalaciones);
+		return json;
+	}
 }

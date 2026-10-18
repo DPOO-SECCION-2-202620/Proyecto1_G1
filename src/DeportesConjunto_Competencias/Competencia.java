@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import PartidosEquipo_Estadisticas.EstadisticaBaloncesto;
 import PartidosEquipo_Estadisticas.EstadisticaConjunto;
 import PartidosEquipo_Estadisticas.EstadisticaFutbol;
@@ -156,5 +159,25 @@ public abstract class Competencia {
 	    return mejor;
 	}
 	
-	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+	    json.put("entidadOrganizadora", entidadOrganizadora);
+	    json.put("anio", anio);
+	    json.put("formatoJuego", formatoJuego);
+	    json.put("nominaMinima", nominaMinima);
+	    json.put("categoria", categoria);
+	    json.put("deporte", deporte);
+	    JSONArray jsonInscripciones = new JSONArray();
+	    for (InscripcionCompetencia inscripcion : inscripciones) {
+	    	jsonInscripciones.put(inscripcion.toJSON());
+	    }
+	    json.put("inscripciones", jsonInscripciones);
+	    JSONArray jsonListaPartidos = new JSONArray();
+	    for (PartidoExterno listaPartido : listaPartidos) {
+	    	jsonListaPartidos.put(listaPartido.toJSON());
+	    }
+	    json.put("listaPartidos", jsonListaPartidos);
+		return json;
+	}
 }

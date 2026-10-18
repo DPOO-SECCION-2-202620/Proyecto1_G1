@@ -3,6 +3,9 @@ package Tienda_Cafeteria_Inventario;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import Usuarios.Empleado;
 import Usuarios.Socio;
 
@@ -102,6 +105,23 @@ public class Venta {
 
 	public int getPuntosGenerados() {
 		return puntosGenerados;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("fecha", fecha.toString());
+	    json.put("propina", propina);
+	    json.put("total", total);
+	    json.put("puntosRedimidos", puntosRedimidos);
+	    json.put("rubro", rubro.name());
+	    json.put("tasaImpuestos", tasaImpuestos);
+	    json.put("comprador", comprador.getNombre());
+	    JSONArray jsonLineas = new JSONArray();
+	    for (LineaVenta linea : lineas) {
+	    	jsonLineas.put(linea.toJSON());
+	    }
+	    json.put("turnos", jsonLineas);
+		return json;
 	}
 	
 }

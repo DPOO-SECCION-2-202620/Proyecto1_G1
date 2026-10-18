@@ -1,5 +1,7 @@
 package Tienda_Cafeteria_Inventario;
 
+import org.json.JSONObject;
+
 public class Snack extends Producto{
 
 	private Alergenos alergenos;
@@ -11,6 +13,13 @@ public class Snack extends Producto{
 
 	public Alergenos getalergenos() {
 		return alergenos;
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("tipo", "Snack");
+		return json;
 	}
 	
 }

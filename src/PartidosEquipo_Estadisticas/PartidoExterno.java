@@ -2,6 +2,8 @@ package PartidosEquipo_Estadisticas;
 
 import java.time.LocalDate;
 
+import org.json.JSONObject;
+
 import DeportesConjunto_Competencias.Equipo;
 
 public class PartidoExterno extends Partido{
@@ -47,4 +49,14 @@ public class PartidoExterno extends Partido{
 		return equipo.puedeJugar();
 	}
 	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+	    json.put("marcadorPropio", marcadorPropio);
+	    json.put("marcadorRival", marcadorRival);
+	    json.put("institucionRival", institucionRival);
+	    json.put("escenario", escenario);
+	    json.put("equipo", equipo.getNombre());
+		return json;
+	}
 }
