@@ -33,11 +33,11 @@ public class SugerenciaArticulo {
 		return estado;
 	}
 
-	public void aprobar(EstadoSugerencia estado) {
+	public void aprobar() {
 		this.estado = EstadoSugerencia.Aceptada;
 	}
 	
-	public void rechazar(EstadoSugerencia estado) {
+	public void rechazar() {
 		this.estado = EstadoSugerencia.Rechazada;
 	}
 }
