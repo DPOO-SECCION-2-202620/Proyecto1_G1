@@ -11,15 +11,15 @@ import Instalaciones.Instalacion;
 
 public class Inventario {
 
-	private Instalacion instalacion;
+	private List<Instalacion> instalaciones;
 
 	private List<Articulo> articulos;
 
 	private Ubicacion ubicacion;
 
-	public Inventario(Instalacion instalacion, Ubicacion ubicacion) {
+	public Inventario(List<Instalacion> instalaciones, Ubicacion ubicacion) {
 		super();
-		this.instalacion = instalacion;
+		this.instalaciones = instalaciones;
 		this.ubicacion = ubicacion;
 		this.articulos = new ArrayList<>();
 	}
@@ -36,10 +36,10 @@ public class Inventario {
 		return articulos.contains(articulo);
 	}
 
-	public Instalacion getInstalacion() {
-		return instalacion;
+	public List<Instalacion> getInstalaciones() {
+		return instalaciones;
 	}
-
+	
 	public List<Articulo> getArticulos() {
 		return articulos;
 	}
@@ -50,7 +50,11 @@ public class Inventario {
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-		json.put("instalacion", instalacion.toJSON());
+		JSONArray jsonInstalaciones = new JSONArray();
+		for (Instalacion instalacion : instalaciones) {
+			jsonInstalaciones.put(instalacion.getNombre());
+		}
+		json.put("instalaciones", jsonInstalaciones);
 		json.put("ubicacion", ubicacion.toJSON());
 		JSONArray jsonArticulos = new JSONArray();
 		for (Articulo articulo : articulos) {
@@ -64,16 +68,20 @@ public class Inventario {
 			Map<String, Producto> mapaProductos,
 			Map<String, Instalacion> mapaInstalaciones) {
 
-		JSONObject jsonInstalacion = json.getJSONObject("instalacion");
-		String nombreInstalacion = jsonInstalacion.getString("nombre");
-
-		Instalacion instalacion = mapaInstalaciones.get(nombreInstalacion);
-		if (instalacion == null) {
-			instalacion = Instalacion.fromJSON(jsonInstalacion, mapaInstalaciones);
+		List<Instalacion> instalaciones = new ArrayList<>();
+		JSONArray jsonInstalaciones = json.getJSONArray("instalaciones");
+		for (int indice = 0; indice < jsonInstalaciones.length(); indice++) {
+			String nombreInstalacion = jsonInstalaciones.getString(indice);
+			Instalacion instalacion = mapaInstalaciones.get(nombreInstalacion);
+			if (instalacion == null) {
+				throw new IllegalArgumentException(
+						"Instalación no encontrada para el inventario: " + nombreInstalacion);
+			}
+			instalaciones.add(instalacion);
 		}
 
 		Ubicacion ubicacion = Ubicacion.fromJSON(json.getJSONObject("ubicacion"));
-		Inventario inventario = new Inventario(instalacion, ubicacion);
+		Inventario inventario = new Inventario(instalaciones, ubicacion);
 
 		JSONArray jsonArticulos = json.optJSONArray("articulos");
 		if (jsonArticulos != null) {

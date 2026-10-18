@@ -669,8 +669,9 @@ public class ClubSeneca {
 		for (int indice = 0; indice < jsonInventarios.length(); indice++) {
 			Inventario inventario = Inventario.fromJSON(jsonInventarios.getJSONObject(indice), mapaProductos, mapaInstalaciones);
 			club.inventarios.add(inventario);
-			Instalacion instalacion = inventario.getInstalacion();
-			mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+			for (Instalacion instalacion : inventario.getInstalaciones()) {
+				mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+			}
 		}
 
 		JSONArray jsonEquipos = leerLista(json, "equipos");
