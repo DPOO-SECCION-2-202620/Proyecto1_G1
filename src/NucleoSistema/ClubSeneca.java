@@ -1,5 +1,9 @@
 package NucleoSistema;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,29 +12,42 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Competencia;
 import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
 import DeportesIndividuales.DisciplinaIndividual;
+import DeportesIndividuales.EstadisticaPractica;
 import DeportesIndividuales.InscripcionIndividual;
+import DeportesIndividuales.Modalidad;
+import DeportesIndividuales.NivelJugador;
 import DeportesIndividuales.PartidoPractica;
 import DeportesIndividuales.RankingJugadorDisciplina;
 import DeportesIndividuales.Reserva;
+import Entrenamiento.EstadoAsistencia;
 import Entrenamiento.SesionEntrenamiento;
+import Excepciones.ReglaNegocioException;
 import Instalaciones.Instalacion;
 import Instalaciones.InstalacionIndividual;
+import PartidosEquipo_Estadisticas.EstadisticaConjunto;
 import PartidosEquipo_Estadisticas.PartidoExterno;
 import PartidosEquipo_Estadisticas.PartidoInterno;
+import Tienda_Cafeteria_Inventario.Articulo;
 import Tienda_Cafeteria_Inventario.CafeteriaSocios;
+import Tienda_Cafeteria_Inventario.CodigoDescuento;
 import Tienda_Cafeteria_Inventario.Inventario;
+import Tienda_Cafeteria_Inventario.LineaVenta;
 import Tienda_Cafeteria_Inventario.Producto;
 import Tienda_Cafeteria_Inventario.Rubro;
 import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
 import Tienda_Cafeteria_Inventario.Tienda;
+import Tienda_Cafeteria_Inventario.Ubicacion;
 import Tienda_Cafeteria_Inventario.Venta;
 import TurnosEmpleados.GestorTurnos;
 import TurnosEmpleados.SolicitudCambioTurno;
+import TurnosEmpleados.Turno;
 import Usuarios.Empleado;
+import Usuarios.Entrenador;
 import Usuarios.Socio;
 import Usuarios.Usuario;
 
@@ -61,8 +78,6 @@ public class ClubSeneca {
 	private CafeteriaSocios cafeteria;
 	
 	private Tienda tienda;
-	
-	private List<Empleado> empleados;
 	
 	private List<Venta> ventas;
 	
@@ -100,45 +115,24 @@ public class ClubSeneca {
 	}
 	
 	public boolean inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta) {
-		if (socio == null || equipo == null) {
-			return false;
-		}
-		if (equipo.getInscripciones().size() >= equipo.getCupoMaximo()) {
-			return false;
-		}
-		if (equipo.camisetaOcupada(numeroCamiseta)) {
-			return false;
-		}
-		if (!equipo.getCategoria().admiteEdad(socio.getEdad())) {
-			return false;
-		}
-		for (DeportesConjunto_Competencias.InscripcionEquipo existente : socio.getInscripcionesEquipo()) {
-			if (existente.getEquipo().getDeporte().equals(equipo.getDeporte())) {
-				return false;
-			}
-		}
-		DeportesConjunto_Competencias.InscripcionEquipo inscripcion = equipo.agregarJugador(socio, posicion, numeroCamiseta);
-		if (inscripcion == null) {
-			return false;
-		}
-		socio.agregarInscripcionEquipo(inscripcion);
+		equipo.agregarJugador(socio, posicion, numeroCamiseta);
 		guardarDatos();
 		return true;
 	}
 	
 	public PartidoInterno registrarPartidoInterno(Equipo equipoLocal, Equipo equipoVisitante,
 			int marcadorLocal, int marcadorVisitante,
-			List<PartidosEquipo_Estadisticas.EstadisticaConjunto> estadisticas) {
+			List<EstadisticaConjunto> estadisticas) {
 		if (equipoLocal == null || equipoVisitante == null || equipoLocal.equals(equipoVisitante)) {
 			return null;
 		}
 		if (!equipoLocal.getDeporte().equals(equipoVisitante.getDeporte())) {
 			return null;
 		}
-		PartidoInterno partido = new PartidoInterno(java.time.LocalDate.now(), equipoLocal, equipoVisitante,
+		PartidoInterno partido = new PartidoInterno(LocalDate.now(), equipoLocal, equipoVisitante,
 				marcadorLocal, marcadorVisitante);
 		if (estadisticas != null) {
-			for (PartidosEquipo_Estadisticas.EstadisticaConjunto estadistica : estadisticas) {
+			for (EstadisticaConjunto estadistica : estadisticas) {
 				partido.agregarEstadistica(estadistica);
 			}
 		}
@@ -148,13 +142,13 @@ public class ClubSeneca {
 	}
  
 	public PartidoExterno registrarPartidoExterno(Competencia competencia, Equipo equipo,
-			java.time.LocalDate fecha, int marcadorPropio, int marcadorRival, String institucionRival,
-			String escenario, List<PartidosEquipo_Estadisticas.EstadisticaConjunto> estadisticas) {
+			LocalDate fecha, int marcadorPropio, int marcadorRival, String institucionRival,
+			String escenario, List<EstadisticaConjunto> estadisticas) {
 		if (competencia == null || equipo == null) {
 			return null;
 		}
-		PartidoExterno partido = new PartidoExterno(fecha, equipo, marcadorPropio, marcadorRival,
-				institucionRival, escenario);
+		PartidoExterno partido = new PartidoExterno(fecha, marcadorPropio, marcadorRival, institucionRival,
+				escenario, equipo);
 		if (estadisticas != null) {
 			for (PartidosEquipo_Estadisticas.EstadisticaConjunto estadistica : estadisticas) {
 				partido.agregarEstadistica(estadistica);
@@ -170,7 +164,7 @@ public class ClubSeneca {
 		if (equipo == null || competencia == null) {
 			return false;
 		}
-		if (!equipo.cumpleRequisitos()) {
+		if (!competencia.equipoCumpleRequisitos(equipo)) {
 			return false;
 		}
 		boolean inscrito = competencia.inscribirEquipo(equipo);
@@ -184,8 +178,8 @@ public class ClubSeneca {
 	}
 	
 	public Reserva reservar(Socio socio, DisciplinaIndividual disciplina, InstalacionIndividual instalacion,
-			java.time.LocalDate fecha, java.time.LocalTime horaInicio, java.time.LocalTime horaFinal,
-			int numeroJugadores, DeportesIndividuales.Modalidad modalidad) {
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal,
+			int numeroJugadores, Modalidad modalidad) {
 		if (socio == null || disciplina == null || instalacion == null) {
 			return null;
 		}
@@ -195,9 +189,9 @@ public class ClubSeneca {
 		if (!instalacion.admiteModalidad(modalidad, numeroJugadores)) {
 			return null;
 		}
-		for (Reserva existente : historial.getReservas()) {
-			if (existente.getInstalacion().equals(instalacion)
-					&& existente.seTraslapaCon(fecha, horaInicio, horaFinal)) {
+		for (Reserva reservaExistente : historial.getReservas()) {
+			if (reservaExistente.getInstalacion().equals(instalacion)
+					&& reservaExistente.seSolapaCon(fecha, horaInicio, horaFinal)) {
 				return null;
 			}
 		}
@@ -209,32 +203,37 @@ public class ClubSeneca {
 	}
 	
 	public PartidoPractica programarPartidoPractica(DisciplinaIndividual disciplina,
-			InstalacionIndividual instalacion, java.time.LocalDate fecha, List<Socio> jugadores) {
+			InstalacionIndividual instalacion, LocalDate fecha, List<Socio> jugadores) {
 		if (disciplina == null || instalacion == null || jugadores == null || jugadores.size() < 2) {
 			return null;
 		}
-		PartidoPractica partido = new PartidoPractica(fecha, disciplina, jugadores, instalacion);
-		historial.agregarPartidoPractica(partido);
+		PartidoPractica partidoPractica = new PartidoPractica(fecha, disciplina, jugadores, instalacion);
+		historial.agregarParidosPractica(partidoPractica);
 		guardarDatos();
-		return partido;
+		return partidoPractica;
 	}
 	
 	public void finalizarPartidoPractica(PartidoPractica partido,
-			List<DeportesIndividuales.EstadisticaPractica> estadisticas) {
+			List<EstadisticaPractica> estadisticas) {
 		if (partido == null) {
 			return;
 		}
-		partido.finalizar(estadisticas);
+		try {
+			partido.finalizar(estadisticas);
+		} catch (ReglaNegocioException excepcion) {
+			excepcion.printStackTrace();
+			return;
+		}
 		Socio ganador = partido.getGanador();
 		for (Socio jugador : partido.getJugadores()) {
-			RankingJugadorDisciplina ranking = null;
-			for (RankingJugadorDisciplina r : rankings) {
-				if (r.getDisciplina().equals(partido.getDisciplina()) && r.getJugador().equals(jugador)) {
-					ranking = r;
+			RankingJugadorDisciplina rankingJugador = null;
+			for (RankingJugadorDisciplina ranking : rankings) {
+				if (ranking.getDisciplina().equals(partido.getDisciplina()) && ranking.getJugador().equals(jugador)) {
+					rankingJugador = ranking;
 					break;
 				}
 			}
-			if (ranking == null) {
+			if (rankingJugador == null) {
 				continue;
 			}
 			double sumaRivales = 0;
@@ -243,16 +242,16 @@ public class ClubSeneca {
 				if (otro.equals(jugador)) {
 					continue;
 				}
-				for (RankingJugadorDisciplina r : rankings) {
-					if (r.getDisciplina().equals(partido.getDisciplina()) && r.getJugador().equals(otro)) {
-						sumaRivales += r.getPuntajeElo();
+				for (RankingJugadorDisciplina ranking : rankings) {
+					if (ranking.getDisciplina().equals(partido.getDisciplina()) && ranking.getJugador().equals(otro)) {
+						sumaRivales += ranking.getPuntajeElo();
 						rivales++;
 						break;
 					}
 				}
 			}
 			if (rivales > 0) {
-				ranking.actualizarPuntaje(sumaRivales / rivales, jugador.equals(ganador));
+				rankingJugador.setPuntajeElo(sumaRivales / rivales, jugador.equals(ganador));
 			}
 		}
 		guardarDatos();
@@ -267,21 +266,21 @@ public class ClubSeneca {
 		return null;
 	}
 	
-	public SesionEntrenamiento planearSesion(Usuarios.Entrenador entrenador, java.time.LocalDate fecha,
-			java.time.LocalTime hora, int duracionMinutos, Instalacion instalacion, List<Socio> convocados) {
+	public SesionEntrenamiento planearSesion(Entrenador entrenador, LocalDate fecha,
+			LocalTime hora, int duracionMinutos, Instalacion instalacion, List<Socio> convocados) {
 		if (entrenador == null || instalacion == null || duracionMinutos <= 0) {
 			return null;
 		}
-		java.time.LocalTime fin = hora.plusMinutes(duracionMinutos);
-		for (SesionEntrenamiento otra : historial.getSesiones()) {
-			if (!otra.getFecha().equals(fecha)) {
+		LocalTime fin = hora.plusMinutes(duracionMinutos);
+		for (SesionEntrenamiento sesionExistente : historial.getSesiones()) {
+			if (!sesionExistente.getFecha().equals(fecha)) {
 				continue;
 			}
-			java.time.LocalTime otraFin = otra.getHora().plusMinutes(otra.getDuracionMinutos());
-			boolean traslape = hora.isBefore(otraFin) && otra.getHora().isBefore(fin);
-			boolean mismoRecurso = otra.getInstalacion().equals(instalacion)
-					|| otra.getEntrenador().equals(entrenador);
-			if (traslape && mismoRecurso) {
+			LocalTime sesionExistenteFin = sesionExistente.getHora().plusMinutes(sesionExistente.getDuracionMinutos());
+			boolean seSolapan = hora.isBefore(sesionExistenteFin) && sesionExistente.getHora().isBefore(fin);
+			boolean mismoRecurso = sesionExistente.getInstalacion().equals(instalacion)
+					|| sesionExistente.getEntrenador().equals(entrenador);
+			if (seSolapan && mismoRecurso) {
 				return null;
 			}
 		}
@@ -293,7 +292,7 @@ public class ClubSeneca {
 	}
 	
 	public void registrarAsistencia(SesionEntrenamiento sesion, Socio socio,
-			Entrenamiento.EstadoAsistencia estado, int evaluacion, String comentario) {
+			EstadoAsistencia estado, int evaluacion, String comentario) {
 		if (sesion == null || socio == null) {
 			return;
 		}
@@ -302,15 +301,19 @@ public class ClubSeneca {
 	}
 	
 	public void registrarVenta(Socio comprador, Map<Producto, Integer> productos, Rubro rubro,
-			Instalacion instalacionActual, String codigoDescuento, int puntosARedimir, double propina) {
+			Instalacion instalacionActual, CodigoDescuento codigoDescuento, int puntosARedimir, double propina) {
 		if (comprador == null || productos == null || productos.isEmpty() || rubro == null) {
 			return;
 		}
 		Venta venta;
+		List<LineaVenta> lineas = new ArrayList<>();
+		productos.forEach((producto, cantidad) -> {
+		    lineas.add(new LineaVenta(cantidad, producto));
+		});
 		if (rubro == Rubro.Tienda) {
-			venta = tienda.vender(comprador, productos, codigoDescuento, puntosARedimir);
+			venta = tienda.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);
 		} else if (rubro == Rubro.Cafeteria) {
-			venta = cafeteria.vender(comprador, productos, instalacionActual, puntosARedimir, propina);
+			venta = cafeteria.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);;
 		} else {
 			return;
 		}
@@ -321,7 +324,7 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
-	public void reabastecerTienda(Producto articulo, int cantidad) {
+	public void reabastecerTienda(Articulo articulo, int cantidad) {
 		if (articulo == null || cantidad <= 0) {
 			return;
 		}
@@ -337,13 +340,28 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
-	public boolean moverArticulo(Tienda_Cafeteria_Inventario.Articulo articulo,
-			Tienda_Cafeteria_Inventario.Ubicacion origen, Tienda_Cafeteria_Inventario.Ubicacion destino) {
-		boolean movido = getInventario().moverArticulo(articulo, origen, destino);
-		if (movido) {
-			guardarDatos();
+	public boolean moverArticulo(Articulo articulo, Ubicacion origen, Ubicacion destino) {
+		Inventario inventarioOrigen = null;
+		Inventario inventarioDestino = null;
+		List<Inventario> inventarios = getInventario();
+		for (Inventario inventario : inventarios) {
+			if (inventario.getUbicacion().equals(origen)) {
+				inventarioOrigen = inventario;
+			}
+			if (inventario.getUbicacion().equals(destino)) {
+				inventarioDestino  = inventario;
+			}
+			if (inventarioOrigen != null && inventarioDestino != null) {
+				break;
+			}
 		}
-		return movido;
+		if (inventarioOrigen == null || inventarioDestino == null) {
+			return false;
+		}
+		inventarioOrigen.quitarArticulo(articulo);
+		inventarioDestino.agregarArticulo(articulo); 
+		guardarDatos();
+		return true;
 	}
 	
 	public SugerenciaArticulo registrarSugerencia(Empleado empleado, String nombrePropuesto,
@@ -363,7 +381,7 @@ public class ClubSeneca {
 		}
 		if (aprobada) {
 			sugerencia.aprobar();
-			tienda.agregarArticulo(new Tienda_Cafeteria_Inventario.Articulo(sugerencia.getNombrePropuesto(),
+			tienda.agregarArticulo(new Articulo(sugerencia.getNombrePropuesto(),
 					sugerencia.getCategoria(), sugerencia.getPrecioSugerido(), 0));
 		} else {
 			sugerencia.rechazar();
@@ -394,8 +412,7 @@ public class ClubSeneca {
 		return autenticador.autenticar(login, usuarios, password);
 	}
 	
-	public Equipo crearEquipo(String nombre, int cupoMaximo, DeporteConjunto deporte,
-			DeportesConjunto_Competencias.Categoria categoria) {
+	public Equipo crearEquipo(String nombre, int cupoMaximo, DeporteConjunto deporte, Categoria categoria) {
 		for (Equipo equipo : equipos) {
 			if (equipo.getNombre().equalsIgnoreCase(nombre)) {
 				return null;
@@ -427,24 +444,20 @@ public class ClubSeneca {
 		return true;
 	}
 	
-	public Map<Rubro, Double> generarReporteVentas(String periodo, java.time.LocalDate fechaReferencia) {
-		return generadorReportes.reporteVentas(ventas, periodo, fechaReferencia);
+	public Map<Rubro, Double> generarReporteVentas() {
+		return generadorReportes.reporteVentas(ventas);
 	}
 	
-	public List<String> generarReporteDeportivo(){
-		List<String> reporte = new ArrayList<>();
-		reporte.addAll(generadorReportes.reporteResultados(historial.getPartidos()));
-		for (DisciplinaIndividual disciplina : disciplinas) {
-			reporte.addAll(generadorReportes.reporteRanking(rankings, disciplina));
-		}
+	public List<RankingJugadorDisciplina> generarReporteDeportivo(){
+		List<RankingJugadorDisciplina> reporte = generadorReportes.reporteRankings(rankings);
 		return reporte;
 	}
 	
 	public void guardarDatos() {
 		try {
 			persistencia.guardar(this);
-		} catch (java.io.IOException e) {
-			throw new java.io.UncheckedIOException("No se pudieron guardar los datos del club", e);
+		} catch (IOException excepcio) {
+			throw new UncheckedIOException("No se pudieron guardar los datos del club", excepcio);
 		}
 	}
 	
@@ -468,8 +481,8 @@ public class ClubSeneca {
 			this.tienda = cargado.tienda;
 			this.cafeteria = cargado.cafeteria;
 			this.historial = cargado.historial;
-		} catch (java.io.IOException e) {
-			throw new java.io.UncheckedIOException("No se pudieron cargar los datos del club", e);
+		} catch (IOException excepcion) {
+			throw new UncheckedIOException("No se pudieron cargar los datos del club", excepcion);
 		}
 	}
 	
@@ -485,8 +498,7 @@ public class ClubSeneca {
 		return socio;
 	}
 	
-	public InscripcionIndividual inscribirEnDisciplina(Socio socio, DisciplinaIndividual disciplina,
-			DeportesIndividuales.NivelJugador nivel) {
+	public InscripcionIndividual inscribirEnDisciplina(Socio socio, DisciplinaIndividual disciplina, NivelJugador nivel) {
 		if (socio == null || disciplina == null) {
 			return null;
 		}
@@ -504,8 +516,7 @@ public class ClubSeneca {
 		return inscripcion;
 	}
 	
-	public void registrarSolicitudTurno(Empleado solicitante, TurnosEmpleados.Turno turnoActual,
-			TurnosEmpleados.Turno turnoNuevo) throws Excepciones.ReglaNegocioException {
+	public void registrarSolicitudTurno(Empleado solicitante, Turno turnoActual, Turno turnoNuevo) throws ReglaNegocioException {
 		if (solicitante == null) {
 			return;
 		}
@@ -514,7 +525,7 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
-	public void asignarTurno(Empleado empleado, TurnosEmpleados.Turno turno) {
+	public void asignarTurno(Empleado empleado, Turno turno) {
 		if (empleado == null || turno == null) {
 			return;
 		}

@@ -60,9 +60,16 @@ public class Reserva {
 		return jugador;
 	}
 	
-	
-	public boolean seSolapaCon (LocalDate fecha,LocalTime horaInicio,LocalTime horaFinal) {
-		return false;
+	public boolean seSolapaCon(LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
+		if (fecha == null || horaInicio == null || horaFinal == null) {
+			return false;
+		}
+
+		if (!this.fecha.equals(fecha)) {
+			return false;
+		}
+
+		return horaInicio.isBefore(this.horaFinal) && horaFinal.isAfter(this.horaInicio);
 	}
 	
 	public JSONObject toJSON() {

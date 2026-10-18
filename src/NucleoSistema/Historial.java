@@ -51,20 +51,20 @@ public class Historial {
 		return sesiones;
 	}
 
-	public void agregarReserva() {
-		
+	public void agregarReserva(Reserva reserva) {
+		reservas.add(reserva);
 	}
 	
-	public void agregarPartido() {
-		
+	public void agregarPartido(Partido partido) {
+		partidos.add(partido);
 	}
 	
-	public void agregarParidosPractica() {
-		
+	public void agregarParidosPractica(PartidoPractica partidoPractica) {
+		partidosPractica.add(partidoPractica);
 	}
 	
-	public void agregarSesion() {
-		
+	public void agregarSesion(SesionEntrenamiento sesion) {
+		sesiones.add(sesion);
 	}
 	
 	public JSONObject toJSON() {

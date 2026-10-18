@@ -29,8 +29,8 @@ public class Administrador extends Usuario{
 		club.resolverSugerencia(sugerencia, aprobada);
 	}
 
-	public boolean resolverSolicitudTurno(SolicitudCambioTurno solicitud, boolean aprobada) {
-		return club.resolverSolicitudTurno(solicitud, aprobada);
+	public void resolverSolicitudTurno(SolicitudCambioTurno solicitud, boolean aprobada) {
+		club.resolverSolicitud(solicitud, aprobada);
 	}
 
 	public Equipo crearEquipo(String nombre, int cupoMaximo, DeporteConjunto deporte, Categoria categoria)

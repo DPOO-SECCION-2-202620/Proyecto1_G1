@@ -1,21 +1,25 @@
 package NucleoSistema;
 
-import java.util.Map;
+import java.util.List;
+
 import Usuarios.Usuario;
 
 public class Autenticador {
 
-	public Usuario autenticar(String login, Map<String, Usuario> mapaUsuarios, String password) {
-		if (login == null || mapaUsuarios == null || password == null) {
+	public Usuario autenticar(String login, List<Usuario> Usuarios, String password) {
+		if (login == null || Usuarios == null || password == null) {
 			return null;
 		}
-
-		Usuario usuario = mapaUsuarios.get(login);
-
-		if (usuario != null && usuario.verificarPassword(password)) {
-			return usuario;
+		
+		Usuario usuarioAutenticado = null;
+		for (Usuario usuario : Usuarios) {
+			if (usuario.getLogin().equals(login)) {
+				usuarioAutenticado = usuario;
+			}
 		}
-
+		if (usuarioAutenticado.getPassword().equals(password)) {
+			return usuarioAutenticado;
+		}
 		return null;
 	}
 	
