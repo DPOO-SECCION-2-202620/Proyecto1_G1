@@ -10,7 +10,7 @@ public class Padel extends DisciplinaIndividual {
 	public static Padel fromJSON(JSONObject json) {
 		Padel padel = new Padel(
 				json.getInt("maxInstalacionesSimultaneas"),
-				json.getString("Padel"));
+				json.getString("nombre"));
 		padel.restaurarEstadoDisciplinaIndividual(json, padel);
 		return padel;
 	}

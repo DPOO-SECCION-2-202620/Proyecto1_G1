@@ -70,7 +70,7 @@ public abstract class InstalacionIndividual extends Instalacion{
 				return CanchaTenis.fromJSON(json, (Tenis)disciplina);
 			case "CanchaPadel":
 				return CanchaPadel.fromJSON(json, (Padel)disciplina);
-			case "MESA_TENIS_DE_MESA":
+			case "MesaTenisDeMesa":
 				return MesaTenisDeMesa.fromJSON(json, (TenisDeMesa)disciplina);
 			default:
 				throw new IllegalArgumentException("Instalación desconocida: " + tipo);

@@ -12,7 +12,7 @@ public class Tenis extends DisciplinaIndividual {
 	public static Tenis fromJSON(JSONObject json) {
 		Tenis tenis = new Tenis(
 				json.getInt("maxInstalacionesSimultaneas"),
-				json.getString("Tenis"));
+				json.getString("nombre"));
 		tenis.restaurarEstadoDisciplinaIndividual(json, tenis);
 		return tenis;
 	}

@@ -31,6 +31,14 @@ public class RankingJugadorDisciplina {
 		return disciplina;
 	}
 	
+	
+	public void setPuntajeElo(double puntajeElo, boolean gano) {
+		if (gano) {
+			this.puntajeElo = puntajeElo;
+		}
+	}
+
+
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 	    json.put("puntajeElo", puntajeElo);

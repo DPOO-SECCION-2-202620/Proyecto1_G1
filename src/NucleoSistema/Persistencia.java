@@ -31,5 +31,5 @@ public class Persistencia {
 		ClubSeneca club = ClubSeneca.fromJSON(json);
 		club.setPersistencia(this);
 		return club;
-	
+	}
 }

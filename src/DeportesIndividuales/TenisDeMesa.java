@@ -11,7 +11,7 @@ public class TenisDeMesa extends DisciplinaIndividual {
 	public static TenisDeMesa fromJSON(JSONObject json) {
 		TenisDeMesa tenisDeMesa = new TenisDeMesa(
 				json.getInt("maxInstalacionesSimultaneas"),
-				json.getString("TenisDeMesa"));
+				json.getString("nombre"));
 		tenisDeMesa.restaurarEstadoDisciplinaIndividual(json, tenisDeMesa);
 		return tenisDeMesa;
 	}
