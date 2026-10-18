@@ -6,6 +6,10 @@ import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
 import Excepciones.ReglaNegocioException;
 import NucleoSistema.ClubSeneca;
+import Tienda_Cafeteria_Inventario.Articulo;
+import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
+import Tienda_Cafeteria_Inventario.Ubicacion;
+import TurnosEmpleados.SolicitudCambioTurno;
 
 public class Administrador extends Usuario{
 

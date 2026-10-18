@@ -1,6 +1,6 @@
 package Tienda_Cafeteria_Inventario;
 
-public class SugerenciasArticulo {
+public class SugerenciaArticulo {
 
 	private String nombrePropuesto;
 	
@@ -10,7 +10,7 @@ public class SugerenciasArticulo {
 	
 	private EstadoSugerencia estado = EstadoSugerencia.Pendiente;
 
-	public SugerenciasArticulo(String nombrePropuesto, String categoria, double precioSugerido) {
+	public SugerenciaArticulo(String nombrePropuesto, String categoria, double precioSugerido) {
 		super();
 		this.nombrePropuesto = nombrePropuesto;
 		this.categoria = categoria;
