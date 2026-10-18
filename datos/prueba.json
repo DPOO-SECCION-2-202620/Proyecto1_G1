@@ -1,0 +1,22 @@
+{
+  "ventas": [{
+    "fecha": "2026-10-17",
+    "total": 12500.5,
+    "comprador": "ana"
+  }],
+  "usuarios": [
+    {
+      "tipo": "Socio",
+      "login": "ana",
+      "nombre": "Ana",
+      "edad": 20
+    },
+    {
+      "tipo": "Entrenador",
+      "login": "luis",
+      "nombre": "Luis",
+      "edad": 35
+    }
+  ],
+  "nombre": "Club Seneca"
+}
