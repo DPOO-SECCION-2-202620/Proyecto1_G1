@@ -88,7 +88,18 @@ public class Reserva {
 			Map<String, Usuario> mapaUsuarios,
 			Map<String, Instalacion> mapaInstalaciones) {
 
-		String loginJugador = json.getString("jugador");
+		String loginJugador = json.optString("jugador", null);
+		if (loginJugador == null) {
+			loginJugador = json.optString("socio", null);
+		}
+		if (loginJugador == null) {
+			loginJugador = json.optString("usuario", null);
+		}
+		if (loginJugador == null) {
+			throw new IllegalArgumentException(
+					"La reserva no indica el jugador. Claves recibidas: " + json.keySet());
+		}
+
 		Usuario usuario = mapaUsuarios.get(loginJugador);
 		if (!(usuario instanceof Socio)) {
 			throw new IllegalArgumentException("El jugador de la reserva no es un socio válido: " + loginJugador);
@@ -105,7 +116,7 @@ public class Reserva {
 				LocalTime.parse(json.getString("horaInicio")),
 				LocalTime.parse(json.getString("horaFinal")),
 				LocalDate.parse(json.getString("fecha")),
-				Modalidad.valueOf(json.getString("modalidad")),
+				Modalidad.valueOf(json.getString("modalidad").toUpperCase()),
 				(Socio) usuario,
 				(InstalacionIndividual) instalacion);
 	}

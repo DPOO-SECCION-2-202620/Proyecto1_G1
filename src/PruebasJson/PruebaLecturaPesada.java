@@ -23,10 +23,10 @@ public class PruebaLecturaPesada {
 	private static Set<String> codigosDescuento = new HashSet<>();
 	private static Map<String, JSONObject> equipos = new HashMap<>();
 
-	private static final Set<String> NIVELES = Set.of("Principiante", "Intermedio", "Avanzado");
+	private static final Set<String> NIVELES = Set.of("PRINCIPIANTE", "INTERMEDIO", "AVANZADO");
 	private static final Map<String, int[]> EDADES = Map.of(
-			"SUB_13", new int[] { 0, 12 }, "SUB_15", new int[] { 13, 14 },
-			"SUB_17", new int[] { 15, 16 }, "MAYORES", new int[] { 17, 80 });
+			"SUB13", new int[] { 0, 12 }, "SUB15", new int[] { 13, 14 },
+			"SUB17", new int[] { 15, 16 }, "MAYORES", new int[] { 17, 80 });
 
 	private static void exigir(boolean condicion, String mensaje) {
 		comprobaciones++;
@@ -176,7 +176,7 @@ public class PruebaLecturaPesada {
 		}
 		for (Object o : club.getJSONObject("cafeteria").getJSONArray("snacks")) {
 			JSONObject s = (JSONObject) o;
-			Set<String> permitidos = Set.of("Mani", "Gluten", "Lacteos");
+			Set<String> permitidos = Set.of("MENSUAL", "GLUTEN", "LACTEOS");
 			for (Object a : s.getJSONArray("alergenos")) {
 				exigir(permitidos.contains((String) a), s.getString("nombre") + ": alérgeno inválido " + a);
 			}
@@ -307,10 +307,10 @@ public class PruebaLecturaPesada {
 			JSONObject empleado = usuarios.get(login);
 			exigir(empleado != null && empleado.has("turnos"), "solicitante no es un empleado: " + login);
 			if (empleado == null || !empleado.has("turnos")) continue;
-			boolean pendiente = s.getString("estado").equals("Pendiente");
+			boolean PENDIENTE = s.getString("estado").equals("PENDIENTE");
 			Object actual = s.get("turnoActual");
-			if (pendiente) {
-				exigir(actual instanceof Integer, login + ": solicitud pendiente debe guardar el índice del turno");
+			if (PENDIENTE) {
+				exigir(actual instanceof Integer, login + ": solicitud PENDIENTE debe guardar el índice del turno");
 				if (actual instanceof Integer) {
 					int indice = (Integer) actual;
 					exigir(indice >= 0 && indice < empleado.getJSONArray("turnos").length(), login + ": índice de turno fuera de rango");
@@ -318,7 +318,7 @@ public class PruebaLecturaPesada {
 			} else {
 				exigir(actual instanceof JSONObject, login + ": solicitud resuelta debe guardar el turno completo");
 			}
-			exigir(Set.of("Pendiente", "Aceptada", "Rechazada").contains(s.getString("estado")), login + ": estado inválido");
+			exigir(Set.of("PENDIENTE", "ACEPTADA", "RECHAZADA").contains(s.getString("estado")), login + ": estado inválido");
 		}
 	}
 
@@ -384,7 +384,7 @@ public class PruebaLecturaPesada {
 				String jugador = a.getString("jugador");
 				exigir(lista.contains(jugador), "asistencia de alguien no convocado: " + jugador);
 				exigir(registrados.add(jugador), "asistencia repetida de " + jugador);
-				exigir(Set.of("Asistio", "Falto", "LlegoTarde").contains(a.getString("estado")), "estado de asistencia inválido");
+				exigir(Set.of("ASISTIO", "FALTO", "LLEGOTARDE").contains(a.getString("estado")), "estado de asistencia inválido");
 				int nota = a.getInt("evaluacion");
 				exigir(nota == 0 || (nota >= 1 && nota <= 5), "nota fuera de 1-5 para " + jugador);
 			}
@@ -392,7 +392,7 @@ public class PruebaLecturaPesada {
 	}
 
 	private static boolean compatibles(String a, String b) {
-		List<String> orden = List.of("Principiante", "Intermedio", "Avanzado");
+		List<String> orden = List.of("PRINCIPIANTE", "INTERMEDIO", "AVANZADO");
 		return Math.abs(orden.indexOf(a) - orden.indexOf(b)) <= 1;
 	}
 

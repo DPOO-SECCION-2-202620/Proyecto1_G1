@@ -9,7 +9,7 @@ import Usuarios.Usuario;
 
 public class SolicitudCambioTurno {
 
-	private EstadoSolicitud estado = EstadoSolicitud.Pendiente;
+	private EstadoSolicitud estado = EstadoSolicitud.PENDIENTE;
 
 	private Turno turnoActual;
 
@@ -41,11 +41,11 @@ public class SolicitudCambioTurno {
 	}
 
 	public void aprobar() {
-		this.estado = EstadoSolicitud.Aceptada;
+		this.estado = EstadoSolicitud.ACEPTADA;
 	}
 
 	public void rechazar() {
-		this.estado = EstadoSolicitud.Rechazada;
+		this.estado = EstadoSolicitud.RECHAZADA;
 	}
 
 	public JSONObject toJSON() {
@@ -65,7 +65,7 @@ public class SolicitudCambioTurno {
 		}
 		Empleado solicitante = (Empleado) usuario;
 
-		Turno turnoActual = Turno.fromJSON(json.getJSONObject("turnoActual"));
+		Turno turnoActual = leerTurno(json.get("turnoActual"), solicitante);
 		for (Turno turno : solicitante.getTurnos()) {
 			boolean mismoDia = turno.getDiaSemana().equals(turnoActual.getDiaSemana());
 			boolean mismaInicio = turno.getHoraInicio().equals(turnoActual.getHoraInicio());
@@ -76,10 +76,25 @@ public class SolicitudCambioTurno {
 			}
 		}
 
-		Turno turnoNuevo = Turno.fromJSON(json.getJSONObject("turnoNuevo"));
+		Turno turnoNuevo = leerTurno(json.get("turnoNuevo"), solicitante);
 
 		SolicitudCambioTurno solicitud = new SolicitudCambioTurno(turnoActual, turnoNuevo, solicitante);
 		solicitud.estado = EstadoSolicitud.valueOf(json.getString("estado"));
 		return solicitud;
+	}
+
+	private static Turno leerTurno(Object valor, Empleado solicitante) {
+		if (valor instanceof JSONObject) {
+			return Turno.fromJSON((JSONObject) valor);
+		}
+		if (valor instanceof Integer) {
+			int posicion = (Integer) valor;
+			if (posicion < 0 || posicion >= solicitante.getTurnos().size()) {
+				throw new IllegalArgumentException("Índice de turno fuera de rango para "
+						+ solicitante.getLogin() + ": " + posicion);
+			}
+			return solicitante.getTurnos().get(posicion);
+		}
+		throw new IllegalArgumentException("Formato de turno no válido: " + valor);
 	}
 }

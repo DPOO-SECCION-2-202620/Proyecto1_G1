@@ -13,7 +13,7 @@ public class GestorTurnos {
 	private static final int MIN_FISIOTERAPEUTAS = 1;
 
 	public boolean puedeAprobar(SolicitudCambioTurno solicitud, List<Empleado> empleados) {
-		if (solicitud.getEstado() != EstadoSolicitud.Pendiente) {
+		if (solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
 			return false;
 		}
 

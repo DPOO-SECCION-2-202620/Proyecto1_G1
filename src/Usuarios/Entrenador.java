@@ -27,10 +27,10 @@ public class Entrenador extends Empleado{
 	public static Entrenador fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
 		Entrenador entrenador = new Entrenador(
 				json.getInt("edad"),
-				json.getString("codigoEmpleado"),
 				json.getString("nombre"),
 				json.getString("login"),
-				json.getString("password"));
+				json.getString("password"),
+				json.getString("codigoEmpleado"));
 		entrenador.restaurarEstadoSocio(json, mapaDisciplinas);
 		entrenador.restaurarEstadoEmpleado(json);
 		return entrenador;

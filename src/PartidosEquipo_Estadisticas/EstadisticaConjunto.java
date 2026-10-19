@@ -22,7 +22,7 @@ public abstract class EstadisticaConjunto {
 	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
-	    json.put("jugador", jugador.getJugador());
+		json.put("jugador", jugador.getJugador().getLogin());
 		return json;
 	}
 	

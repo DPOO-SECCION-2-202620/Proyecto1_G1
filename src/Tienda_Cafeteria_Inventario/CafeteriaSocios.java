@@ -60,7 +60,7 @@ public class CafeteriaSocios {
 		    	continue;
 		    }
 		}
-		Venta venta = new Venta(propina, puntosARedimir, Rubro.Cafeteria, codigoDescuento, comprador, lineas, IMPUESTO_CONSUMO);
+		Venta venta = new Venta(propina, puntosARedimir, Rubro.CAFETERIA, codigoDescuento, comprador, lineas, IMPUESTO_CONSUMO);
 		return venta;
 	}
 	

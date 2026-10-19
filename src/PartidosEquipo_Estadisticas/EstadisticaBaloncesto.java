@@ -1,7 +1,9 @@
 package PartidosEquipo_Estadisticas;
 
-import java.util.Map;
+import java.util.List;
+
 import org.json.JSONObject;
+
 import DeportesConjunto_Competencias.InscripcionEquipo;
 
 public class EstadisticaBaloncesto extends EstadisticaConjunto {
@@ -37,17 +39,27 @@ public class EstadisticaBaloncesto extends EstadisticaConjunto {
 		return json;
 	}
 	
-	public static EstadisticaBaloncesto fromJSON(JSONObject json, Map<String, InscripcionEquipo> mapaInscripciones) {
+	public static EstadisticaBaloncesto fromJSON(JSONObject json, List<InscripcionEquipo> inscripciones) {
 		if (json == null) {
 			return null;
 		}
 
-		String claveJugador = json.getString("jugador");
-		InscripcionEquipo jugador = mapaInscripciones.get(claveJugador);
-	
+		String loginJugador = json.getString("jugador");
+		InscripcionEquipo jugador = null;
+		for (InscripcionEquipo inscripcion : inscripciones) {
+			if (inscripcion.getJugador().getLogin().equals(loginJugador)) {
+				jugador = inscripcion;
+				break;
+			}
+		}
+		if (jugador == null) {
+			throw new IllegalArgumentException(
+					"El jugador " + loginJugador + " no está inscrito en el equipo de la estadística");
+		}
+
 		int puntos = json.getInt("puntos");
 		int rebotes = json.getInt("rebotes");
-		
+
 		return new EstadisticaBaloncesto(jugador, puntos, rebotes);
 	}
 }

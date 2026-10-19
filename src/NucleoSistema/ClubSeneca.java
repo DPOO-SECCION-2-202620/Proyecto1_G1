@@ -310,9 +310,9 @@ public class ClubSeneca {
 		productos.forEach((producto, cantidad) -> {
 		    lineas.add(new LineaVenta(cantidad, producto));
 		});
-		if (rubro == Rubro.Tienda) {
+		if (rubro == Rubro.TIENDA) {
 			venta = tienda.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);
-		} else if (rubro == Rubro.Cafeteria) {
+		} else if (rubro == Rubro.CAFETERIA) {
 			venta = cafeteria.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);;
 		} else {
 			return;

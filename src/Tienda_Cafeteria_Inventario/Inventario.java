@@ -52,7 +52,7 @@ public class Inventario {
 		JSONObject json = new JSONObject();
 		JSONArray jsonInstalaciones = new JSONArray();
 		for (Instalacion instalacion : instalaciones) {
-			jsonInstalaciones.put(instalacion.getNombre());
+			jsonInstalaciones.put(instalacion.toJSON());
 		}
 		json.put("instalaciones", jsonInstalaciones);
 		json.put("ubicacion", ubicacion.toJSON());
@@ -71,16 +71,24 @@ public class Inventario {
 		List<Instalacion> instalaciones = new ArrayList<>();
 		JSONArray jsonInstalaciones = json.getJSONArray("instalaciones");
 		for (int indice = 0; indice < jsonInstalaciones.length(); indice++) {
-			String nombreInstalacion = jsonInstalaciones.getString(indice);
+			JSONObject jsonInstalacion = jsonInstalaciones.getJSONObject(indice);
+			String nombreInstalacion = jsonInstalacion.getString("nombre");
+
 			Instalacion instalacion = mapaInstalaciones.get(nombreInstalacion);
 			if (instalacion == null) {
-				throw new IllegalArgumentException(
-						"Instalación no encontrada para el inventario: " + nombreInstalacion);
+				instalacion = Instalacion.fromJSON(jsonInstalacion, mapaInstalaciones);
+				mapaInstalaciones.put(nombreInstalacion, instalacion);
 			}
 			instalaciones.add(instalacion);
 		}
 
-		Ubicacion ubicacion = Ubicacion.fromJSON(json.getJSONObject("ubicacion"));
+		JSONObject jsonUbicacion = json.optJSONObject("ubicacion");
+		if (jsonUbicacion == null) {
+			JSONArray jsonUbicaciones = json.getJSONArray("ubicaciones");
+			jsonUbicacion = jsonUbicaciones.getJSONObject(0);
+		}
+		Ubicacion ubicacion = Ubicacion.fromJSON(jsonUbicacion);
+
 		Inventario inventario = new Inventario(instalaciones, ubicacion);
 
 		JSONArray jsonArticulos = json.optJSONArray("articulos");

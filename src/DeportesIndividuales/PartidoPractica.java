@@ -166,7 +166,6 @@ public class PartidoPractica {
 				disciplina,
 				jugadores,
 				(InstalacionIndividual) instalacion);
-		partido.finalizado = json.getBoolean("finalizado");
 
 		JSONArray jsonEstadisticas = json.optJSONArray("estadisticas");
 		if (jsonEstadisticas != null) {
@@ -174,6 +173,9 @@ public class PartidoPractica {
 				partido.estadisticas.add(EstadisticaPractica.fromJSON(jsonEstadisticas.getJSONObject(indice), mapaUsuarios));
 			}
 		}
+
+		boolean tieneEstadisticas = !partido.estadisticas.isEmpty();
+		partido.finalizado = json.optBoolean("finalizado", tieneEstadisticas);
 		return partido;
 	}
 }

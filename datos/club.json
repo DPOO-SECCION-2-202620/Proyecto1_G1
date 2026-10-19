@@ -32,17 +32,17 @@
 
     { "tipo": "Entrenador", "nombre": "Luis Perez", "login": "luis", "password": "1234", "edad": 35,
       "puntosFidelidad": 320, "codigoEmpleado": "EMP-001",
-      "codigoDescuento": { "codigo": "LUIS15" },
+      "codigoDescuento": { "codigo": "DESC-EMP-001" },
       "turnos": [
         { "diaSemana": "Lunes", "horaInicio": "06:00", "horaFinal": "14:00" },
         { "diaSemana": "Miercoles", "horaInicio": "14:00", "horaFinal": "22:00" },
         { "diaSemana": "Sabado", "horaInicio": "06:00", "horaFinal": "14:00" }
       ],
-      "inscripcionesIndividuales": [ { "disciplina": "Tenis", "nivel": "Avanzado" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "Tenis", "nivel": "AVANZADO" } ] },
 
     { "tipo": "Entrenador", "nombre": "Carla Gomez", "login": "carla", "password": "1234", "edad": 31,
       "puntosFidelidad": 80, "codigoEmpleado": "EMP-002",
-      "codigoDescuento": { "codigo": "CARLA15" },
+      "codigoDescuento": { "codigo": "DESC-EMP-002" },
       "turnos": [
         { "diaSemana": "Lunes", "horaInicio": "14:00", "horaFinal": "22:00" },
         { "diaSemana": "Viernes", "horaInicio": "06:00", "horaFinal": "14:00" },
@@ -52,16 +52,16 @@
 
     { "tipo": "Entrenador", "nombre": "Pablo Rios", "login": "pablo", "password": "1234", "edad": 40,
       "puntosFidelidad": 0, "codigoEmpleado": "EMP-003",
-      "codigoDescuento": { "codigo": "PABLO15" },
+      "codigoDescuento": { "codigo": "DESC-EMP-003" },
       "turnos": [
         { "diaSemana": "Martes", "horaInicio": "06:00", "horaFinal": "14:00" },
         { "diaSemana": "Jueves", "horaInicio": "14:00", "horaFinal": "22:00" }
       ],
-      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "Intermedio" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "INTERMEDIO" } ] },
 
     { "tipo": "Fisioterapeuta", "nombre": "Marta Diaz", "login": "marta", "password": "1234", "edad": 29,
       "puntosFidelidad": 45, "codigoEmpleado": "EMP-004",
-      "codigoDescuento": { "codigo": "MARTA15" },
+      "codigoDescuento": { "codigo": "DESC-EMP-004" },
       "turnos": [
         { "diaSemana": "Lunes", "horaInicio": "06:00", "horaFinal": "22:00" },
         { "diaSemana": "Viernes", "horaInicio": "14:00", "horaFinal": "22:00" }
@@ -70,39 +70,39 @@
 
     { "tipo": "Fisioterapeuta", "nombre": "Diego Castro", "login": "diego", "password": "1234", "edad": 33,
       "puntosFidelidad": 12, "codigoEmpleado": "EMP-005",
-      "codigoDescuento": { "codigo": "DIEGO15" },
+      "codigoDescuento": { "codigo": "DESC-EMP-005" },
       "turnos": [
         { "diaSemana": "Miercoles", "horaInicio": "06:00", "horaFinal": "22:00" },
         { "diaSemana": "Sabado", "horaInicio": "06:00", "horaFinal": "22:00" }
       ],
-      "inscripcionesIndividuales": [ { "disciplina": "TenisDeMesa", "nivel": "Principiante" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "TenisDeMesa", "nivel": "PRINCIPIANTE" } ] },
 
     { "tipo": "Socio", "nombre": "Ana Torres", "login": "ana", "password": "1234", "edad": 20,
       "puntosFidelidad": 450, "horaUltimaBebidaCaliente": "2026-10-17T10:30:00",
       "inscripcionesIndividuales": [
-        { "disciplina": "Tenis", "nivel": "Intermedio" },
-        { "disciplina": "Padel", "nivel": "Principiante" }
+        { "disciplina": "Tenis", "nivel": "INTERMEDIO" },
+        { "disciplina": "Padel", "nivel": "PRINCIPIANTE" }
       ] },
     { "tipo": "Socio", "nombre": "Pedro Ramirez", "login": "pedro", "password": "1234", "edad": 22,
       "puntosFidelidad": 120,
       "inscripcionesIndividuales": [
-        { "disciplina": "Tenis", "nivel": "Intermedio" },
-        { "disciplina": "TenisDeMesa", "nivel": "Avanzado" }
+        { "disciplina": "Tenis", "nivel": "INTERMEDIO" },
+        { "disciplina": "TenisDeMesa", "nivel": "AVANZADO" }
       ] },
     { "tipo": "Socio", "nombre": "Camilo Vargas", "login": "camilo", "password": "1234", "edad": 21,
       "puntosFidelidad": 0,
-      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "Avanzado" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "AVANZADO" } ] },
     { "tipo": "Socio", "nombre": "Mateo Silva", "login": "mateo", "password": "1234", "edad": 23,
       "puntosFidelidad": 75, "inscripcionesIndividuales": [] },
     { "tipo": "Socio", "nombre": "Andres Mejia", "login": "andres", "password": "1234", "edad": 25,
       "puntosFidelidad": 210,
-      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "Intermedio" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "Padel", "nivel": "INTERMEDIO" } ] },
     { "tipo": "Socio", "nombre": "Laura Pineda", "login": "laura", "password": "1234", "edad": 24,
       "puntosFidelidad": 33,
-      "inscripcionesIndividuales": [ { "disciplina": "TenisDeMesa", "nivel": "Intermedio" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "TenisDeMesa", "nivel": "INTERMEDIO" } ] },
     { "tipo": "Socio", "nombre": "Sofia Herrera", "login": "sofia", "password": "1234", "edad": 19,
       "puntosFidelidad": 18,
-      "inscripcionesIndividuales": [ { "disciplina": "Tenis", "nivel": "Principiante" } ] },
+      "inscripcionesIndividuales": [ { "disciplina": "Tenis", "nivel": "PRINCIPIANTE" } ] },
     { "tipo": "Socio", "nombre": "Valentina Cruz", "login": "valentina", "password": "1234", "edad": 18,
       "puntosFidelidad": 260, "horaUltimaBebidaCaliente": "2026-10-18T08:15:00",
       "inscripcionesIndividuales": [] },
@@ -164,11 +164,11 @@
     ],
     "snacks": [
       { "tipo": "Snack", "nombre": "Galleta", "categoria": "Dulces", "precio": 3000.0, "cantidad": 90,
-        "alergenos": ["Gluten", "Lacteos"] },
-      { "tipo": "Snack", "nombre": "Mani Salado", "categoria": "Salados", "precio": 2000.0, "cantidad": 100,
-        "alergenos": ["Mani"] },
+        "alergenos": ["GLUTEN", "LACTEOS"] },
+      { "tipo": "Snack", "nombre": "MENSUAL Salado", "categoria": "Salados", "precio": 2000.0, "cantidad": 100,
+        "alergenos": ["MENSUAL"] },
       { "tipo": "Snack", "nombre": "Barra de Cereal", "categoria": "Saludable", "precio": 3500.0, "cantidad": 55,
-        "alergenos": ["Gluten", "Mani"] },
+        "alergenos": ["GLUTEN", "MENSUAL"] },
       { "tipo": "Snack", "nombre": "Manzana", "categoria": "Saludable", "precio": 2500.0, "cantidad": 30,
         "alergenos": [] }
     ]
@@ -178,17 +178,20 @@
     {
       "ubicaciones": [ { "nombre": "Bodega Central" }, { "nombre": "Tienda Principal" } ],
       "articulos": ["Raqueta Pro", "Pelotas Tenis x3", "Camiseta Seneca", "Balon de Futbol"],
-      "instalacion": { "tipo": "CanchaFutbol", "nombre": "Cancha Futbol 1", "capacidadMaxima": 22 }
+      "instalaciones":[ { "tipo": "CanchaFutbol", "nombre": "Cancha Futbol 1", "capacidadMaxima": 22 }, 
+	  					{ "tipo": "CanchaFutbol", "nombre": "Cancha Futbol 2", "capacidadMaxima": 22 } ]
     },
     {
       "ubicaciones": [ { "nombre": "Cafeteria Norte" } ],
       "articulos": ["Paleta Tenis de Mesa", "Toalla Deportiva"],
-      "instalacion": { "tipo": "CanchaBaloncesto", "nombre": "Cancha Baloncesto 1", "capacidadMaxima": 10 }
+      "instalaciones":[ { "tipo": "CanchaBaloncesto", "nombre": "Cancha Baloncesto 1", "capacidadMaxima": 10 },
+	  				 	{ "tipo": "CanchaBaloncesto", "nombre": "Cancha Baloncesto 2", "capacidadMaxima": 10 } ]
     },
     {
       "ubicaciones": [ { "nombre": "Bodega Sur" } ],
       "articulos": [],
-      "instalacion": { "tipo": "CanchaVoleibol", "nombre": "Cancha Voleibol 1", "capacidadMaxima": 12 }
+      "instalaciones":[ { "tipo": "CanchaVoleibol", "nombre": "Cancha Voleibol 1", "capacidadMaxima": 12 },
+	  					{ "tipo": "CanchaVoleibol", "nombre": "Cancha Voleibol 2", "capacidadMaxima": 12 } ]
     }
   ],
 
@@ -196,53 +199,53 @@
     {
       "nombre": "Los Andes FC", "cupoMaximo": 18, "categoria": "MAYORES", "deporte": "Futbol",
       "inscripciones": [
-        { "jugador": "ana", "posicion": "Delantero", "numeroCamiseta": 9, "amarillasAcumuladas": 1, "estado": "Habilitado" },
-        { "jugador": "pedro", "posicion": "Portero", "numeroCamiseta": 1, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "camilo", "posicion": "Defensa", "numeroCamiseta": 4, "amarillasAcumuladas": 2, "estado": "Suspendido" },
-        { "jugador": "mateo", "posicion": "Mediocampista", "numeroCamiseta": 8, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "andres", "posicion": "Defensa", "numeroCamiseta": 5, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "laura", "posicion": "Mediocampista", "numeroCamiseta": 10, "amarillasAcumuladas": 1, "estado": "Habilitado" },
-        { "jugador": "sofia", "posicion": "Delantero", "numeroCamiseta": 11, "amarillasAcumuladas": 0, "estado": "Habilitado" }
+        { "jugador": "ana", "posicion": "Delantero", "numeroCamiseta": 9, "controlSanciones": { "amarillasAcumuladas": 1, "estado": "HABILITADO" } },
+        { "jugador": "pedro", "posicion": "Portero", "numeroCamiseta": 1, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "camilo", "posicion": "Defensa", "numeroCamiseta": 4, "controlSanciones": { "amarillasAcumuladas": 2, "estado": "SUSPENDIDO" } },
+        { "jugador": "mateo", "posicion": "Mediocampista", "numeroCamiseta": 8, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "andres", "posicion": "Defensa", "numeroCamiseta": 5, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "laura", "posicion": "Mediocampista", "numeroCamiseta": 10, "controlSanciones": { "amarillasAcumuladas": 1, "estado": "HABILITADO" } },
+        { "jugador": "sofia", "posicion": "Delantero", "numeroCamiseta": 11, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
       ]
     },
     {
       "nombre": "Cerros FC", "cupoMaximo": 18, "categoria": "MAYORES", "deporte": "Futbol",
       "inscripciones": [
-        { "jugador": "valentina", "posicion": "Delantero", "numeroCamiseta": 7, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "tomas", "posicion": "Portero", "numeroCamiseta": 1, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "julian", "posicion": "Defensa", "numeroCamiseta": 3, "amarillasAcumuladas": 1, "estado": "Habilitado" },
-        { "jugador": "david", "posicion": "Defensa", "numeroCamiseta": 6, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "simon", "posicion": "Mediocampista", "numeroCamiseta": 8, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "felipe", "posicion": "Mediocampista", "numeroCamiseta": 10, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "isabel", "posicion": "Delantero", "numeroCamiseta": 9, "amarillasAcumuladas": 0, "estado": "Habilitado" }
+        { "jugador": "valentina", "posicion": "Delantero", "numeroCamiseta": 7, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "tomas", "posicion": "Portero", "numeroCamiseta": 1, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "julian", "posicion": "Defensa", "numeroCamiseta": 3, "controlSanciones": { "amarillasAcumuladas": 1, "estado": "HABILITADO" } },
+        { "jugador": "david", "posicion": "Defensa", "numeroCamiseta": 6, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "simon", "posicion": "Mediocampista", "numeroCamiseta": 8, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "felipe", "posicion": "Mediocampista", "numeroCamiseta": 10, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "isabel", "posicion": "Delantero", "numeroCamiseta": 9, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
       ]
     },
     {
-      "nombre": "Seneca Sub17", "cupoMaximo": 14, "categoria": "SUB_17", "deporte": "Futbol",
+      "nombre": "Seneca Sub17", "cupoMaximo": 14, "categoria": "SUB17", "deporte": "Futbol",
       "inscripciones": [
-        { "jugador": "juan", "posicion": "Delantero", "numeroCamiseta": 10, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "nico", "posicion": "Portero", "numeroCamiseta": 1, "amarillasAcumuladas": 0, "estado": "Habilitado" }
+        { "jugador": "juan", "posicion": "Delantero", "numeroCamiseta": 10, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "nico", "posicion": "Portero", "numeroCamiseta": 1, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
       ]
     },
     {
       "nombre": "Voley Seneca", "cupoMaximo": 12, "categoria": "MAYORES", "deporte": "Voleibol",
       "inscripciones": [
-        { "jugador": "ana", "posicion": "Central", "numeroCamiseta": 5, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "laura", "posicion": "Armadora", "numeroCamiseta": 2, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "sofia", "posicion": "Libero", "numeroCamiseta": 12, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "valentina", "posicion": "Opuesta", "numeroCamiseta": 7, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "isabel", "posicion": "Punta", "numeroCamiseta": 9, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "camilo", "posicion": "Punta", "numeroCamiseta": 11, "amarillasAcumuladas": 0, "estado": "Habilitado" }
+        { "jugador": "ana", "posicion": "Central", "numeroCamiseta": 5, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "laura", "posicion": "Armadora", "numeroCamiseta": 2, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "sofia", "posicion": "Libero", "numeroCamiseta": 12, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "valentina", "posicion": "Opuesta", "numeroCamiseta": 7, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "isabel", "posicion": "Punta", "numeroCamiseta": 9, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "camilo", "posicion": "Punta", "numeroCamiseta": 11, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
       ]
     },
     {
       "nombre": "Basket Seneca", "cupoMaximo": 12, "categoria": "MAYORES", "deporte": "Baloncesto",
       "inscripciones": [
-        { "jugador": "pedro", "posicion": "Base", "numeroCamiseta": 3, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "tomas", "posicion": "Escolta", "numeroCamiseta": 23, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "julian", "posicion": "Alero", "numeroCamiseta": 8, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "david", "posicion": "Ala-Pivot", "numeroCamiseta": 14, "amarillasAcumuladas": 0, "estado": "Habilitado" },
-        { "jugador": "simon", "posicion": "Pivot", "numeroCamiseta": 21, "amarillasAcumuladas": 0, "estado": "Habilitado" }
+        { "jugador": "pedro", "posicion": "Base", "numeroCamiseta": 3, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "tomas", "posicion": "Escolta", "numeroCamiseta": 23, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "julian", "posicion": "Alero", "numeroCamiseta": 8, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "david", "posicion": "Ala-Pivot", "numeroCamiseta": 14, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+        { "jugador": "simon", "posicion": "Pivot", "numeroCamiseta": 21, "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
       ]
     }
   ],
@@ -256,25 +259,25 @@
         {
           "equipo": "Los Andes FC",
           "nomina": [
-            { "equipo": "Los Andes FC", "jugador": "ana", "controlSanciones": { "amarillasAcumuladas": 1, "estado": "Habilitado" } },
-            { "equipo": "Los Andes FC", "jugador": "pedro", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Los Andes FC", "jugador": "camilo", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Los Andes FC", "jugador": "mateo", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Los Andes FC", "jugador": "andres", "controlSanciones": { "amarillasAcumuladas": 2, "estado": "Suspendido" } },
-            { "equipo": "Los Andes FC", "jugador": "laura", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Los Andes FC", "jugador": "sofia", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } }
+            { "equipo": "Los Andes FC", "jugador": "ana", "controlSanciones": { "amarillasAcumuladas": 1, "estado": "HABILITADO" } },
+            { "equipo": "Los Andes FC", "jugador": "pedro", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Los Andes FC", "jugador": "camilo", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Los Andes FC", "jugador": "mateo", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Los Andes FC", "jugador": "andres", "controlSanciones": { "amarillasAcumuladas": 2, "estado": "SUSPENDIDO" } },
+            { "equipo": "Los Andes FC", "jugador": "laura", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Los Andes FC", "jugador": "sofia", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
           ]
         },
         {
           "equipo": "Cerros FC",
           "nomina": [
-            { "equipo": "Cerros FC", "jugador": "valentina", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "tomas", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "julian", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "david", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "simon", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "felipe", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "isabel", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } }
+            { "equipo": "Cerros FC", "jugador": "valentina", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "tomas", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "julian", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "david", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "simon", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "felipe", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "isabel", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
           ]
         }
       ],
@@ -282,48 +285,48 @@
         { "equipo": "Los Andes FC", "puntos": 6 },
         { "equipo": "Cerros FC", "puntos": 1 }
       ],
-      "partidos": [
-        {
-          "tipo": "PartidoExterno", "fecha": "2026-09-12",
-          "marcadorPropio": 3, "marcadorRival": 1,
-          "institucionRival": "Universidad Javeriana", "escenario": "Estadio Javeriano",
-          "estadisticasConjunto": [
-            { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "ana",
-              "goles": 2, "asistencias": 0, "tarjetasAmarillas": 0, "tarjetasRojas": 0 },
-            { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "sofia",
-              "goles": 1, "asistencias": 2, "tarjetasAmarillas": 1, "tarjetasRojas": 0 },
-            { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "andres",
-              "goles": 0, "asistencias": 0, "tarjetasAmarillas": 2, "tarjetasRojas": 0 }
-          ]
-        },
-        {
-          "tipo": "PartidoExterno", "fecha": "2026-09-26",
-          "marcadorPropio": 2, "marcadorRival": 2,
-          "institucionRival": "Universidad Nacional", "escenario": "Cancha Nacional",
-          "estadisticasConjunto": [
-            { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "ana",
-              "goles": 1, "asistencias": 1, "tarjetasAmarillas": 0, "tarjetasRojas": 0 },
-            { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "mateo",
-              "goles": 1, "asistencias": 0, "tarjetasAmarillas": 0, "tarjetasRojas": 0 }
-          ]
-        }
-      ]
+	  "partidos": [
+	    {
+	      "tipo": "PartidoExterno", "fecha": "2026-09-12", "equipo": "Los Andes FC",
+	      "marcadorPropio": 3, "marcadorRival": 1,
+	      "institucionRival": "Universidad Javeriana", "escenario": "Estadio Javeriano",
+	      "estadisticasConjunto": [
+	        { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "ana",
+	          "goles": 2, "asistencias": 0, "tarjetasAmarillas": 0, "tarjetasRojas": 0 },
+	        { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "sofia",
+	          "goles": 1, "asistencias": 2, "tarjetasAmarillas": 1, "tarjetasRojas": 0 },
+	        { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "andres",
+	          "goles": 0, "asistencias": 0, "tarjetasAmarillas": 2, "tarjetasRojas": 0 }
+	      ]
+	    },
+	    {
+	      "tipo": "PartidoExterno", "fecha": "2026-09-26", "equipo": "Los Andes FC",
+	      "marcadorPropio": 2, "marcadorRival": 2,
+	      "institucionRival": "Universidad Nacional", "escenario": "Cancha Nacional",
+	      "estadisticasConjunto": [
+	        { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "ana",
+	          "goles": 1, "asistencias": 1, "tarjetasAmarillas": 0, "tarjetasRojas": 0 },
+	        { "tipo": "EstadisticaFutbol", "equipo": "Los Andes FC", "jugador": "mateo",
+	          "goles": 1, "asistencias": 0, "tarjetasAmarillas": 0, "tarjetasRojas": 0 }
+	      ]
+	    }
+	  ]
     },
     {
       "tipo": "ASCUN", "nombre": "ASCUN Futbol 2026",
-      "entidadOrganizadora": "ASCUN Deportes", "anio": 2026, "formatoJuego": "Grupos y eliminacion directa",
-      "nominaMinima": 7, "deporte": "Futbol", "categoria": "MAYORES", "fase": "Grupos",
+      "entidadOrganizadora": "ASCUN Deportes", "anio": 2026, "formatoJuego": "GRUPOS y ELIMINACION_DIRECTA",
+      "nominaMinima": 7, "deporte": "Futbol", "categoria": "MAYORES", "fase": "GRUPOS",
       "inscripciones": [
         {
           "equipo": "Cerros FC",
           "nomina": [
-            { "equipo": "Cerros FC", "jugador": "valentina", "controlSanciones": { "amarillasAcumuladas": 1, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "tomas", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "julian", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "david", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "simon", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "felipe", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } },
-            { "equipo": "Cerros FC", "jugador": "isabel", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "Habilitado" } }
+            { "equipo": "Cerros FC", "jugador": "valentina", "controlSanciones": { "amarillasAcumuladas": 1, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "tomas", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "julian", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "david", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "simon", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "felipe", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } },
+            { "equipo": "Cerros FC", "jugador": "isabel", "controlSanciones": { "amarillasAcumuladas": 0, "estado": "HABILITADO" } }
           ]
         }
       ],
@@ -335,7 +338,7 @@
     {
       "fecha": "2026-10-10", "propina": 800.0, "total": 9440.0,
       "puntosRedimidos": 0, "puntosGenerados": 189,
-      "rubro": "Cafeteria", "tasaImpuestos": 0.08, "comprador": "ana",
+      "rubro": "CAFETERIA", "tasaImpuestos": 0.08, "comprador": "ana",
       "lineas": [
         { "cantidad": 2, "producto": "Agua" },
         { "cantidad": 1, "producto": "Galleta" }
@@ -344,21 +347,21 @@
     {
       "fecha": "2026-10-12", "propina": 0.0, "total": 218860.0,
       "puntosRedimidos": 100, "puntosGenerados": 4377,
-      "rubro": "Tienda", "tasaImpuestos": 0.19, "comprador": "ana",
+      "rubro": "TIENDA", "tasaImpuestos": 0.19, "comprador": "ana",
       "codigoDescuento": "LUIS15",
       "lineas": [ { "cantidad": 1, "producto": "Raqueta Pro" } ]
     },
     {
       "fecha": "2026-10-14", "propina": 0.0, "total": 7294.0,
       "puntosRedimidos": 50, "puntosGenerados": 146,
-      "rubro": "Cafeteria", "tasaImpuestos": 0.08, "comprador": "luis",
+      "rubro": "CAFETERIA", "tasaImpuestos": 0.08, "comprador": "luis",
       "codigoDescuento": "LUIS15",
       "lineas": [ { "cantidad": 2, "producto": "Cafe" } ]
     },
     {
       "fecha": "2026-10-15", "propina": 1000.0, "total": 20960.0,
       "puntosRedimidos": 0, "puntosGenerados": 419,
-      "rubro": "Cafeteria", "tasaImpuestos": 0.08, "comprador": "valentina",
+      "rubro": "CAFETERIA", "tasaImpuestos": 0.08, "comprador": "valentina",
       "lineas": [
         { "cantidad": 3, "producto": "Isotonica" },
         { "cantidad": 1, "producto": "Barra de Cereal" }
@@ -367,7 +370,7 @@
     {
       "fecha": "2026-10-16", "propina": 0.0, "total": 107100.0,
       "puntosRedimidos": 0, "puntosGenerados": 2142,
-      "rubro": "Tienda", "tasaImpuestos": 0.19, "comprador": "pedro",
+      "rubro": "TIENDA", "tasaImpuestos": 0.19, "comprador": "pedro",
       "lineas": [
         { "cantidad": 1, "producto": "Balon de Futbol" }
       ]
@@ -375,9 +378,9 @@
     {
       "fecha": "2026-10-17", "propina": 500.0, "total": 5240.0,
       "puntosRedimidos": 0, "puntosGenerados": 105,
-      "rubro": "Cafeteria", "tasaImpuestos": 0.08, "comprador": "isabel",
+      "rubro": "CAFETERIA", "tasaImpuestos": 0.08, "comprador": "isabel",
       "lineas": [
-        { "cantidad": 1, "producto": "Mani Salado" },
+        { "cantidad": 1, "producto": "MENSUAL Salado" },
         { "cantidad": 1, "producto": "Manzana" }
       ]
     }
@@ -385,31 +388,31 @@
 
   "solicitudes": [
     {
-      "estado": "Pendiente", "solicitante": "luis",
+      "estado": "PENDIENTE", "solicitante": "luis",
       "turnoActual": 0,
       "turnoNuevo": { "diaSemana": "Lunes", "horaInicio": "14:00", "horaFinal": "22:00" }
     },
     {
-      "estado": "Aceptada", "solicitante": "marta",
+      "estado": "ACEPTADA", "solicitante": "marta",
       "turnoActual": { "diaSemana": "Viernes", "horaInicio": "06:00", "horaFinal": "14:00" },
       "turnoNuevo": { "diaSemana": "Viernes", "horaInicio": "14:00", "horaFinal": "22:00" }
     },
     {
-      "estado": "Rechazada", "solicitante": "pablo",
+      "estado": "RECHAZADA", "solicitante": "pablo",
       "turnoActual": { "diaSemana": "Martes", "horaInicio": "06:00", "horaFinal": "14:00" },
       "turnoNuevo": { "diaSemana": "Domingo", "horaInicio": "06:00", "horaFinal": "14:00" }
     },
     {
-      "estado": "Pendiente", "solicitante": "carla",
+      "estado": "PENDIENTE", "solicitante": "carla",
       "turnoActual": 2,
       "turnoNuevo": { "diaSemana": "Sabado", "horaInicio": "06:00", "horaFinal": "14:00" }
     }
   ],
 
   "sugerencias": [
-    { "nombrePropuesto": "Empanada", "categoria": "Salados", "precioSugerido": 4000.0, "estado": "Pendiente" },
-    { "nombrePropuesto": "Proteina en polvo", "categoria": "Suplementos", "precioSugerido": 120000.0, "estado": "Aceptada" },
-    { "nombrePropuesto": "Gaseosa", "categoria": "Frias", "precioSugerido": 3500.0, "estado": "Rechazada" }
+    { "nombrePropuesto": "Empanada", "categoria": "Salados", "precioSugerido": 4000.0, "estado": "PENDIENTE" },
+    { "nombrePropuesto": "Proteina en polvo", "categoria": "Suplementos", "precioSugerido": 120000.0, "estado": "ACEPTADA" },
+    { "nombrePropuesto": "Gaseosa", "categoria": "Frias", "precioSugerido": 3500.0, "estado": "RECHAZADA" }
   ],
 
   "historial": {
@@ -457,8 +460,8 @@
         "fecha": "2026-10-09", "disciplina": "TenisDeMesa", "instalacion": "Mesa 1",
         "jugadores": ["pedro", "laura"],
         "estadisticas": [
-          { "tipo": "EstadisticaTenisMesa", "jugador": "pedro", "setsGanados": 3, "puntosTotales": 33 },
-          { "tipo": "EstadisticaTenisMesa", "jugador": "laura", "setsGanados": 1, "puntosTotales": 25 }
+          { "tipo": "EstadisticaTenisDeMesa", "jugador": "pedro", "setsGanados": 3, "puntosTotales": 33 },
+          { "tipo": "EstadisticaTenisDeMesa", "jugador": "laura", "setsGanados": 1, "puntosTotales": 25 }
         ]
       },
       {
@@ -479,11 +482,11 @@
         "entrenador": "luis", "instalacion": "Cancha Baloncesto 1",
         "convocados": ["pedro", "tomas", "julian", "david", "simon"],
         "asistencias": [
-          { "jugador": "pedro", "estado": "Asistio", "evaluacion": 5, "comentario": "Excelente tiro bajo presion" },
-          { "jugador": "tomas", "estado": "Asistio", "evaluacion": 4, "comentario": "Buena defensa" },
-          { "jugador": "julian", "estado": "LlegoTarde", "evaluacion": 3, "comentario": "Llego a mitad del calentamiento" },
-          { "jugador": "david", "estado": "Falto", "evaluacion": 0 },
-          { "jugador": "simon", "estado": "Asistio", "evaluacion": 0 }
+          { "jugador": "pedro", "estado": "ASISTIO", "evaluacion": 5, "comentario": "Excelente tiro bajo presion" },
+          { "jugador": "tomas", "estado": "ASISTIO", "evaluacion": 4, "comentario": "Buena defensa" },
+          { "jugador": "julian", "estado": "LLEGOTARDE", "evaluacion": 3, "comentario": "Llego a mitad del calentamiento" },
+          { "jugador": "david", "estado": "FALTO", "evaluacion": 0 },
+          { "jugador": "simon", "estado": "ASISTIO", "evaluacion": 0 }
         ]
       },
       {
@@ -491,13 +494,13 @@
         "entrenador": "carla", "instalacion": "Cancha Futbol 1",
         "convocados": ["ana", "pedro", "camilo", "mateo", "andres", "laura", "sofia"],
         "asistencias": [
-          { "jugador": "ana", "estado": "Asistio", "evaluacion": 5, "comentario": "Gran definicion" },
-          { "jugador": "pedro", "estado": "Asistio", "evaluacion": 4, "comentario": "Reflejos mejorados" },
-          { "jugador": "camilo", "estado": "Asistio", "evaluacion": 3, "comentario": "Debe mejorar la marca" },
-          { "jugador": "mateo", "estado": "Asistio", "evaluacion": 4, "comentario": "Buena distribucion" },
-          { "jugador": "andres", "estado": "LlegoTarde", "evaluacion": 2, "comentario": "Impuntual y falto de ritmo" },
-          { "jugador": "laura", "estado": "Asistio", "evaluacion": 0 },
-          { "jugador": "sofia", "estado": "Falto", "evaluacion": 0 }
+          { "jugador": "ana", "estado": "ASISTIO", "evaluacion": 5, "comentario": "Gran definicion" },
+          { "jugador": "pedro", "estado": "ASISTIO", "evaluacion": 4, "comentario": "Reflejos mejorados" },
+          { "jugador": "camilo", "estado": "ASISTIO", "evaluacion": 3, "comentario": "Debe mejorar la marca" },
+          { "jugador": "mateo", "estado": "ASISTIO", "evaluacion": 4, "comentario": "Buena distribucion" },
+          { "jugador": "andres", "estado": "LLEGOTARDE", "evaluacion": 2, "comentario": "Impuntual y FALTO de ritmo" },
+          { "jugador": "laura", "estado": "ASISTIO", "evaluacion": 0 },
+          { "jugador": "sofia", "estado": "FALTO", "evaluacion": 0 }
         ]
       },
       {
@@ -511,8 +514,8 @@
         "entrenador": "luis", "instalacion": "Tenis 1",
         "convocados": ["ana", "sofia"],
         "asistencias": [
-          { "jugador": "ana", "estado": "Asistio", "evaluacion": 4, "comentario": "Mejor saque" },
-          { "jugador": "sofia", "estado": "Asistio", "evaluacion": 3, "comentario": "Trabajar el reves" }
+          { "jugador": "ana", "estado": "ASISTIO", "evaluacion": 4, "comentario": "Mejor saque" },
+          { "jugador": "sofia", "estado": "ASISTIO", "evaluacion": 3, "comentario": "Trabajar el reves" }
         ]
       }
     ],

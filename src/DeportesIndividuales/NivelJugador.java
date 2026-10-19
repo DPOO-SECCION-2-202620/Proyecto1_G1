@@ -2,9 +2,9 @@ package DeportesIndividuales;
 
 public enum NivelJugador {
 
-	Principiante,
-	Intermedio,
-	Avanzado;
+	PRINCIPIANTE,
+	INTERMEDIO,
+	AVANZADO;
 
 	
 	public boolean esCompatibleCon (NivelJugador otro) {

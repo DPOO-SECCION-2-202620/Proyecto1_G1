@@ -22,10 +22,10 @@ public class Fisioterapeuta extends Empleado{
 	public static Fisioterapeuta fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
 		Fisioterapeuta fisioterapeuta = new Fisioterapeuta(
 				json.getInt("edad"),
-				json.getString("codigoEmpleado"),
 				json.getString("nombre"),
 				json.getString("login"),
-				json.getString("password"));
+				json.getString("password"),
+				json.getString("codigoEmpleado"));
 		fisioterapeuta.restaurarEstadoSocio(json, mapaDisciplinas);
 		fisioterapeuta.restaurarEstadoEmpleado(json);
 		return fisioterapeuta;

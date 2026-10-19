@@ -41,7 +41,7 @@ public abstract class Instalacion {
 				return CanchaTenis.fromJSON(json, mapaInstalaciones);
 			case "CanchaPadel":
 				return CanchaPadel.fromJSON(json, mapaInstalaciones);
-			case "MESA_TENIS_DE_MESA":
+			case "MesaTenisDeMesa":
 				return MesaTenisDeMesa.fromJSON(json, mapaInstalaciones);
 			case "CanchaFutbol":
 				return CanchaFutbol.fromJSON(json);

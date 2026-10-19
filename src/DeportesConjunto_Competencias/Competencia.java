@@ -185,7 +185,18 @@ public abstract class Competencia {
 			Map<String, DeporteConjunto> mapaDeportes,
 			Map<String, Equipo> mapaEquipos) {
 
-		DeporteConjunto deporte = DeporteConjunto.fromJSON(json.getJSONObject("deporte"), mapaDeportes);
+		Object valorDeporte = json.get("deporte");
+		DeporteConjunto deporte;
+		if (valorDeporte instanceof JSONObject) {
+			deporte = DeporteConjunto.fromJSON((JSONObject) valorDeporte, mapaDeportes);
+		} else {
+			String nombreDeporte = valorDeporte.toString();
+			deporte = mapaDeportes.get(nombreDeporte);
+			if (deporte == null) {
+				throw new IllegalArgumentException(
+						"Deporte no encontrado para la competencia: " + nombreDeporte);
+			}
+		}
 		Categoria categoria = Categoria.valueOf(json.getString("categoria"));
 
 		Competencia competencia;
@@ -210,6 +221,9 @@ public abstract class Competencia {
 		}
 
 		JSONArray jsonPartidos = json.optJSONArray("listaPartidos");
+		if (jsonPartidos == null) {
+			jsonPartidos = json.optJSONArray("partidos");
+		}
 		if (jsonPartidos != null) {
 			for (int indice = 0; indice < jsonPartidos.length(); indice++) {
 				PartidoExterno partido = PartidoExterno.fromJSON(jsonPartidos.getJSONObject(indice), mapaEquipos);

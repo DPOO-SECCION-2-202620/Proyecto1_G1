@@ -10,7 +10,7 @@ public class Articulo extends Producto{
 	
 	@Override
 	public JSONObject toJSON() {
-		JSONObject json = new JSONObject();
+		JSONObject json = super.toJSON();
 		json.put("tipo", "Articulo");
 		return json;
 	}

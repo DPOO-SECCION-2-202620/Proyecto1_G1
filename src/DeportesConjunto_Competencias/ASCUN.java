@@ -13,7 +13,7 @@ public class ASCUN extends Competencia{
 
 	public ASCUN(String nombre, String entidadOrganizadora, int anio, String formatoJuego, int nominaMinima,
 			Categoria categoria, DeporteConjunto deporte, FaseASCUN fase) {
-		super("ASCUN", "ASCUN", anio, "Grupos y eliminación directa", nominaMinima, categoria, deporte);
+		super("ASCUN", "ASCUN", anio, "GRUPOS y eliminación directa", nominaMinima, categoria, deporte);
 		this.fase = FaseASCUN.GRUPOS;
 	}
 	

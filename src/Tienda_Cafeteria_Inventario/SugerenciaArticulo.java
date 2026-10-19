@@ -10,7 +10,7 @@ public class SugerenciaArticulo {
 	
 	private double precioSugerido;
 	
-	private EstadoSugerencia estado = EstadoSugerencia.Pendiente;
+	private EstadoSugerencia estado = EstadoSugerencia.PENDIENTE;
 
 	public SugerenciaArticulo(String nombrePropuesto, String categoria, double precioSugerido) {
 		super();
@@ -36,11 +36,11 @@ public class SugerenciaArticulo {
 	}
 
 	public void aprobar() {
-		this.estado = EstadoSugerencia.Aceptada;
+		this.estado = EstadoSugerencia.ACEPTADA;
 	}
 	
 	public void rechazar() {
-		this.estado = EstadoSugerencia.Rechazada;
+		this.estado = EstadoSugerencia.RECHAZADA;
 	}
 	
 	public JSONObject toJSON() {

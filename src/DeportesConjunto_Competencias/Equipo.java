@@ -145,7 +145,18 @@ public static Equipo fromJSON(JSONObject json,
 		Map<String, DeporteConjunto> mapaDeportes,
 		Map<String, Usuario> mapaUsuarios) {
 
-	DeporteConjunto deporte = DeporteConjunto.fromJSON(json.getJSONObject("deporte"), mapaDeportes);
+	Object valorDeporte = json.get("deporte");
+	DeporteConjunto deporte;
+	if (valorDeporte instanceof JSONObject) {
+		deporte = DeporteConjunto.fromJSON((JSONObject) valorDeporte, mapaDeportes);
+	} else {
+		String nombreDeporte = valorDeporte.toString();
+		deporte = mapaDeportes.get(nombreDeporte);
+		if (deporte == null) {
+			throw new IllegalArgumentException(
+					"Deporte no encontrado para el equipo: " + nombreDeporte);
+		}
+	}
 
 	Equipo equipo = new Equipo(
 			json.getString("nombre"),
@@ -156,7 +167,8 @@ public static Equipo fromJSON(JSONObject json,
 	JSONArray jsonInscripciones = json.optJSONArray("inscripciones");
 	if (jsonInscripciones != null) {
 		for (int indice = 0; indice < jsonInscripciones.length(); indice++) {
-			InscripcionEquipo inscripcion = InscripcionEquipo.fromJSON(jsonInscripciones.getJSONObject(indice), equipo, mapaUsuarios);
+			InscripcionEquipo inscripcion = InscripcionEquipo.fromJSON(
+					jsonInscripciones.getJSONObject(indice), equipo, mapaUsuarios);
 			equipo.inscripciones.add(inscripcion);
 			inscripcion.getJugador().agregarInscripcionEquipo(inscripcion);
 		}
@@ -164,4 +176,3 @@ public static Equipo fromJSON(JSONObject json,
 	return equipo;
 }
 }
-

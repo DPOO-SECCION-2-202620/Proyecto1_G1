@@ -2,8 +2,8 @@ package NucleoSistema;
 
 public enum Periodo {
 
-	Diario,
-	Semanal,
-	Mensual;
+	DIARIO,
+	SEMANAL,
+	MENSUAL;
 	
 }
