@@ -32,7 +32,7 @@ public class Tienda {
 	}
 	
 	public Venta vender(Socio comprador, List<LineaVenta> lineas, Instalacion instalacionActual, CodigoDescuento codigoDescuento, int puntosARedimir, double propina) {
-		Venta venta = new Venta(propina, puntosARedimir, Rubro.CAFETERIA, codigoDescuento, comprador, lineas, IVA);
+		Venta venta = new Venta(propina, puntosARedimir, Rubro.TIENDA, codigoDescuento, comprador, lineas, IVA);
 		return venta;
 	}
 	

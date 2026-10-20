@@ -87,7 +87,7 @@ public abstract class DisciplinaIndividual {
 	protected void restaurarEstadoDisciplinaIndividual(JSONObject disciplinaIndividualJson, DisciplinaIndividual disciplina) {
 		JSONArray jsonInstalaciones = disciplinaIndividualJson.getJSONArray("instalaciones");
 		for (int indice = 0; indice < jsonInstalaciones.length(); indice++) {
-			this.instalaciones.add(InstalacionIndividual.fromJSON(jsonInstalaciones.getJSONObject(indice), disciplina));
+			InstalacionIndividual.fromJSON(jsonInstalaciones.getJSONObject(indice), disciplina);
 		}
 	}
 }

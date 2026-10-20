@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import DeportesIndividuales.DisciplinaIndividual;
+
 public abstract class Instalacion {
 
 	private String nombre;
@@ -33,16 +35,16 @@ public abstract class Instalacion {
 		return json;
 	}
 	
-	public static Instalacion fromJSON(JSONObject json, Map<String, Instalacion> mapaInstalaciones) {
+	public static Instalacion fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
 		String tipo = json.getString("tipo");
 
 		switch (tipo) {
 			case "CanchaTenis":
-				return CanchaTenis.fromJSON(json, mapaInstalaciones);
+				return CanchaTenis.fromJSON(json, mapaDisciplinas);
 			case "CanchaPadel":
-				return CanchaPadel.fromJSON(json, mapaInstalaciones);
+				return CanchaPadel.fromJSON(json, mapaDisciplinas);
 			case "MesaTenisDeMesa":
-				return MesaTenisDeMesa.fromJSON(json, mapaInstalaciones);
+				return MesaTenisDeMesa.fromJSON(json, mapaDisciplinas);
 			case "CanchaFutbol":
 				return CanchaFutbol.fromJSON(json);
 			case "CanchaBaloncesto":

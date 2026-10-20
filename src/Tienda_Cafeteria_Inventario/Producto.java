@@ -65,9 +65,8 @@ public abstract class Producto {
 	        	return Articulo.fromJSON(json);
 	        case "Bebida":
 	        	return Bebida.fromJSON(json);
-	        case "Snack": {
+	        case "Snack": 
 	            return Snack.fromJSON(json);
-	        }
 	        default:throw new IllegalArgumentException("Tipo de producto desconocido");
 	    }
 	}

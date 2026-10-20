@@ -4,6 +4,6 @@ public enum Periodo {
 
 	DIARIO,
 	SEMANAL,
-	MENSUAL;
+	MANI;
 	
 }

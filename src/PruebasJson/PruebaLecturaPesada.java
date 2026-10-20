@@ -176,7 +176,7 @@ public class PruebaLecturaPesada {
 		}
 		for (Object o : club.getJSONObject("cafeteria").getJSONArray("snacks")) {
 			JSONObject s = (JSONObject) o;
-			Set<String> permitidos = Set.of("MENSUAL", "GLUTEN", "LACTEOS");
+			Set<String> permitidos = Set.of("MANI", "GLUTEN", "LACTEOS");
 			for (Object a : s.getJSONArray("alergenos")) {
 				exigir(permitidos.contains((String) a), s.getString("nombre") + ": alérgeno inválido " + a);
 			}

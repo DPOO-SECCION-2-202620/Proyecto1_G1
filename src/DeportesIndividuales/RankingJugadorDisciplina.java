@@ -9,6 +9,7 @@ import Usuarios.Usuario;
 
 public class RankingJugadorDisciplina {
 
+	private static final double FACTOR_K = 32;
 	private double puntajeElo = 1000;
 	private Socio jugador;
 	private DisciplinaIndividual disciplina;
@@ -31,13 +32,15 @@ public class RankingJugadorDisciplina {
 		return disciplina;
 	}
 	
-	
-	public void setPuntajeElo(double puntajeElo, boolean gano) {
-		if (gano) {
-			this.puntajeElo = puntajeElo;
-		}
+	public void calcularPuntajeElo(double puntajeRival, boolean gano) {
+		double esperado = 1.0 / (1 + Math.pow(10, (puntajeRival - this.puntajeElo) / 400));
+		double resultado = gano ? 1 : 0;
+		this.puntajeElo += FACTOR_K * (resultado - esperado);
 	}
-
+	
+	public void setPuntajeElo(double puntajeElo) {
+		this.puntajeElo = puntajeElo;
+	}
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();

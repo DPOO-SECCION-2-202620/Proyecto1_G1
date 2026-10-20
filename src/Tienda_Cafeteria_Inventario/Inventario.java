@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import DeportesIndividuales.DisciplinaIndividual;
 import Instalaciones.Instalacion;
 
 public class Inventario {
@@ -66,7 +67,8 @@ public class Inventario {
 
 	public static Inventario fromJSON(JSONObject json,
 			Map<String, Producto> mapaProductos,
-			Map<String, Instalacion> mapaInstalaciones) {
+			Map<String, Instalacion> mapaInstalaciones,
+			Map<String, DisciplinaIndividual> mapaDisciplinas) {
 
 		List<Instalacion> instalaciones = new ArrayList<>();
 		JSONArray jsonInstalaciones = json.getJSONArray("instalaciones");
@@ -76,7 +78,7 @@ public class Inventario {
 
 			Instalacion instalacion = mapaInstalaciones.get(nombreInstalacion);
 			if (instalacion == null) {
-				instalacion = Instalacion.fromJSON(jsonInstalacion, mapaInstalaciones);
+				instalacion = Instalacion.fromJSON(jsonInstalacion, mapaDisciplinas);
 				mapaInstalaciones.put(nombreInstalacion, instalacion);
 			}
 			instalaciones.add(instalacion);

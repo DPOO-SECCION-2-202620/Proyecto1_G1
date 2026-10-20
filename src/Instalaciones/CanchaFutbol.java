@@ -16,6 +16,6 @@ public class CanchaFutbol extends InstalacionConjunto{
 	}
 	
 	public static CanchaFutbol fromJSON(JSONObject json) {
-	    return new CanchaFutbol(json.getString("tipo"));
+	    return new CanchaFutbol(json.getString("nombre"));
 	}
 }

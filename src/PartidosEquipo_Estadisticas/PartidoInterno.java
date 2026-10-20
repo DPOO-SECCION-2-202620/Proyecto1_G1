@@ -60,6 +60,12 @@ public class PartidoInterno extends Partido{
 	
 	
 	@Override
+	public String toString() {
+		return getFecha() + ": " + equipoLocal.getNombre() + " " + marcadorLocal + " - "
+				+ marcadorVisitante + " " + equipoVisitante.getNombre();
+	}
+	
+	@Override
 	public boolean puedeJugarse() {
 	    return equipoLocal.puedeJugar() && equipoVisitante.puedeJugar();
 	}

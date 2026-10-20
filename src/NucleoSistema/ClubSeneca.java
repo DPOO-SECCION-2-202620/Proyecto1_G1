@@ -3,6 +3,7 @@ package NucleoSistema;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,9 @@ import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Competencia;
 import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
+import DeportesConjunto_Competencias.InscripcionCompetencia;
+import DeportesConjunto_Competencias.InscripcionEquipo;
+import DeportesConjunto_Competencias.TorneoCerros;
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.EstadisticaPractica;
 import DeportesIndividuales.InscripcionIndividual;
@@ -28,11 +32,15 @@ import Entrenamiento.EstadoAsistencia;
 import Entrenamiento.SesionEntrenamiento;
 import Excepciones.ReglaNegocioException;
 import Instalaciones.Instalacion;
+import Instalaciones.InstalacionConjunto;
 import Instalaciones.InstalacionIndividual;
 import PartidosEquipo_Estadisticas.EstadisticaConjunto;
+import PartidosEquipo_Estadisticas.EstadisticaFutbol;
+import PartidosEquipo_Estadisticas.Partido;
 import PartidosEquipo_Estadisticas.PartidoExterno;
 import PartidosEquipo_Estadisticas.PartidoInterno;
 import Tienda_Cafeteria_Inventario.Articulo;
+import Tienda_Cafeteria_Inventario.Bebida;
 import Tienda_Cafeteria_Inventario.CafeteriaSocios;
 import Tienda_Cafeteria_Inventario.CodigoDescuento;
 import Tienda_Cafeteria_Inventario.Inventario;
@@ -43,6 +51,7 @@ import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
 import Tienda_Cafeteria_Inventario.Tienda;
 import Tienda_Cafeteria_Inventario.Ubicacion;
 import Tienda_Cafeteria_Inventario.Venta;
+import TurnosEmpleados.EstadoSolicitud;
 import TurnosEmpleados.GestorTurnos;
 import TurnosEmpleados.SolicitudCambioTurno;
 import TurnosEmpleados.Turno;
@@ -115,9 +124,11 @@ public class ClubSeneca {
 	}
 	
 	public boolean inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta) {
-		equipo.agregarJugador(socio, posicion, numeroCamiseta);
-		guardarDatos();
-		return true;
+		boolean inscrito = equipo.agregarJugador(socio, posicion, numeroCamiseta);
+		if (inscrito) {
+			guardarDatos();
+		}
+		return inscrito;
 	}
 	
 	public PartidoInterno registrarPartidoInterno(Equipo equipoLocal, Equipo equipoVisitante,
@@ -129,11 +140,22 @@ public class ClubSeneca {
 		if (!equipoLocal.getDeporte().equals(equipoVisitante.getDeporte())) {
 			return null;
 		}
+		if (equipoLocal.getCategoria() != equipoVisitante.getCategoria()) {
+			return null;
+		}
+		if (!equipoLocal.puedeJugar() || !equipoVisitante.puedeJugar()) {
+			return null;
+		}
 		PartidoInterno partido = new PartidoInterno(LocalDate.now(), equipoLocal, equipoVisitante,
 				marcadorLocal, marcadorVisitante);
 		if (estadisticas != null) {
 			for (EstadisticaConjunto estadistica : estadisticas) {
 				partido.agregarEstadistica(estadistica);
+				if (estadistica instanceof EstadisticaFutbol) {
+					EstadisticaFutbol estadisticaFutbol = (EstadisticaFutbol) estadistica;
+					estadistica.getJugador().registrarTarjetas(estadisticaFutbol.getTarjetasAmarillas(),
+							estadisticaFutbol.getTarjetasRojas());
+				}
 			}
 		}
 		historial.agregarPartido(partido);
@@ -147,11 +169,24 @@ public class ClubSeneca {
 		if (competencia == null || equipo == null) {
 			return null;
 		}
+		InscripcionCompetencia inscripcionCompetencia = competencia.getInscripcionDe(equipo);
+		if (estadisticas != null && inscripcionCompetencia != null) {
+			for (EstadisticaConjunto estadistica : estadisticas) {
+				if (!inscripcionCompetencia.puedeAlinear(estadistica.getJugador().getJugador())) {
+					return null;
+				}
+			}
+		}
 		PartidoExterno partido = new PartidoExterno(fecha, marcadorPropio, marcadorRival, institucionRival,
 				escenario, equipo);
 		if (estadisticas != null) {
 			for (PartidosEquipo_Estadisticas.EstadisticaConjunto estadistica : estadisticas) {
 				partido.agregarEstadistica(estadistica);
+				if (estadistica instanceof EstadisticaFutbol && inscripcionCompetencia != null) {
+					EstadisticaFutbol estadisticaFutbol = (EstadisticaFutbol) estadistica;
+					inscripcionCompetencia.getRegistroDe(estadistica.getJugador().getJugador()).registrarTarjetas(
+							estadisticaFutbol.getTarjetasAmarillas(), estadisticaFutbol.getTarjetasRojas());
+				}
 			}
 		}
 		competencia.registrarPartido(partido);
@@ -195,6 +230,9 @@ public class ClubSeneca {
 				return null;
 			}
 		}
+		if (!disciplina.hayCupo(historial.getReservas(), fecha, horaInicio, horaFinal)) {
+			return null;
+		}
 		Reserva reserva = new Reserva(numeroJugadores, horaInicio, horaFinal, fecha, modalidad, socio,
 				instalacion);
 		historial.agregarReserva(reserva);
@@ -204,10 +242,14 @@ public class ClubSeneca {
 	
 	public PartidoPractica programarPartidoPractica(DisciplinaIndividual disciplina,
 			InstalacionIndividual instalacion, LocalDate fecha, List<Socio> jugadores) {
-		if (disciplina == null || instalacion == null || jugadores == null || jugadores.size() < 2) {
+		if (disciplina == null || instalacion == null || jugadores == null
+				|| (jugadores.size() != 2 && jugadores.size() != 4)) {
 			return null;
 		}
 		PartidoPractica partidoPractica = new PartidoPractica(fecha, disciplina, jugadores, instalacion);
+		if (!partidoPractica.validarNiveles()) {
+			return null;
+		}
 		historial.agregarParidosPractica(partidoPractica);
 		guardarDatos();
 		return partidoPractica;
@@ -225,6 +267,7 @@ public class ClubSeneca {
 			return;
 		}
 		Socio ganador = partido.getGanador();
+		Map<RankingJugadorDisciplina, Double> promediosRivales = new HashMap<>();
 		for (Socio jugador : partido.getJugadores()) {
 			RankingJugadorDisciplina rankingJugador = null;
 			for (RankingJugadorDisciplina ranking : rankings) {
@@ -251,8 +294,12 @@ public class ClubSeneca {
 				}
 			}
 			if (rivales > 0) {
-				rankingJugador.setPuntajeElo(sumaRivales / rivales, jugador.equals(ganador));
+				promediosRivales.put(rankingJugador, sumaRivales / rivales);
 			}
+		}
+		for (Map.Entry<RankingJugadorDisciplina, Double> entrada : promediosRivales.entrySet()) {
+			RankingJugadorDisciplina rankingJugador = entrada.getKey();
+			rankingJugador.calcularPuntajeElo(entrada.getValue(), rankingJugador.getJugador().equals(ganador));
 		}
 		guardarDatos();
 	}
@@ -305,6 +352,14 @@ public class ClubSeneca {
 		if (comprador == null || productos == null || productos.isEmpty() || rubro == null) {
 			return;
 		}
+		for (Map.Entry<Producto, Integer> linea : productos.entrySet()) {
+			if (linea.getKey() == null || linea.getKey().getCantidad() < linea.getValue()) {
+				return;
+			}
+		}
+		if (puntosARedimir < 0 || puntosARedimir > comprador.getPuntosFidelidad()) {
+			puntosARedimir = 0;
+		}
 		Venta venta;
 		List<LineaVenta> lineas = new ArrayList<>();
 		productos.forEach((producto, cantidad) -> {
@@ -320,6 +375,16 @@ public class ClubSeneca {
 		if (venta == null) {
 			return;
 		}
+		for (Map.Entry<Producto, Integer> linea : productos.entrySet()) {
+			linea.getKey().reducirCantidad(linea.getValue());
+			if (linea.getKey() instanceof Bebida && ((Bebida) linea.getKey()).getCaliente()) {
+				comprador.registrarBebidaCaliente(LocalDateTime.now());
+			}
+		}
+		if (venta.getPuntosRedimidos() > 0) {
+			comprador.redimirPuntos(venta.getPuntosRedimidos());
+		}
+		comprador.acumularPuntos(venta.getPuntosGenerados());
 		ventas.add(venta);
 		guardarDatos();
 	}
@@ -358,6 +423,9 @@ public class ClubSeneca {
 		if (inventarioOrigen == null || inventarioDestino == null) {
 			return false;
 		}
+		if (!inventarioOrigen.tieneArticulo(articulo) || inventarioDestino.tieneArticulo(articulo)) {
+			return false;
+		}
 		inventarioOrigen.quitarArticulo(articulo);
 		inventarioDestino.agregarArticulo(articulo); 
 		guardarDatos();
@@ -390,7 +458,8 @@ public class ClubSeneca {
 	}
 	
 	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada) {
-		if (solicitud == null || !solicitudes.contains(solicitud)) {
+		if (solicitud == null || !solicitudes.contains(solicitud)
+				|| solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
 			return;
 		}
 		List<Empleado> todosEmpleados = new ArrayList<>();
@@ -431,17 +500,57 @@ public class ClubSeneca {
 		if (equipo == null || !equipos.remove(equipo)) {
 			return false;
 		}
+		for (InscripcionEquipo inscripcion : equipo.getInscripciones()) {
+			inscripcion.getJugador().getInscripcionesEquipo().remove(inscripcion);
+		}
+		for (Competencia competencia : competencias) {
+			competencia.getInscripciones().removeIf(inscripcion -> inscripcion.getEquipo() == equipo);
+			competencia.getListaPartidos().removeIf(partido -> partido.getEquipo() == equipo);
+			if (competencia instanceof TorneoCerros) {
+				((TorneoCerros) competencia).getTablaPosiciones().remove(equipo);
+			}
+		}
+		historial.getPartidos().removeIf(partido -> 
+				(partido instanceof PartidoInterno && (((PartidoInterno) partido).getEquipoLocal() == equipo
+						|| ((PartidoInterno) partido).getEquipoVisitante() == equipo))
+				|| (partido instanceof PartidoExterno && ((PartidoExterno) partido).getEquipo() == equipo));
 		guardarDatos();
 		return true;
 	}
 	
 	public boolean darDeBajaSocio(Socio socio) {
-		if (socio == null || !usuarios.remove(socio)) {
-			return false;
+	    if (socio == null || !usuarios.contains(socio)) {
+	        return false;
+	    }
+	    if (socio.getInscripcionesEquipo().isEmpty()) {
+	        return false;
+	    }
+	    usuarios.remove(socio);
+	    rankings.removeIf(ranking -> ranking.getJugador().equals(socio));
+		for (Equipo equipo : equipos) {
+			equipo.getInscripciones().removeIf(inscripcion -> inscripcion.getJugador() == socio);
 		}
-		rankings.removeIf(ranking -> ranking.getJugador().equals(socio));
+		for (Competencia competencia : competencias) {
+			for (InscripcionCompetencia inscripcion : competencia.getInscripciones()) {
+				inscripcion.getNomina().removeIf(registro -> registro.getInscripcionEquipo().getJugador() == socio);
+			}
+			for (PartidoExterno partido : competencia.getListaPartidos()) {
+				partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+			}
+		}
+		for (Partido partido : historial.getPartidos()) {
+			partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+		}
+		historial.getReservas().removeIf(reserva -> reserva.getJugador() == socio);
+		historial.getParidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
+		historial.getSesiones().removeIf(sesion -> sesion.getEntrenador() == socio);
+		for (SesionEntrenamiento sesion : historial.getSesiones()) {
+			sesion.getConvocados().remove(socio);
+			sesion.getAsistencias().removeIf(asistencia -> asistencia.getJugador() == socio);
+		}
+		solicitudes.removeIf(solicitud -> solicitud.getSolicitante() == socio);
 		guardarDatos();
-		return true;
+	    return true;
 	}
 	
 	public Map<Rubro, Double> generarReporteVentas() {
@@ -580,6 +689,25 @@ public class ClubSeneca {
 	    }
 	    json.put("inventarios", jsonInventarios);
 	    
+	    Map<String, InstalacionConjunto> instalacionesConjunto = new HashMap<>();
+	    for (SesionEntrenamiento sesion : historial.getSesiones()) {
+	    	if (sesion.getInstalacion() instanceof InstalacionConjunto) {
+	    		instalacionesConjunto.put(sesion.getInstalacion().getNombre(), (InstalacionConjunto) sesion.getInstalacion());
+	    	}
+	    }
+	    for (Inventario inventario : inventarios) {
+	    	for (Instalacion instalacion : inventario.getInstalaciones()) {
+	    		if (instalacion instanceof InstalacionConjunto) {
+	    			instalacionesConjunto.put(instalacion.getNombre(), (InstalacionConjunto) instalacion);
+	    		}
+	    	}
+	    }
+	    JSONArray jsonInstalacionesConjunto = new JSONArray();
+	    for (InstalacionConjunto instalacion : instalacionesConjunto.values()) {
+	    	jsonInstalacionesConjunto.put(instalacion.toJSON());
+	    }
+	    json.put("instalacionesConjunto", jsonInstalacionesConjunto);
+	    
 	    json.put("tienda", tienda.toJSON());
 	    
 	    json.put("cafeteria", cafeteria.toJSON());
@@ -639,6 +767,12 @@ public class ClubSeneca {
 			}
 		}
 		
+		JSONArray jsonInstalacionesConjunto = leerLista(json, "instalacionesConjunto");
+		for (int indice = 0; indice < jsonInstalacionesConjunto.length(); indice++) {
+			Instalacion instalacion = InstalacionConjunto.fromJSON(jsonInstalacionesConjunto.getJSONObject(indice));
+			mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+		}
+		
 		JSONArray jsonUsuarios = leerLista(json, "usuarios");
 		for (int indice = 0; indice < jsonUsuarios.length(); indice++) {
 			Usuario usuario = Usuario.fromJSON(jsonUsuarios.getJSONObject(indice), mapaDisciplinas);
@@ -667,7 +801,7 @@ public class ClubSeneca {
 
 		JSONArray jsonInventarios = leerLista(json, "inventarios");
 		for (int indice = 0; indice < jsonInventarios.length(); indice++) {
-			Inventario inventario = Inventario.fromJSON(jsonInventarios.getJSONObject(indice), mapaProductos, mapaInstalaciones);
+			Inventario inventario = Inventario.fromJSON(jsonInventarios.getJSONObject(indice), mapaProductos, mapaInstalaciones, mapaDisciplinas);
 			club.inventarios.add(inventario);
 			for (Instalacion instalacion : inventario.getInstalaciones()) {
 				mapaInstalaciones.put(instalacion.getNombre(), instalacion);
@@ -716,3 +850,4 @@ public class ClubSeneca {
 	}
 	
 }
+

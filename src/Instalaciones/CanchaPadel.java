@@ -1,7 +1,10 @@
 package Instalaciones;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
+import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Modalidad;
 import DeportesIndividuales.Padel;
 
@@ -29,6 +32,15 @@ public class CanchaPadel extends InstalacionIndividual{
 		JSONObject json = super.toJSON();
 		json.put("tipo", "CanchaPadel");
 		return json;
+	}
+	
+	public static CanchaPadel fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+		CanchaPadel cancha = new CanchaPadel(
+				json.getString("nombre"),
+				json.getBoolean("techado"),
+				json.getInt("salon"),
+				(Padel) mapaDisciplinas.get("Padel"));
+		return cancha;
 	}
 	
 	public static CanchaPadel fromJSON(JSONObject json, Padel padel) {

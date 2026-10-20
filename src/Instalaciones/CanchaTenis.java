@@ -1,7 +1,10 @@
 package Instalaciones;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 
+import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Tenis;
 
 public class CanchaTenis extends InstalacionIndividual{
@@ -22,6 +25,15 @@ public class CanchaTenis extends InstalacionIndividual{
 		return json;
 	}
 	
+	public static CanchaTenis fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+		CanchaTenis cancha = new CanchaTenis(
+				json.getString("nombre"),
+				json.getBoolean("techado"),
+				json.getInt("salon"),
+				(Tenis) mapaDisciplinas.get("Tenis"));
+		return cancha;
+	}
+	
 	public static CanchaTenis fromJSON(JSONObject json, Tenis tenis) {
 		CanchaTenis cancha = new CanchaTenis(
 				json.getString("nombre"),
@@ -30,5 +42,4 @@ public class CanchaTenis extends InstalacionIndividual{
 				tenis);
 		return cancha;
 	}
-	
 }

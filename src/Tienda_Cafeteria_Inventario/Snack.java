@@ -22,7 +22,7 @@ public class Snack extends Producto{
 	@Override
 	public JSONObject toJSON() {
 	    JSONObject json = super.toJSON();
-	    json.put("tipo", "SNACK");
+	    json.put("tipo", "Snack");
 	    JSONArray jsonAlergenos = new JSONArray();
 	    for (Alergeno alergeno : alergenos) {
 	    	jsonAlergenos.put(alergeno.name());

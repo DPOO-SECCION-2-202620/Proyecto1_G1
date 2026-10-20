@@ -14,7 +14,6 @@ import DeportesIndividuales.Reserva;
 import Entrenamiento.SesionEntrenamiento;
 import Instalaciones.Instalacion;
 import PartidosEquipo_Estadisticas.Partido;
-import PartidosEquipo_Estadisticas.PartidoInterno;
 import Usuarios.Usuario;
 
 public class Historial {
@@ -126,7 +125,7 @@ public class Historial {
 		JSONArray jsonPartidos = historialJson.optJSONArray("partidos");
 		if (jsonPartidos != null) {
 			for (int indice = 0; indice < jsonPartidos.length(); indice++) {
-				historial.partidos.add(PartidoInterno.fromJSON(
+				historial.partidos.add(Partido.fromJSON(
 						jsonPartidos.getJSONObject(indice), mapaEquipos));
 			}
 		}

@@ -77,6 +77,9 @@ public class PartidoPractica {
 			for(Socio b : jugadores) {
 				NivelJugador nivelA = a.getNivelEn(disciplina);
 				NivelJugador nivelB = b.getNivelEn(disciplina);
+				if (nivelA == null || nivelB == null) {
+					return false;
+				}
 				if (!nivelA.esCompatibleCon(nivelB)) {
 					return false;
 				}
@@ -166,6 +169,8 @@ public class PartidoPractica {
 				disciplina,
 				jugadores,
 				(InstalacionIndividual) instalacion);
+		boolean tieneEstadisticas = !partido.estadisticas.isEmpty();
+		partido.finalizado = json.optBoolean("finalizado", tieneEstadisticas);
 
 		JSONArray jsonEstadisticas = json.optJSONArray("estadisticas");
 		if (jsonEstadisticas != null) {
@@ -173,9 +178,6 @@ public class PartidoPractica {
 				partido.estadisticas.add(EstadisticaPractica.fromJSON(jsonEstadisticas.getJSONObject(indice), mapaUsuarios));
 			}
 		}
-
-		boolean tieneEstadisticas = !partido.estadisticas.isEmpty();
-		partido.finalizado = json.optBoolean("finalizado", tieneEstadisticas);
 		return partido;
 	}
 }

@@ -47,6 +47,12 @@ public class PartidoExterno extends Partido{
 	}
 
 	@Override
+	public String toString() {
+		return getFecha() + ": " + equipo.getNombre() + " " + marcadorPropio + " - "
+				+ marcadorRival + " " + institucionRival + " (" + escenario + ")";
+	}
+	
+	@Override
 	public boolean puedeJugarse() {
 		return equipo.puedeJugar();
 	}

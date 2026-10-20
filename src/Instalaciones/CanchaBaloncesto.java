@@ -16,6 +16,6 @@ public class CanchaBaloncesto extends InstalacionConjunto{
 	}
 	
 	public static CanchaBaloncesto fromJSON(JSONObject json) {
-	    return new CanchaBaloncesto(json.getString("tipo"));
+	    return new CanchaBaloncesto(json.getString("nombre"));
 	}
 }

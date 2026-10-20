@@ -8,7 +8,7 @@ public class CodigoDescuento {
 	
 	private static final Double PORCENTAJE_DUENO = 0.15;
 	
-	private static final Double PORCENTAJE_COMPARTIDO = 0.15;
+	private static final Double PORCENTAJE_COMPARTIDO = 0.08;
 
 	public CodigoDescuento(String codigo) {
 		super();

@@ -17,7 +17,7 @@ public class Autenticador {
 				usuarioAutenticado = usuario;
 			}
 		}
-		if (usuarioAutenticado.getPassword().equals(password)) {
+		if (usuarioAutenticado != null && usuarioAutenticado.getPassword().equals(password)) {
 			return usuarioAutenticado;
 		}
 		return null;

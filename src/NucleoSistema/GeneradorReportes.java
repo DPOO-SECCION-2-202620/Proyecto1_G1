@@ -9,6 +9,7 @@ import DeportesIndividuales.RankingJugadorDisciplina;
 import Tienda_Cafeteria_Inventario.Rubro;
 import Tienda_Cafeteria_Inventario.Venta;
 import Entrenamiento.AsistenciaEntrenamiento;
+import Entrenamiento.EstadoAsistencia;
 import PartidosEquipo_Estadisticas.Partido;
 import Usuarios.Socio;
 
@@ -46,7 +47,8 @@ public class GeneradorReportes {
 		}
 
 		for (AsistenciaEntrenamiento asistencia : asistencias) {
-			if (asistencia != null && asistencia.getJugador() != null) {
+			if (asistencia != null && asistencia.getJugador() != null
+					&& asistencia.getEstado() != EstadoAsistencia.FALTO) {
 				Socio socio = asistencia.getJugador();
 				
 				int totalAsistencias = asistenciasPorSocio.getOrDefault(socio, 0);

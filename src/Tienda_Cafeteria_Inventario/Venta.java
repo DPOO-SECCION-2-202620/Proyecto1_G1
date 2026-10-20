@@ -89,7 +89,6 @@ public class Venta {
 	
 	private double calcularTotal(CodigoDescuento codigoDescuento){
 		
-		// Calculo del total con las lineas.
 		double total = 0;
 		for (LineaVenta linea : lineas) {
 		    if (linea != null && linea.getProducto() != null) {
@@ -97,17 +96,16 @@ public class Venta {
 		    }
 		}
 		
-		// Calculo del total con el descuento de empleado.
 		double descuento = 0;
 	    if (codigoDescuento != null) {
-	    	descuento = codigoDescuento.getPorcentaje(comprador instanceof Empleado);
+	    	boolean esDueno = comprador instanceof Empleado
+	    			&& codigoDescuento.getCodigo().equals(((Empleado) comprador).getCodigoDescuento().getCodigo());
+	    	descuento = codigoDescuento.getPorcentaje(esDueno);
 	    	total -= total * descuento;
 	    }
 	    
-	    // Calculo del total con la propina.
 	    total += this.propina;
 	    
-	    // Calculo del total con los puntos usados.
 	    int puntosNecesarios = (int) Math.ceil(total);
 	    if (puntosRedimidos >= puntosNecesarios) {
 	        puntosRedimidos = puntosNecesarios;
@@ -148,8 +146,11 @@ public class Venta {
 
 		String loginComprador = json.getString("comprador");
 		Usuario usuario = mapaUsuarios.get(loginComprador);
-		if (!(usuario instanceof Socio)) {
-			throw new IllegalArgumentException("El comprador no es un socio válido: " + loginComprador);
+		Socio comprador;
+		if (usuario instanceof Socio) {
+			comprador = (Socio) usuario;
+		} else {
+			comprador = new Socio(0, loginComprador, loginComprador, "");
 		}
 
 		List<LineaVenta> lineas = new ArrayList<>();
@@ -167,7 +168,7 @@ public class Venta {
 				json.getInt("puntosRedimidos"),
 				json.getInt("puntosGenerados"),
 				Rubro.valueOf(json.getString("rubro")),
-				(Socio) usuario,
+				comprador,
 				lineas,
 				json.getDouble("tasaImpuestos"));
 	}

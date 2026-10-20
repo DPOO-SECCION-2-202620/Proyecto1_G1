@@ -49,7 +49,7 @@ public class CafeteriaSocios {
 	
 	public boolean puedeDespachar(Bebida bebida, Instalacion instalacionActual) {
 		boolean esCaliente = bebida.getCaliente();
-		boolean esCanchaRestringida = instalacionActual instanceof InstalacionIndividual && ((InstalacionIndividual) instalacionActual).permiteBebidaCaliente();
+		boolean esCanchaRestringida = instalacionActual instanceof InstalacionIndividual && !((InstalacionIndividual) instalacionActual).permiteBebidaCaliente();
 		return !(esCaliente && esCanchaRestringida);
 	}
 	
@@ -57,7 +57,7 @@ public class CafeteriaSocios {
 		for (LineaVenta linea : lineas) {
 			Producto producto = linea.getProducto();
 		    if (producto instanceof Bebida && !(puedeDespachar((Bebida)producto, instalacionActual))) {
-		    	continue;
+		    	return null;
 		    }
 		}
 		Venta venta = new Venta(propina, puntosARedimir, Rubro.CAFETERIA, codigoDescuento, comprador, lineas, IMPUESTO_CONSUMO);

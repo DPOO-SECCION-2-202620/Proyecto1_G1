@@ -1,0 +1,25 @@
+{
+  "instalacionesConjunto": [],
+  "deportes": [],
+  "inventarios": [],
+  "usuarios": [],
+  "cafeteria": {
+    "snacks": [],
+    "bebidas": []
+  },
+  "nombre": "Club Seneca",
+  "competencias": [],
+  "solicitudes": [],
+  "disciplinas": [],
+  "rankings": [],
+  "tienda": {"articulos": []},
+  "historial": {
+    "sesiones": [],
+    "reservas": [],
+    "partidosPractica": [],
+    "partidos": []
+  },
+  "ventas": [],
+  "sugerencias": [],
+  "equipos": []
+}

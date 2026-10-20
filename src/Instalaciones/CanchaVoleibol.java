@@ -16,6 +16,6 @@ public class CanchaVoleibol extends InstalacionConjunto{
 	}
 	
 	public static CanchaVoleibol fromJSON(JSONObject json) {
-	    return new CanchaVoleibol(json.getString("tipo"));
+	    return new CanchaVoleibol(json.getString("nombre"));
 	}
 }
