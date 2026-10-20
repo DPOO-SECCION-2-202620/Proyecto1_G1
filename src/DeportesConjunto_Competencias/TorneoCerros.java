@@ -11,9 +11,9 @@ import PartidosEquipo_Estadisticas.PartidoExterno;
 public class TorneoCerros extends Competencia{
 
 	private Map <Equipo, Integer> tablaPosiciones;
-	public TorneoCerros(String nombre, String entidadOrganizadora, int anio, String formatoJuego, int nominaMinima,
-			Categoria categoria, DeporteConjunto deporte) {
-		super("Torneo de los Cerros", "Universidades de Bogotá", anio, "Liga", nominaMinima, categoria, deporte);
+	
+	public TorneoCerros(String nombre, int anio, int nominaMinima, Categoria categoria, DeporteConjunto deporte) {
+		super(nombre, "Grupo Deportivo Universitario Los Cerros" , anio, "Liga", nominaMinima, categoria, deporte);
 		this.tablaPosiciones = new LinkedHashMap<>();
 	}
 
@@ -63,9 +63,7 @@ public class TorneoCerros extends Competencia{
 
 		TorneoCerros torneo = new TorneoCerros(
 				json.getString("nombre"),
-				json.getString("entidadOrganizadora"),
 				json.getInt("anio"),
-				json.getString("formatoJuego"),
 				json.getInt("nominaMinima"),
 				categoria,
 				deporte);

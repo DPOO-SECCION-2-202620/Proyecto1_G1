@@ -5,9 +5,11 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -61,6 +63,7 @@ import Instalaciones.Instalacion;
 import Instalaciones.MesaTenisDeMesa;
 import NucleoSistema.ClubSeneca;
 import NucleoSistema.GeneradorReportes;
+import NucleoSistema.Periodo;
 import NucleoSistema.Persistencia;
 import PartidosEquipo_Estadisticas.EstadisticaBaloncesto;
 import PartidosEquipo_Estadisticas.EstadisticaConjunto;
@@ -250,16 +253,22 @@ public class PruebaCompleta {
 		return new JSONObject(json.toString(2));
 	}
 
+	private static double sumarReporte(Map<LocalDate, Map<Rubro, Double>> reporte) {
+		double suma = 0;
+		for (Map<Rubro, Double> totalesPorRubro : reporte.values()) {
+			for (double total : totalesPorRubro.values()) {
+				suma += total;
+			}
+		}
+		return suma;
+	}
+
 	private static double totalReporte(Rubro rubro) {
-		return club.generarReporteVentas().getOrDefault(rubro, 0.0);
+		return sumarReporte(club.generarReporteVentas(rubro, Periodo.DIARIO));
 	}
 
 	private static double totalGeneralVentas() {
-		double suma = 0;
-		for (double total : club.generarReporteVentas().values()) {
-			suma += total;
-		}
-		return suma;
+		return sumarReporte(club.generarReporteVentas(null, Periodo.DIARIO));
 	}
 
 	private static Map<Producto, Integer> pedido(Producto producto, int cantidad) {
@@ -402,7 +411,7 @@ public class PruebaCompleta {
 
 		exigir(club.getHistorial() != null, "un club nuevo debe tener historial");
 		exigir(club.getInventario().isEmpty(), "un club nuevo no tiene inventarios");
-		exigir(club.generarReporteVentas().isEmpty(), "un club nuevo no tiene ventas");
+		exigir(club.generarReporteVentas(null, Periodo.DIARIO).isEmpty(), "un club nuevo no tiene ventas");
 		exigir(club.generarReporteDeportivo().isEmpty(), "un club nuevo no tiene rankings");
 
 		for (int numero = 1; numero <= 16; numero++) {
@@ -835,8 +844,8 @@ public class PruebaCompleta {
 	// ================================================================ 09 competencias
 
 	private static void competencias() throws Exception {
-		torneo = new TorneoCerros("Torneo de los Cerros 2026", "Universidades de Bogotá", 2026, "Liga", 7, Categoria.MAYORES, futbol);
-		ascun = new ASCUN("ASCUN Futbol 2026", "ASCUN", 2026, "Grupos y eliminación directa", 7, Categoria.MAYORES, futbol, FaseASCUN.GRUPOS);
+		torneo = new TorneoCerros("Torneo de los Cerros 2026", 2026, 7, Categoria.MAYORES, futbol);
+		ascun = new ASCUN("ASCUN Futbol 2026", 2026, 7, Categoria.MAYORES, futbol, FaseASCUN.GRUPOS);
 		List<Competencia> competenciasClub = listaPrivada(club, "competencias");
 
 		exigir(club.inscribirEquipoEnCompetencia(cerros, torneo), "Cerros FC cumple los requisitos del torneo");
@@ -1183,9 +1192,23 @@ public class PruebaCompleta {
 	// ================================================================ 14 reportes
 
 	private static void reportes() throws Exception {
-		Map<Rubro, Double> ventas = club.generarReporteVentas();
-		exigir(ventas.containsKey(Rubro.CAFETERIA), "el reporte de ventas incluye la cafetería");
-		exigir(!ventas.containsKey(Rubro.MENSUALIDAD), "no hay ventas de mensualidades");
+		Map<LocalDate, Map<Rubro, Double>> ventas = club.generarReporteVentas(null, Periodo.MENSUAL);
+		exigir(ventas.values().stream().anyMatch(totales -> totales.containsKey(Rubro.CAFETERIA)), "el reporte de ventas incluye la cafetería");
+		exigir(ventas.values().stream().noneMatch(totales -> totales.containsKey(Rubro.MENSUALIDAD)), "no hay ventas de mensualidades");
+
+		LocalDate hoy = LocalDate.now();
+		Map<LocalDate, Map<Rubro, Double>> ventasDiarias = club.generarReporteVentas(null, Periodo.DIARIO);
+		Map<LocalDate, Map<Rubro, Double>> ventasSemanales = club.generarReporteVentas(null, Periodo.SEMANAL);
+		Map<LocalDate, Map<Rubro, Double>> ventasMensuales = club.generarReporteVentas(null, Periodo.MENSUAL);
+		exigir(ventasDiarias.containsKey(hoy), "el reporte diario agrupa por el día de la venta");
+		exigir(ventasSemanales.containsKey(hoy.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))),
+				"el reporte semanal agrupa por el lunes de la semana de la venta");
+		exigir(ventasMensuales.containsKey(hoy.withDayOfMonth(1)), "el reporte mensual agrupa por el día 1 del mes de la venta");
+		exigirCercano(sumarReporte(ventasDiarias), sumarReporte(ventasSemanales), "el total semanal coincide con el total diario");
+		exigirCercano(sumarReporte(ventasDiarias), sumarReporte(ventasMensuales), "el total mensual coincide con el total diario");
+		exigirCercano(totalReporte(Rubro.CAFETERIA), sumarReporte(club.generarReporteVentas(Rubro.CAFETERIA, Periodo.MENSUAL)),
+				"filtrar por rubro suma solo las ventas de ese rubro");
+		exigir(club.generarReporteVentas(Rubro.MENSUALIDAD, Periodo.MENSUAL).isEmpty(), "un rubro sin ventas devuelve un reporte vacío");
 
 		List<RankingJugadorDisciplina> ranking = club.generarReporteDeportivo();
 		exigirIgual(9, ranking.size(), "un ranking por cada inscripción individual (9)");
@@ -1198,7 +1221,8 @@ public class PruebaCompleta {
 		exigir(ordenado, "el reporte deportivo va de mayor a menor puntaje");
 
 		GeneradorReportes generador = new GeneradorReportes();
-		exigir(generador.reporteVentas(null).isEmpty(), "reporteVentas(null) devuelve un mapa vacío");
+		exigir(generador.reporteVentas(null, null, Periodo.DIARIO).isEmpty(), "reporteVentas(null) devuelve un mapa vacío");
+		exigir(generador.reporteVentas(new ArrayList<Venta>(), null, null).isEmpty(), "reporteVentas sin periodo devuelve un mapa vacío");
 		exigir(generador.reporteAsistencias(null).isEmpty(), "reporteAsistencias(null) devuelve un mapa vacío");
 		exigir(generador.reporteResultados(null).isEmpty(), "reporteResultados(null) devuelve una lista vacía");
 		exigir(generador.reporteRankings(null).isEmpty(), "reporteRankings(null) devuelve una lista vacía");
@@ -1480,7 +1504,7 @@ public class PruebaCompleta {
 			List<Socio> socios = new ArrayList<>();
 			Futbol deporte = new Futbol();
 			Equipo equipo = equipoUnitario(deporte, socios, 7, "torneo");
-			TorneoCerros original = new TorneoCerros("Torneo", "Org", 2026, "Liga", 7, Categoria.MAYORES, deporte);
+			TorneoCerros original = new TorneoCerros("Torneo", 2026, 7, Categoria.MAYORES, deporte);
 			original.inscribirEquipo(equipo);
 			original.getInscripcionDe(equipo).agregarANomina(socios.get(0));
 			original.registrarPartido(new PartidoExterno(FECHA_BASE, 2, 0, "Rival", "Estadio", equipo));
@@ -1495,7 +1519,7 @@ public class PruebaCompleta {
 		});
 		ida("Competencia ASCUN (fase)", () -> {
 			Futbol deporte = new Futbol();
-			ASCUN original = new ASCUN("ASCUN", "ASCUN", 2026, "Grupos", 7, Categoria.MAYORES, deporte, FaseASCUN.GRUPOS);
+			ASCUN original = new ASCUN("ASCUN", 2026, 7, Categoria.MAYORES, deporte, FaseASCUN.GRUPOS);
 			original.avanzarFase();
 			Competencia copia = Competencia.fromJSON(viajarPorTexto(original.toJSON()), new HashMap<String, DeporteConjunto>(), new HashMap<String, Equipo>());
 			exigirIgual(FaseASCUN.ELIMINACION_DIRECTA, ((ASCUN) copia).getFase(), "fase de ASCUN");
@@ -1664,7 +1688,8 @@ public class PruebaCompleta {
 		exigirIgual(club.getHistorial().getReservas().size(), recargado.getHistorial().getReservas().size(), "reservas tras cargar");
 		exigirIgual(club.getHistorial().getPartidos().size(), recargado.getHistorial().getPartidos().size(), "partidos tras cargar");
 		exigirIgual(club.getHistorial().getSesiones().size(), recargado.getHistorial().getSesiones().size(), "sesiones tras cargar");
-		exigirIgual(club.generarReporteVentas(), recargado.generarReporteVentas(), "reporte de ventas tras cargar");
+		exigirIgual(club.generarReporteVentas(null, Periodo.DIARIO), recargado.generarReporteVentas(null, Periodo.DIARIO), "reporte de ventas diario tras cargar");
+		exigirIgual(club.generarReporteVentas(null, Periodo.MENSUAL), recargado.generarReporteVentas(null, Periodo.MENSUAL), "reporte de ventas mensual tras cargar");
 		exigirIgual(club.generarReporteDeportivo().size(), recargado.generarReporteDeportivo().size(), "rankings tras cargar");
 
 		Reserva reserva = recargado.getHistorial().getReservas().get(0);

@@ -4,13 +4,13 @@ import org.json.JSONObject;
 
 public abstract class Producto {
 
-	public String nombre;
+	private String nombre;
 	
-	public String categoria;
+	private String categoria;
 	
-	public double precio;
+	private double precio;
 	
-	public int cantidad;
+	private int cantidad;
 
 	public Producto(String nombre, String categoria, double precio, int cantidad) {
 		super();

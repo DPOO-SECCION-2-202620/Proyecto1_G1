@@ -250,7 +250,7 @@ public class ClubSeneca {
 		if (!partidoPractica.validarNiveles()) {
 			return null;
 		}
-		historial.agregarParidosPractica(partidoPractica);
+		historial.agregarPartidosPractica(partidoPractica);
 		guardarDatos();
 		return partidoPractica;
 	}
@@ -542,7 +542,7 @@ public class ClubSeneca {
 			partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
 		}
 		historial.getReservas().removeIf(reserva -> reserva.getJugador() == socio);
-		historial.getParidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
+		historial.getPartidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
 		historial.getSesiones().removeIf(sesion -> sesion.getEntrenador() == socio);
 		for (SesionEntrenamiento sesion : historial.getSesiones()) {
 			sesion.getConvocados().remove(socio);
@@ -553,8 +553,8 @@ public class ClubSeneca {
 	    return true;
 	}
 	
-	public Map<Rubro, Double> generarReporteVentas() {
-		return generadorReportes.reporteVentas(ventas);
+	public Map<LocalDate, Map<Rubro, Double>>  generarReporteVentas(Rubro rubro, Periodo periodo) {
+		return generadorReportes.reporteVentas(ventas, rubro, periodo);
 	}
 	
 	public List<RankingJugadorDisciplina> generarReporteDeportivo(){

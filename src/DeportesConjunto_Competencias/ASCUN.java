@@ -11,10 +11,9 @@ public class ASCUN extends Competencia{
 
 	private FaseASCUN fase;
 
-	public ASCUN(String nombre, String entidadOrganizadora, int anio, String formatoJuego, int nominaMinima,
-			Categoria categoria, DeporteConjunto deporte, FaseASCUN fase) {
-		super("ASCUN", "ASCUN", anio, "GRUPOS y eliminación directa", nominaMinima, categoria, deporte);
-		this.fase = FaseASCUN.GRUPOS;
+	public ASCUN(String nombre, int anio, int nominaMinima, Categoria categoria, DeporteConjunto deporte, FaseASCUN fase) {
+		super(nombre, "ASCUN", anio, "GRUPOS y eliminación directa", nominaMinima, categoria, deporte);
+		this.fase = fase;
 	}
 	
 	public FaseASCUN getFase() {
@@ -65,9 +64,7 @@ public class ASCUN extends Competencia{
 		FaseASCUN fase = FaseASCUN.valueOf(json.getString("fase"));
 		ASCUN ascun = new ASCUN(
 				json.getString("nombre"),
-				json.getString("entidadOrganizadora"),
 				json.getInt("anio"),
-				json.getString("formatoJuego"),
 				json.getInt("nominaMinima"),
 				categoria,
 				deporte,

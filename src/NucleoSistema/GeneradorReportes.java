@@ -1,16 +1,20 @@
 package NucleoSistema;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 import DeportesIndividuales.RankingJugadorDisciplina;
-import Tienda_Cafeteria_Inventario.Rubro;
-import Tienda_Cafeteria_Inventario.Venta;
 import Entrenamiento.AsistenciaEntrenamiento;
 import Entrenamiento.EstadoAsistencia;
 import PartidosEquipo_Estadisticas.Partido;
+import Tienda_Cafeteria_Inventario.Rubro;
+import Tienda_Cafeteria_Inventario.Venta;
 import Usuarios.Socio;
 
 public class GeneradorReportes {
@@ -19,26 +23,51 @@ public class GeneradorReportes {
 		super();
 	}
 
-	public Map<Rubro, Double> reporteVentas(List<Venta> ventas) {
-		Map<Rubro, Double> totalesPorRubro = new HashMap<>();
-		
-		if (ventas == null) {
-			return totalesPorRubro;
+	public Map<LocalDate, Map<Rubro, Double>> reporteVentas(List<Venta> ventas, Rubro rubro, Periodo periodo) {
+		Map<LocalDate, Map<Rubro, Double>> ventasDiscriminadas = new TreeMap<>();
+
+		if (ventas == null || periodo == null) {
+			return ventasDiscriminadas;
 		}
 
 		for (Venta venta : ventas) {
-			if (venta != null && venta.getRubro() != null) {
-				Rubro rubro = venta.getRubro();
-				double totalVenta = venta.getTotal();
-				
-				double acumulado = totalesPorRubro.getOrDefault(rubro, 0.0);
-				totalesPorRubro.put(rubro, acumulado + totalVenta);
+			if (venta == null || venta.getRubro() == null) {
+				continue;
 			}
+			if (rubro != null && venta.getRubro() != rubro) {
+				continue;
+			}
+
+			if (venta.getFecha() == null) {
+				continue;
+			}
+			LocalDate fecha = venta.getFecha();
+
+			LocalDate clave;
+			switch (periodo) {
+				case SEMANAL:
+					clave = fecha.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+					break;
+				case MENSUAL:
+					clave = fecha.withDayOfMonth(1);
+					break;
+				default:
+					clave = fecha;
+					break;
+			}
+
+			Map<Rubro, Double> totalesPorRubro = ventasDiscriminadas.get(clave);
+			if (totalesPorRubro == null) {
+				totalesPorRubro = new HashMap<>();
+				ventasDiscriminadas.put(clave, totalesPorRubro);
+			}
+			double acumulado = totalesPorRubro.getOrDefault(venta.getRubro(), 0.0);
+			totalesPorRubro.put(venta.getRubro(), acumulado + venta.getTotal());
 		}
 
-		return totalesPorRubro;
+		return ventasDiscriminadas;
 	}
-	
+
 	public Map<Socio, Integer> reporteAsistencias(List<AsistenciaEntrenamiento> asistencias) {
 		Map<Socio, Integer> asistenciasPorSocio = new HashMap<>();
 
@@ -50,7 +79,7 @@ public class GeneradorReportes {
 			if (asistencia != null && asistencia.getJugador() != null
 					&& asistencia.getEstado() != EstadoAsistencia.FALTO) {
 				Socio socio = asistencia.getJugador();
-				
+
 				int totalAsistencias = asistenciasPorSocio.getOrDefault(socio, 0);
 				asistenciasPorSocio.put(socio, totalAsistencias + 1);
 			}
@@ -58,7 +87,7 @@ public class GeneradorReportes {
 
 		return asistenciasPorSocio;
 	}
-	
+
 	public List<String> reporteResultados(List<Partido> partidos) {
 		List<String> resultadosFormateados = new ArrayList<>();
 
@@ -74,7 +103,7 @@ public class GeneradorReportes {
 
 		return resultadosFormateados;
 	}
-	
+
 	public List<RankingJugadorDisciplina> reporteRankings(List<RankingJugadorDisciplina> rankingsGlobales) {
 		List<RankingJugadorDisciplina> listaOrdenada = new ArrayList<>();
 
@@ -83,7 +112,7 @@ public class GeneradorReportes {
 		}
 
 		listaOrdenada.addAll(rankingsGlobales);
-		
+
 		listaOrdenada.sort((r1, r2) -> {
 			if (r1 == null || r2 == null) return 0;
 			return Double.compare(r2.getPuntajeElo(), r1.getPuntajeElo());
@@ -91,5 +120,5 @@ public class GeneradorReportes {
 
 		return listaOrdenada;
 	}
-	
+
 }

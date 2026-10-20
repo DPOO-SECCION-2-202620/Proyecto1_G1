@@ -38,7 +38,7 @@ public class Historial {
 		return partidos;
 	}
 
-	public List<PartidoPractica> getParidosPractica() {
+	public List<PartidoPractica> getPartidosPractica() {
 		return partidosPractica;
 	}
 
@@ -58,7 +58,7 @@ public class Historial {
 		partidos.add(partido);
 	}
 	
-	public void agregarParidosPractica(PartidoPractica partidoPractica) {
+	public void agregarPartidosPractica(PartidoPractica partidoPractica) {
 		partidosPractica.add(partidoPractica);
 	}
 	
