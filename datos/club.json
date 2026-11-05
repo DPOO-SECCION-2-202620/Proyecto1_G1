@@ -2,14 +2,229 @@
   "instalacionesConjunto": [],
   "deportes": [],
   "inventarios": [],
-  "usuarios": [],
+  "usuarios": [
+    {
+      "password": "admin123",
+      "tipo": "Administrador",
+      "login": "admin",
+      "nombre": "Admin Seneca"
+    },
+    {
+      "password": "clave-luis",
+      "tipo": "Entrenador",
+      "codigoEmpleado": "EMP-001",
+      "codigoDescuento": {"codigo": "DESC-EMP-001"},
+      "inscripcionesIndividuales": [],
+      "turnos": [{
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      }],
+      "puntosFidelidad": 0,
+      "login": "luis",
+      "nombre": "Luis Perez",
+      "edad": 38
+    },
+    {
+      "password": "clave-carla",
+      "tipo": "Entrenador",
+      "codigoEmpleado": "EMP-002",
+      "codigoDescuento": {"codigo": "DESC-EMP-002"},
+      "inscripcionesIndividuales": [],
+      "turnos": [{
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      }],
+      "puntosFidelidad": 0,
+      "login": "carla",
+      "nombre": "Carla Gomez",
+      "edad": 34
+    },
+    {
+      "password": "clave-pablo",
+      "tipo": "Entrenador",
+      "codigoEmpleado": "EMP-003",
+      "codigoDescuento": {"codigo": "DESC-EMP-003"},
+      "inscripcionesIndividuales": [],
+      "turnos": [{
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      }],
+      "puntosFidelidad": 0,
+      "login": "pablo",
+      "nombre": "Pablo Rios",
+      "edad": 41
+    },
+    {
+      "password": "clave-marta",
+      "tipo": "Fisioterapeuta",
+      "codigoEmpleado": "EMP-004",
+      "codigoDescuento": {"codigo": "DESC-EMP-004"},
+      "inscripcionesIndividuales": [],
+      "turnos": [{
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      }],
+      "puntosFidelidad": 0,
+      "login": "marta",
+      "nombre": "Marta Diaz",
+      "edad": 36
+    },
+    {
+      "password": "clave-diego",
+      "tipo": "Fisioterapeuta",
+      "codigoEmpleado": "EMP-005",
+      "codigoDescuento": {"codigo": "DESC-EMP-005"},
+      "inscripcionesIndividuales": [],
+      "turnos": [{
+        "diaSemana": "Lunes",
+        "horaFinal": "18:00",
+        "horaInicio": "14:00"
+      }],
+      "puntosFidelidad": 0,
+      "login": "diego",
+      "nombre": "Diego Castro",
+      "edad": 39
+    },
+    {
+      "password": "clave1",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador01",
+      "nombre": "Jugador 1",
+      "edad": 20
+    },
+    {
+      "password": "clave2",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador02",
+      "nombre": "Jugador 2",
+      "edad": 21
+    },
+    {
+      "password": "clave3",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador03",
+      "nombre": "Jugador 3",
+      "edad": 22
+    },
+    {
+      "password": "clave4",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador04",
+      "nombre": "Jugador 4",
+      "edad": 23
+    },
+    {
+      "password": "clave5",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador05",
+      "nombre": "Jugador 5",
+      "edad": 24
+    },
+    {
+      "password": "clave6",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador06",
+      "nombre": "Jugador 6",
+      "edad": 25
+    },
+    {
+      "password": "clave7",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador07",
+      "nombre": "Jugador 7",
+      "edad": 26
+    },
+    {
+      "password": "clave8",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador08",
+      "nombre": "Jugador 8",
+      "edad": 27
+    },
+    {
+      "password": "clave9",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "jugador09",
+      "nombre": "Jugador 9",
+      "edad": 28
+    },
+    {
+      "password": "clave-ana",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "ana",
+      "nombre": "Ana Torres",
+      "edad": 24
+    },
+    {
+      "password": "clave-nino",
+      "tipo": "Socio",
+      "inscripcionesIndividuales": [],
+      "puntosFidelidad": 0,
+      "login": "nino",
+      "nombre": "Nino Sub17",
+      "edad": 15
+    }
+  ],
   "cafeteria": {
     "snacks": [],
     "bebidas": []
   },
   "nombre": "Club Seneca",
   "competencias": [],
-  "solicitudes": [],
+  "solicitudes": [
+    {
+      "estado": "PENDIENTE",
+      "turnoActual": {
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      },
+      "solicitante": "luis",
+      "turnoNuevo": {
+        "diaSemana": "Lunes",
+        "horaFinal": "18:00",
+        "horaInicio": "14:00"
+      }
+    },
+    {
+      "estado": "PENDIENTE",
+      "turnoActual": {
+        "diaSemana": "Lunes",
+        "horaFinal": "12:00",
+        "horaInicio": "08:00"
+      },
+      "solicitante": "marta",
+      "turnoNuevo": {
+        "diaSemana": "Lunes",
+        "horaFinal": "18:00",
+        "horaInicio": "14:00"
+      }
+    }
+  ],
   "disciplinas": [],
   "rankings": [],
   "tienda": {"articulos": []},
@@ -21,5 +236,191 @@
   },
   "ventas": [],
   "sugerencias": [],
-  "equipos": []
+  "equipos": [
+    {
+      "cupoMaximo": 10,
+      "deporte": {
+        "minimoJugadores": 7,
+        "nombre": "Futbol"
+      },
+      "inscripciones": [
+        {
+          "posicion": "Posicion 1",
+          "numeroCamiseta": 1,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador01"
+        },
+        {
+          "posicion": "Posicion 2",
+          "numeroCamiseta": 2,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador02"
+        },
+        {
+          "posicion": "Posicion 3",
+          "numeroCamiseta": 3,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador03"
+        },
+        {
+          "posicion": "Posicion 4",
+          "numeroCamiseta": 4,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador04"
+        },
+        {
+          "posicion": "Posicion 5",
+          "numeroCamiseta": 5,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador05"
+        },
+        {
+          "posicion": "Posicion 6",
+          "numeroCamiseta": 6,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador06"
+        },
+        {
+          "posicion": "Posicion 7",
+          "numeroCamiseta": 7,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador07"
+        },
+        {
+          "posicion": "Posicion 8",
+          "numeroCamiseta": 8,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "SUSPENDIDO"
+          },
+          "jugador": "jugador08"
+        },
+        {
+          "posicion": "delantero",
+          "numeroCamiseta": 9,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador09"
+        }
+      ],
+      "categoria": "MAYORES",
+      "nombre": "Cerros FC"
+    },
+    {
+      "cupoMaximo": 8,
+      "deporte": {
+        "minimoJugadores": 7,
+        "nombre": "Futbol"
+      },
+      "inscripciones": [],
+      "categoria": "MAYORES",
+      "nombre": "Andes FC"
+    },
+    {
+      "cupoMaximo": 8,
+      "deporte": {
+        "minimoJugadores": 7,
+        "nombre": "Futbol"
+      },
+      "inscripciones": [{
+        "posicion": "extremo",
+        "numeroCamiseta": 3,
+        "controlSanciones": {
+          "amarillasAcumuladas": 0,
+          "estado": "HABILITADO"
+        },
+        "jugador": "nino"
+      }],
+      "categoria": "SUB17",
+      "nombre": "Seneca Sub17"
+    },
+    {
+      "cupoMaximo": 6,
+      "deporte": {
+        "minimoJugadores": 5,
+        "nombre": "Baloncesto"
+      },
+      "inscripciones": [
+        {
+          "posicion": "Posicion 1",
+          "numeroCamiseta": 1,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador01"
+        },
+        {
+          "posicion": "Posicion 2",
+          "numeroCamiseta": 2,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador02"
+        },
+        {
+          "posicion": "Posicion 3",
+          "numeroCamiseta": 3,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador03"
+        },
+        {
+          "posicion": "Posicion 4",
+          "numeroCamiseta": 4,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador04"
+        },
+        {
+          "posicion": "Posicion 5",
+          "numeroCamiseta": 5,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "SUSPENDIDO"
+          },
+          "jugador": "jugador05"
+        },
+        {
+          "posicion": "base",
+          "numeroCamiseta": 6,
+          "controlSanciones": {
+            "amarillasAcumuladas": 0,
+            "estado": "HABILITADO"
+          },
+          "jugador": "jugador06"
+        }
+      ],
+      "categoria": "MAYORES",
+      "nombre": "Basket Seneca"
+    }
+  ]
 }

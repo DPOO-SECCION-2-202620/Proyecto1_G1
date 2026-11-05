@@ -59,6 +59,7 @@ import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
 import Usuarios.Usuario;
+import Usuarios.Administrador;
 
 public class ClubSeneca {
 
@@ -603,6 +604,23 @@ public class ClubSeneca {
 		usuarios.add(socio);
 		guardarDatos();
 		return socio;
+	}
+	
+	public boolean registrarUsuario(Usuario usuario) {
+		if (usuario == null) {
+			return false;
+		}
+		for (Usuario existente : usuarios) {
+			if (existente.getLogin().equals(usuario.getLogin())) {
+				return false;
+			}
+		}
+		usuarios.add(usuario);
+		if (usuario instanceof Administrador) {
+			((Administrador) usuario).setClub(this);
+		}
+		guardarDatos();
+		return true;
 	}
 	
 	public InscripcionIndividual inscribirEnDisciplina(Socio socio, DisciplinaIndividual disciplina, NivelJugador nivel) {
