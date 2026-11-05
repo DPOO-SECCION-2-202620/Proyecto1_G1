@@ -29,7 +29,7 @@ public class Administrador extends Usuario{
 		club.resolverSugerencia(sugerencia, aprobada);
 	}
 
-	public void resolverSolicitudTurno(SolicitudCambioTurno solicitud, boolean aprobada) {
+	public void resolverSolicitudTurno(SolicitudCambioTurno solicitud, boolean aprobada) throws ReglaNegocioException{
 		club.resolverSolicitud(solicitud, aprobada);
 	}
 

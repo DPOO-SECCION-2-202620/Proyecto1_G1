@@ -123,12 +123,10 @@ public class ClubSeneca {
 		this.persistencia = new Persistencia("datos");
 	}
 	
-	public boolean inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta) {
-		boolean inscrito = equipo.agregarJugador(socio, posicion, numeroCamiseta);
-		if (inscrito) {
-			guardarDatos();
-		}
-		return inscrito;
+	public void inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta)
+			throws ReglaNegocioException {
+		equipo.agregarJugador(socio, posicion, numeroCamiseta);
+		guardarDatos();
 	}
 	
 	public PartidoInterno registrarPartidoInterno(Equipo equipoLocal, Equipo equipoVisitante,
@@ -457,23 +455,23 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
-	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada) {
+	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada)
+			throws ReglaNegocioException {
 		if (solicitud == null || !solicitudes.contains(solicitud)
 				|| solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
+			throw new ReglaNegocioException("La solicitud no existe o ya fue resuelta");
+		}
+		if (!aprobada) {
+			solicitud.rechazar();
+			guardarDatos();
 			return;
 		}
-		List<Empleado> todosEmpleados = new ArrayList<>();
-		for (Usuario usuario : usuarios) {
-			if (usuario instanceof Empleado) {
-				todosEmpleados.add((Empleado) usuario);
-			}
+		if (!gestorTurnos.puedeAprobar(solicitud, getEmpleados())) {
+			throw new ReglaNegocioException(
+					"La aprobación dejaría menos de 2 entrenadores o menos de 1 fisioterapeuta disponibles");
 		}
-		if (aprobada && gestorTurnos.puedeAprobar(solicitud, todosEmpleados)) {
-			solicitud.aprobar();
-			solicitud.getSolicitante().cambiarTurno(solicitud.getTurnoActual(), solicitud.getTurnoNuevo());
-		} else {
-			solicitud.rechazar();
-		}
+		solicitud.aprobar();
+		solicitud.getSolicitante().cambiarTurno(solicitud.getTurnoActual(), solicitud.getTurnoNuevo());
 		guardarDatos();
 	}
 	
@@ -648,6 +646,30 @@ public class ClubSeneca {
 	
 	public Historial getHistorial() {
 		return historial;
+	}
+	
+	public List<Equipo> getEquipos() {
+		return new ArrayList<>(equipos);
+	}
+
+	public List<SolicitudCambioTurno> getSolicitudesPendientes() {
+		List<SolicitudCambioTurno> pendientes = new ArrayList<>();
+		for (SolicitudCambioTurno solicitud : solicitudes) {
+			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				pendientes.add(solicitud);
+			}
+		}
+		return pendientes;
+	}
+
+	public List<Empleado> getEmpleados() {
+		List<Empleado> empleados = new ArrayList<>();
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof Empleado) {
+				empleados.add((Empleado) usuario);
+			}
+		}
+		return empleados;
 	}
 	
 	public void setPersistencia(Persistencia persistencia) {

@@ -248,6 +248,15 @@ public class PruebaCompleta {
 	private static LocalTime hora(int horas) {
 		return LocalTime.of(horas, 0);
 	}
+	
+	private static boolean inscribir(ClubSeneca club, Socio socio, Equipo equipo, String posicion, int camiseta) {
+		try {
+			club.inscribirJugador(socio, equipo, posicion, camiseta);
+			return true;
+		} catch (ReglaNegocioException excepcion) {
+			return false;
+		}
+	}
 
 	private static JSONObject viajarPorTexto(JSONObject json) {
 		return new JSONObject(json.toString(2));
@@ -712,38 +721,38 @@ public class PruebaCompleta {
 		exigirIgual(8, cerros.getCupoMaximo(), "cupo máximo del equipo");
 
 		for (int numero = 1; numero <= 8; numero++) {
-			exigir(club.inscribirJugador(jugador(numero), cerros, "Posicion " + numero, numero),
+			exigir(inscribir(club, jugador(numero), cerros, "Posicion " + numero, numero),
 					"jugador" + numero + " entra a Cerros FC");
 		}
 		exigirIgual(8, cerros.getInscripciones().size(), "Cerros FC tiene 8 jugadores");
-		boolean rechazoPorCupo = !club.inscribirJugador(jugador(16), cerros, "Suplente", 20);
+		boolean rechazoPorCupo = !inscribir(club, jugador(16), cerros, "Suplente", 20);
 		exigir(cerros.getInscripcionDe(jugador(16)) == null, "el jugador rechazado por cupo no queda inscrito");
 		exigirIgual(8, cerros.getInscripciones().size(), "no se supera el cupo máximo");
 
 		// Historia Socio-02: un solo equipo por deporte, pero se puede estar en varios deportes.
-		boolean rechazoPorDeporte = !club.inscribirJugador(jugador(1), andes, "Defensa", 2);
+		boolean rechazoPorDeporte = !inscribir(club, jugador(1), andes, "Defensa", 2);
 		exigir(andes.getInscripcionDe(jugador(1)) == null, "el jugador no queda duplicado en el segundo equipo de fútbol");
-		exigir(club.inscribirJugador(jugador(1), voley, "Central", 1), "el mismo jugador sí puede estar en voleibol");
-		exigir(club.inscribirJugador(jugador(1), basket, "Base", 1), "el mismo jugador sí puede estar en baloncesto");
+		exigir(inscribir(club, jugador(1), voley, "Central", 1), "el mismo jugador sí puede estar en voleibol");
+		exigir(inscribir(club, jugador(1), basket, "Base", 1), "el mismo jugador sí puede estar en baloncesto");
 
 		// Camiseta repetida y edad.
-		exigir(club.inscribirJugador(jugador(9), andes, "Portero", 5), "jugador09 entra a Andes FC con la 5");
-		boolean rechazoPorCamiseta = !club.inscribirJugador(jugador(10), andes, "Defensa", 5);
+		exigir(inscribir(club, jugador(9), andes, "Portero", 5), "jugador09 entra a Andes FC con la 5");
+		boolean rechazoPorCamiseta = !inscribir(club, jugador(10), andes, "Defensa", 5);
 		exigir(andes.getInscripcionDe(jugador(10)) == null, "el jugador con camiseta repetida no queda inscrito");
 		for (int numero = 10; numero <= 15; numero++) {
-			exigir(club.inscribirJugador(jugador(numero), andes, "Posicion " + numero, numero), "jugador" + numero + " entra a Andes FC");
+			exigir(inscribir(club, jugador(numero), andes, "Posicion " + numero, numero), "jugador" + numero + " entra a Andes FC");
 		}
-		boolean rechazoPorEdadMayores = !club.inscribirJugador(nino, cerros, "Extremo", 30);
-		boolean rechazoPorEdadSub17 = !club.inscribirJugador(nina, sub17, "Extremo", 3);
+		boolean rechazoPorEdadMayores = !inscribir(club, nino, cerros, "Extremo", 30);
+		boolean rechazoPorEdadSub17 = !inscribir(club, nina, sub17, "Extremo", 3);
 		exigir(cerros.getInscripcionDe(nino) == null, "un menor de 17 no entra a un equipo de mayores");
 		exigir(sub17.getInscripcionDe(nina) == null, "una niña de 11 no entra a un equipo sub17");
-		exigir(club.inscribirJugador(nino, sub17, "Extremo", 3), "un jugador de 15 entra a un equipo sub17");
+		exigir(inscribir(club, nino, sub17, "Extremo", 3), "un jugador de 15 entra a un equipo sub17");
 
 		for (int numero = 2; numero <= 6; numero++) {
-			exigir(club.inscribirJugador(jugador(numero), voley, "Posicion " + numero, numero), "jugador" + numero + " entra a Voley");
+			exigir(inscribir(club, jugador(numero), voley, "Posicion " + numero, numero), "jugador" + numero + " entra a Voley");
 		}
 		for (int numero = 2; numero <= 5; numero++) {
-			exigir(club.inscribirJugador(jugador(numero), basket, "Posicion " + numero, numero), "jugador" + numero + " entra a Basket");
+			exigir(inscribir(club, jugador(numero), basket, "Posicion " + numero, numero), "jugador" + numero + " entra a Basket");
 		}
 
 		exigir(rechazoPorCupo && rechazoPorDeporte && rechazoPorCamiseta && rechazoPorEdadMayores && rechazoPorEdadSub17,
@@ -1152,7 +1161,7 @@ public class PruebaCompleta {
 		exigirSinExcepcion("registrarSolicitudTurno con solicitante null", () -> club.registrarSolicitudTurno(null, turnoLuis, turnoLuis));
 		exigirIgual(0, solicitudes.size(), "las solicitudes inválidas no se registran");
 
-		// Luis cambia a la tarde: quedan carla y pablo (2 entrenadores) y marta: se aprueba.
+		// Luis cambia a la tarde entonces quedan carla y pablo (2 entrenadores) y marta entonces se aprueba.
 		Turno tardeLuis = new Turno("Lunes", hora(14), hora(18));
 		club.registrarSolicitudTurno(luis, turnoLuis, tardeLuis);
 		SolicitudCambioTurno aprobable = solicitudes.get(0);
@@ -1160,22 +1169,26 @@ public class PruebaCompleta {
 		club.resolverSolicitud(aprobable, true);
 		exigirIgual(EstadoSolicitud.ACEPTADA, aprobable.getEstado(), "el cambio que cumple el mínimo se acepta");
 		exigir(luis.getTurnos().contains(tardeLuis) && !luis.getTurnos().contains(turnoLuis), "el empleado pasa a trabajar el turno nuevo");
-		club.resolverSolicitud(aprobable, true);
+		exigirExcepcion(ReglaNegocioException.class, "resolver otra vez una solicitud ya aceptada",
+				() -> club.resolverSolicitud(aprobable, true));
 		exigirIgual(EstadoSolicitud.ACEPTADA, aprobable.getEstado(),
-				"resolver otra vez una solicitud ya aceptada no debe cambiarle el estado (hoy pasa a Rechazada)");
+				"resolver otra vez una solicitud ya aceptada no debe cambiarle el estado");
 
-		// Carla también quiere cambiar: quedaría un solo entrenador en la mañana: se rechaza.
+		// Carla también quiere cambiar entonces quedaría un solo entrenador en la mañana y no se puede aprobar.
 		club.registrarSolicitudTurno(carla, turnoCarla, new Turno("Lunes", hora(14), hora(18)));
 		SolicitudCambioTurno sinEntrenadores = solicitudes.get(1);
-		administrador.resolverSolicitudTurno(sinEntrenadores, true);
-		exigirIgual(EstadoSolicitud.RECHAZADA, sinEntrenadores.getEstado(), "un cambio que deja menos de 2 entrenadores se rechaza");
+		exigirExcepcion(ReglaNegocioException.class, "aprobar un cambio que deja menos de 2 entrenadores",
+				() -> administrador.resolverSolicitudTurno(sinEntrenadores, true));
+		exigirIgual(EstadoSolicitud.PENDIENTE, sinEntrenadores.getEstado(), "la solicitud que no se puede aprobar sigue Pendiente");
 		exigir(carla.getTurnos().contains(turnoCarla), "el empleado sigue con su turno habitual");
 
-		// Marta es la única fisioterapeuta de la mañana: se rechaza.
+		// Marta es la única fisioterapeuta de la mañana entonces no se puede aprobar.
 		club.registrarSolicitudTurno(marta, turnoMarta, new Turno("Lunes", hora(14), hora(18)));
 		SolicitudCambioTurno sinFisio = solicitudes.get(2);
-		club.resolverSolicitud(sinFisio, true);
-		exigirIgual(EstadoSolicitud.RECHAZADA, sinFisio.getEstado(), "un cambio que deja sin fisioterapeuta se rechaza");
+		exigirExcepcion(ReglaNegocioException.class, "aprobar un cambio que deja sin fisioterapeuta",
+				() -> club.resolverSolicitud(sinFisio, true));
+		exigirIgual(EstadoSolicitud.PENDIENTE, sinFisio.getEstado(), "la solicitud sin fisioterapeuta sigue Pendiente");
+		exigir(marta.getTurnos().contains(turnoMarta), "Marta sigue con su turno habitual");
 
 		// El administrador puede rechazar aunque se cumpla el mínimo.
 		club.registrarSolicitudTurno(pablo, turnoPablo, new Turno("Martes", hora(8), hora(12)));
@@ -1184,9 +1197,11 @@ public class PruebaCompleta {
 		exigirIgual(EstadoSolicitud.RECHAZADA, denegada.getEstado(), "el administrador rechaza la solicitud");
 		exigir(pablo.getTurnos().contains(turnoPablo), "una solicitud rechazada no cambia el turno");
 		SolicitudCambioTurno ajena = new SolicitudCambioTurno(turnoPablo, tardeLuis, pablo);
-		club.resolverSolicitud(ajena, true);
-		exigirIgual(EstadoSolicitud.PENDIENTE, ajena.getEstado(), "una solicitud no registrada en el club se ignora");
-		exigirSinExcepcion("resolverSolicitud(null)", () -> club.resolverSolicitud(null, true));
+		exigirExcepcion(ReglaNegocioException.class, "resolver una solicitud no registrada en el club",
+				() -> club.resolverSolicitud(ajena, true));
+		exigirIgual(EstadoSolicitud.PENDIENTE, ajena.getEstado(), "una solicitud no registrada no cambia de estado");
+		exigirExcepcion(ReglaNegocioException.class, "resolverSolicitud(null)",
+				() -> club.resolverSolicitud(null, true));
 	}
 
 	// ================================================================ 14 reportes
@@ -1243,7 +1258,7 @@ public class PruebaCompleta {
 		Socio miembro = pequeno.crearSocio(25, "Miembro", "miembro", "x");
 		Socio companero = pequeno.crearSocio(26, "Companero", "companero", "x");
 		Socio sinEquipo = pequeno.crearSocio(27, "Sin equipo", "sinequipo", "x");
-		exigir(pequeno.inscribirJugador(miembro, equipo, "Portero", 1) && pequeno.inscribirJugador(companero, equipo, "Defensa", 2),
+		exigir(inscribir(pequeno, miembro, equipo, "Portero", 1) && inscribir(pequeno, companero, equipo, "Defensa", 2),
 				"se arma el equipo del club pequeño");
 
 		exigir(!pequeno.darDeBajaSocio(sinEquipo), "dar de baja a quien no está en ningún equipo se rechaza (historia Administrador-01)");
@@ -1275,7 +1290,7 @@ public class PruebaCompleta {
 		exigir(conReservas.reservar(reservador, tenisPequeno, canchaPequena, FECHA_BASE, hora(9), hora(10), 2, Modalidad.SENCILLOS) != null,
 				"el club pequeño acepta la reserva");
 		Equipo equipoReservas = conReservas.crearEquipo("Equipo Reservas", 7, new Futbol(), Categoria.MAYORES);
-		exigir(conReservas.inscribirJugador(reservador, equipoReservas, "Portero", 1), "el socio con reserva hace parte de un equipo");
+		exigir(inscribir(conReservas, reservador, equipoReservas, "Portero", 1), "el socio con reserva hace parte de un equipo");
 		exigirIgual(1, conReservas.getHistorial().getReservas().size(), "el club tiene la reserva antes de la baja");
 		exigir(conReservas.darDeBajaSocio(reservador), "se da de baja al socio con reserva");
 		exigirIgual(0, conReservas.getHistorial().getReservas().size(), "la reserva del socio dado de baja se quita del historial");
@@ -1295,7 +1310,7 @@ public class PruebaCompleta {
 		exigirSinExcepcion("la ida y vuelta de " + nombre, tarea);
 	}
 
-	private static Equipo equipoUnitario(Futbol deporte, List<Socio> destino, int cantidad, String nombre) {
+	private static Equipo equipoUnitario(Futbol deporte, List<Socio> destino, int cantidad, String nombre) throws Exception{
 		Equipo equipo = new Equipo(nombre, 12, deporte, Categoria.MAYORES);
 		for (int numero = 1; numero <= cantidad; numero++) {
 			Socio socio = new Socio(20 + numero, "Socio " + nombre + numero, nombre + numero, "clave");
