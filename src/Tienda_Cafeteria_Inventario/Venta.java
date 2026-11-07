@@ -122,6 +122,14 @@ public class Venta {
 		return puntosGenerados;
 	}
 	
+	public int aplicarBono(double porcentaje) {
+		double base = total - propina;
+		total = base * (1 - porcentaje) + propina;
+		int puntosAntes = puntosGenerados;
+		puntosGenerados = (int) Math.round(total * VALOR_PUNTOS);
+		return puntosAntes - puntosGenerados;
+	}
+	
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("fecha", fecha.toString());

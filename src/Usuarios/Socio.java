@@ -15,14 +15,17 @@ import DeportesConjunto_Competencias.InscripcionEquipo;
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.InscripcionIndividual;
 import DeportesIndividuales.NivelJugador;
+import TorneosInternos.BonoDescuento;
+import TorneosInternos.JugadorTorneo;
 
-public class Socio extends Usuario{
+public class Socio extends Usuario implements JugadorTorneo{
 private int edad;
 private int puntosFidelidad;
 public static final int MINUTOS_BEBIDA_CALIENTE = 30;
 private LocalDateTime horaUltimaBebidaCaliente;
 private List<InscripcionEquipo> inscripcionesEquipos;
 private List<InscripcionIndividual> inscripcionesIndividuales;
+private List<BonoDescuento> bonos;
 
 
 public Socio(int edad, String nombre, String login, String password) {
@@ -32,6 +35,7 @@ public Socio(int edad, String nombre, String login, String password) {
 	this.horaUltimaBebidaCaliente = null;
 	this.inscripcionesEquipos = new ArrayList<>();
 	this.inscripcionesIndividuales = new ArrayList<>();
+	this.bonos = new ArrayList<>();
 }
 
 public boolean tieneEquipoEn(DeporteConjunto deporte) {
@@ -93,6 +97,21 @@ public void agregarInscripcionIndividual(InscripcionIndividual inscripcion) {
 }
 
 
+@Override
+public List<BonoDescuento> getBonos() {
+	return bonos;
+}
+
+@Override
+public void agregarBono(BonoDescuento bono) {
+	bonos.add(bono);
+}
+
+@Override
+public boolean esEmpleado() {
+	return false;
+}
+
 public boolean esEntrenador() {
     return false;
 }
@@ -132,6 +151,12 @@ public JSONObject toJSON() {
 		jsonInscripcionesIndividuales.put(inscripcion.toJSON());
 	}
 	json.put("inscripcionesIndividuales", jsonInscripcionesIndividuales);
+	
+	JSONArray jsonBonos = new JSONArray();
+	for (BonoDescuento bono : bonos) {
+	    jsonBonos.put(bono.toJSON());
+	}
+	json.put("bonos", jsonBonos);
 	return json;
 }
 
@@ -161,6 +186,13 @@ protected void restaurarEstadoSocio(JSONObject json, Map<String, DisciplinaIndiv
 		}
 		NivelJugador nivel = NivelJugador.valueOf(jsonInscripcion.getString("nivel"));
 		this.inscripcionesIndividuales.add(new InscripcionIndividual(disciplina, nivel));
+	}
+	
+	JSONArray jsonBonos = json.optJSONArray("bonos");
+	if (jsonBonos != null) {
+	    for (int indice = 0; indice < jsonBonos.length(); indice++) {
+	        this.bonos.add(BonoDescuento.fromJSON(jsonBonos.getJSONObject(indice)));
+	    }
 	}
 }
 
