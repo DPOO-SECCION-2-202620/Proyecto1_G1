@@ -4,6 +4,7 @@ import java.util.List;
 
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.NivelJugador;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
 
 public interface JugadorTorneo {
 

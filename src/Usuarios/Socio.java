@@ -15,7 +15,7 @@ import DeportesConjunto_Competencias.InscripcionEquipo;
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.InscripcionIndividual;
 import DeportesIndividuales.NivelJugador;
-import TorneosInternos.BonoDescuento;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
 import TorneosInternos.JugadorTorneo;
 
 public class Socio extends Usuario implements JugadorTorneo{
