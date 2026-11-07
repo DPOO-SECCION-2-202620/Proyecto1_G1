@@ -41,7 +41,6 @@ import PartidosEquipo_Estadisticas.PartidoExterno;
 import PartidosEquipo_Estadisticas.PartidoInterno;
 import Tienda_Cafeteria_Inventario.Articulo;
 import Tienda_Cafeteria_Inventario.Bebida;
-import Tienda_Cafeteria_Inventario.BonoDescuento;
 import Tienda_Cafeteria_Inventario.CafeteriaSocios;
 import Tienda_Cafeteria_Inventario.CodigoDescuento;
 import Tienda_Cafeteria_Inventario.Inventario;
@@ -52,6 +51,7 @@ import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
 import Tienda_Cafeteria_Inventario.Tienda;
 import Tienda_Cafeteria_Inventario.Ubicacion;
 import Tienda_Cafeteria_Inventario.Venta;
+import TorneosInternos.Torneo;
 import TurnosEmpleados.EstadoSolicitud;
 import TurnosEmpleados.GestorTurnos;
 import TurnosEmpleados.SolicitudCambioTurno;
@@ -60,16 +60,6 @@ import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
 import Usuarios.Usuario;
-import TorneosInternos.Encuentro;
-import TorneosInternos.InscripcionTorneo;
-import TorneosInternos.InscripcionTorneoEquipo;
-import TorneosInternos.InscripcionTorneoIndividual;
-import TorneosInternos.Premiacion;
-import TorneosInternos.PremiacionCompetitiva;
-import TorneosInternos.PremiacionRecreativa;
-import TorneosInternos.Torneo;
-import TorneosInternos.TorneoConjunto;
-import TorneosInternos.TorneoIndividual;
 
 public class ClubSeneca {
 

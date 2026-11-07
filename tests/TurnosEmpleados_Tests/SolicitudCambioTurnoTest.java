@@ -48,7 +48,7 @@ public class SolicitudCambioTurnoTest
     }
 
     @Test
-    void testsolicitudNueva()
+    void testSolicitudNueva()
     {
         assertEquals(EstadoSolicitud.PENDIENTE, solicitud.getEstado(), "Una solicitud nueva debe estar pendiente.");
         assertSame(turnoLunes, solicitud.getTurnoActual(), "El turno actual no es el esperado.");
@@ -95,6 +95,39 @@ public class SolicitudCambioTurnoTest
         assertSame(turnoLunes, restaurada.getTurnoActual(), "El turno actual restaurado debe ser el mismo objeto del empleado.");
         assertEquals("MARTES", restaurada.getTurnoNuevo().getDiaSemana(), "El día del turno nuevo restaurado no es el esperado.");
         assertEquals(LocalTime.of(14, 0), restaurada.getTurnoNuevo().getHoraInicio(), "La hora del turno nuevo restaurado no es la esperada.");
+    }
+
+    @Test
+    void testFromJSONBuscaElTurnoActualEntreVariosTurnos()
+    {
+        Empleado conVariosTurnos = new Empleado(31, "Sara Paz", "spaz", "def", "E02");
+        Turno otroTurno = new Turno("JUEVES", LocalTime.of(6, 0), LocalTime.of(9, 0));
+        Turno turnoDeLaSolicitud = new Turno("LUNES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        conVariosTurnos.agregarTurno(otroTurno);
+        conVariosTurnos.agregarTurno(turnoDeLaSolicitud);
+        mapaUsuarios.put("spaz", conVariosTurnos);
+
+        SolicitudCambioTurno original = new SolicitudCambioTurno(turnoDeLaSolicitud, turnoMartes, conVariosTurnos);
+
+        SolicitudCambioTurno restaurada = SolicitudCambioTurno.fromJSON(original.toJSON(), mapaUsuarios);
+
+        assertSame(turnoDeLaSolicitud, restaurada.getTurnoActual(), "El turno actual debe ser el turno del empleado que coincide, aunque no sea el primero.");
+    }
+
+    @Test
+    void testFromJSONTurnoActualQueElEmpleadoNoTiene()
+    {
+        Empleado sinCoincidencia = new Empleado(31, "Sara Paz", "spaz", "def", "E02");
+        sinCoincidencia.agregarTurno(new Turno("JUEVES", LocalTime.of(6, 0), LocalTime.of(9, 0)));
+        mapaUsuarios.put("spaz", sinCoincidencia);
+
+        SolicitudCambioTurno original = new SolicitudCambioTurno(turnoLunes, turnoMartes, sinCoincidencia);
+
+        SolicitudCambioTurno restaurada = SolicitudCambioTurno.fromJSON(original.toJSON(), mapaUsuarios);
+
+        assertNotSame(turnoLunes, restaurada.getTurnoActual(), "Sin coincidencia se debe crear un turno nuevo.");
+        assertEquals("LUNES", restaurada.getTurnoActual().getDiaSemana(), "El día del turno creado no es el esperado.");
+        assertEquals(LocalTime.of(8, 0), restaurada.getTurnoActual().getHoraInicio(), "La hora de inicio del turno creado no es la esperada.");
     }
 
     @Test

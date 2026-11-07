@@ -1,12 +1,6 @@
 package DeportesConjunto_Competencias_Tests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -26,10 +20,12 @@ import DeportesConjunto_Competencias.DeporteConjunto;
 import DeportesConjunto_Competencias.Equipo;
 import DeportesConjunto_Competencias.FaseASCUN;
 import DeportesConjunto_Competencias.Futbol;
+import DeportesConjunto_Competencias.Voleibol;
 import DeportesConjunto_Competencias.InscripcionCompetencia;
 import DeportesConjunto_Competencias.TorneoCerros;
 import PartidosEquipo_Estadisticas.EstadisticaBaloncesto;
 import PartidosEquipo_Estadisticas.EstadisticaFutbol;
+import PartidosEquipo_Estadisticas.EstadisticaVoleibol;
 import PartidosEquipo_Estadisticas.PartidoExterno;
 import Usuarios.Socio;
 
@@ -220,6 +216,22 @@ public class CompetenciaTest
         liga.registrarPartido(partido);
 
         assertSame(pedro, liga.getGoleador(), "El goleador debe ser quien más puntos anotó.");
+    }
+
+    @Test
+    void testGetGoleadorVoleibolCuentaAcesYBloqueos()
+    {
+        Equipo voley = new Equipo("Cerros Voley", 10, new Voleibol(), Categoria.MAYORES);
+        voley.agregarJugador(ana, "Central", 3);
+        voley.agregarJugador(pedro, "Libero", 4);
+        Competencia liga = new TorneoCerros("Liga Voley", 2026, 2, Categoria.MAYORES, new Voleibol());
+
+        PartidoExterno partido = new PartidoExterno(fecha, 3, 1, "Rival", "Coliseo", voley);
+        partido.agregarEstadistica(new EstadisticaVoleibol(voley.getInscripcionDe(ana), 2, 2));
+        partido.agregarEstadistica(new EstadisticaVoleibol(voley.getInscripcionDe(pedro), 4, 3));
+        liga.registrarPartido(partido);
+
+        assertSame(pedro, liga.getGoleador(), "El máximo anotador debe ser quien más aces y bloqueos suma.");
     }
 
     @Test

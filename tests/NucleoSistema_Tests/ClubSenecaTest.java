@@ -411,6 +411,102 @@ public class ClubSenecaTest
         assertEquals(0, club.getHistorial().getPartidosPractica().size(), "Los partidos de práctica del socio deben eliminarse.");
     }
 
+    @Test
+    void testDarDeBajaSocioLimpiaNominasYEstadisticasDeCompetencias()
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        club.inscribirJugador(ana, equipo, "Delantero", 9);
+        club.inscribirJugador(pedro, equipo, "Portero", 1);
+        TorneoCerros torneo = new TorneoCerros("Liga 2026", 2026, 2, Categoria.MAYORES, futbol);
+        club.inscribirEquipoEnCompetencia(equipo, torneo);
+        torneo.getInscripcionDe(equipo).agregarANomina(ana);
+        torneo.getInscripcionDe(equipo).agregarANomina(pedro);
+
+        List<EstadisticaConjunto> estadisticas = new ArrayList<EstadisticaConjunto>();
+        estadisticas.add(new EstadisticaFutbol(equipo.getInscripcionDe(ana), 2, 0, 0, 0));
+        estadisticas.add(new EstadisticaFutbol(equipo.getInscripcionDe(pedro), 1, 1, 0, 0));
+        PartidoExterno partido = club.registrarPartidoExterno(torneo, equipo, fecha, 3, 1, "Rival", "Estadio", estadisticas);
+
+        assertEquals(2, torneo.getInscripcionDe(equipo).getNomina().size(), "Antes de la baja la nómina debe tener dos jugadores.");
+        assertEquals(2, partido.getEstadisticas().size(), "Antes de la baja el partido debe tener dos estadísticas.");
+
+        assertTrue(club.darDeBajaSocio(ana), "El socio debe poder darse de baja.");
+
+        assertEquals(1, torneo.getInscripcionDe(equipo).getNomina().size(), "Después de la baja la nómina debe tener un solo jugador.");
+        assertNull(torneo.getInscripcionDe(equipo).getRegistroDe(ana), "El socio dado de baja no debe seguir en la nómina.");
+        assertNotNull(torneo.getInscripcionDe(equipo).getRegistroDe(pedro), "El otro jugador debe seguir en la nómina.");
+        assertEquals(1, partido.getEstadisticas().size(), "El partido externo debe conservar solo la estadística del otro jugador.");
+        assertSame(pedro, partido.getEstadisticas().get(0).getJugador().getJugador(), "La estadística que queda debe ser la del otro jugador.");
+    }
+
+    @Test
+    void testDarDeBajaSocioLimpiaEstadisticasDePartidosInternos()
+    {
+        Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
+        Equipo visitante = club.crearEquipo("Visitante", 8, baloncesto, Categoria.MAYORES);
+        local.agregarJugador(ana, "Alero", 10);
+        llenarEquipo(local, "l", 4);
+        llenarEquipo(visitante, "v", 5);
+
+        List<EstadisticaConjunto> estadisticas = new ArrayList<EstadisticaConjunto>();
+        estadisticas.add(new EstadisticaBaloncesto(local.getInscripcionDe(ana), 20, 5));
+        estadisticas.add(new EstadisticaBaloncesto(visitante.getInscripciones().get(0), 15, 7));
+        PartidoInterno partido = club.registrarPartidoInterno(local, visitante, 80, 75, estadisticas);
+
+        assertEquals(2, partido.getEstadisticas().size(), "Antes de la baja el partido debe tener dos estadísticas.");
+
+        assertTrue(club.darDeBajaSocio(ana), "El socio debe poder darse de baja.");
+
+        assertEquals(1, partido.getEstadisticas().size(), "El partido interno debe conservar solo la estadística del otro jugador.");
+        assertEquals(1, club.getHistorial().getPartidos().size(), "El partido debe seguir en el historial.");
+    }
+
+    @Test
+    void testDarDeBajaSocioLimpiaSesionesDeEntrenamiento()
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        club.inscribirJugador(ana, equipo, "Delantero", 9);
+        SesionEntrenamiento sesion = club.planearSesion(entrenador, fecha, LocalTime.of(8, 0), 60, canchaFutbol, listaDe(ana, pedro));
+        club.registrarAsistencia(sesion, ana, EstadoAsistencia.ASISTIO, 4, "Buen trabajo");
+        club.registrarAsistencia(sesion, pedro, EstadoAsistencia.ASISTIO, 3, "Bien");
+
+        assertEquals(2, sesion.getConvocados().size(), "Antes de la baja la sesión debe tener dos convocados.");
+        assertEquals(2, sesion.getAsistencias().size(), "Antes de la baja la sesión debe tener dos asistencias.");
+
+        assertTrue(club.darDeBajaSocio(ana), "El socio debe poder darse de baja.");
+
+        assertEquals(1, club.getHistorial().getSesiones().size(), "La sesión debe seguir en el historial.");
+        assertEquals(1, sesion.getConvocados().size(), "El socio dado de baja no debe seguir convocado.");
+        assertSame(pedro, sesion.getConvocados().get(0), "El convocado que queda no es el esperado.");
+        assertEquals(1, sesion.getAsistencias().size(), "La asistencia del socio dado de baja debe eliminarse.");
+        assertSame(pedro, sesion.getAsistencias().get(0).getJugador(), "La asistencia que queda no es la esperada.");
+    }
+
+    @Test
+    void testDarDeBajaEntrenadorEliminaSusSesionesYSolicitudes() throws Exception
+    {
+        cargarClubConUsuarios(new Entrenador(40, "Jorge Ruiz", "jruiz", "pass", "ENT01"));
+        Entrenador entrenadorDelClub = (Entrenador) club.iniciarSesion("jruiz", "pass");
+        Socio socioNuevo = club.crearSocio(22, "Sofia Vega", "svega", "x");
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        club.inscribirJugador(entrenadorDelClub, equipo, "Portero", 1);
+
+        club.planearSesion(entrenadorDelClub, fecha, LocalTime.of(8, 0), 60, canchaFutbol, listaDe(socioNuevo));
+        Turno actual = new Turno("LUNES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        Turno nuevo = new Turno("MARTES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        entrenadorDelClub.agregarTurno(actual);
+        club.registrarSolicitudTurno(entrenadorDelClub, actual, nuevo);
+
+        assertEquals(1, club.getHistorial().getSesiones().size(), "Antes de la baja debe haber una sesión.");
+        assertEquals(1, obtenerSolicitudes().size(), "Antes de la baja debe haber una solicitud.");
+
+        assertTrue(club.darDeBajaSocio(entrenadorDelClub), "El entrenador debe poder darse de baja.");
+
+        assertEquals(0, club.getHistorial().getSesiones().size(), "Las sesiones del entrenador deben eliminarse.");
+        assertEquals(0, obtenerSolicitudes().size(), "Las solicitudes del entrenador deben eliminarse.");
+        assertNull(club.iniciarSesion("jruiz", "pass"), "El entrenador dado de baja no debe poder iniciar sesión.");
+    }
+
     // ---------------------------------------------------------------------
     // Disciplinas individuales y rankings
     // ---------------------------------------------------------------------
@@ -1778,6 +1874,37 @@ public class ClubSenecaTest
 
         assertNotNull(restaurado.iniciarSesion("ana", "1234"), "Debe restaurarse el socio.");
         assertEquals(2, restaurado.toJSON().getJSONArray("usuarios").length(), "Deben restaurarse los dos usuarios.");
+    }
+
+    @Test
+    void testFromJSONConDeportesInventariosYSolicitudes() throws Exception
+    {
+        Entrenador empleado = new Entrenador(30, "Luis Mora", "lmora", "abc", "E01");
+        Turno actual = new Turno("LUNES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        Turno nuevo = new Turno("MARTES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        empleado.agregarTurno(actual);
+        SolicitudCambioTurno solicitud = empleado.solicitarCambioTurno(actual, nuevo);
+
+        Inventario inventario = new Inventario(new ArrayList<Instalacion>(List.of(canchaFutbol)), new Ubicacion("Bodega"));
+
+        JSONObject json = new JSONObject();
+        json.put("nombre", "Club Completo");
+        json.put("usuarios", new JSONArray().put(empleado.toJSON()));
+        json.put("deportes", new JSONArray().put(futbol.toJSON()));
+        json.put("inventarios", new JSONArray().put(inventario.toJSON()));
+        json.put("solicitudes", new JSONArray().put(solicitud.toJSON()));
+
+        club = ClubSeneca.fromJSON(json);
+
+        JSONObject restaurado = jsonDelClub();
+        assertEquals("Club Completo", restaurado.getString("nombre"), "El nombre restaurado no es el esperado.");
+        assertEquals(1, restaurado.getJSONArray("deportes").length(), "Debe restaurarse un deporte.");
+        assertEquals("Futbol", restaurado.getJSONArray("deportes").getJSONObject(0).getString("nombre"), "El deporte restaurado no es el esperado.");
+        assertEquals(1, club.getInventario().size(), "Debe restaurarse un inventario.");
+        assertEquals("Futbol 1", club.getInventario().get(0).getInstalaciones().get(0).getNombre(), "La instalación del inventario restaurado no es la esperada.");
+        assertEquals(1, obtenerSolicitudes().size(), "Debe restaurarse una solicitud.");
+        assertEquals(EstadoSolicitud.PENDIENTE, obtenerSolicitudes().get(0).getEstado(), "El estado de la solicitud restaurada no es el esperado.");
+        assertEquals("lmora", obtenerSolicitudes().get(0).getSolicitante().getLogin(), "El solicitante restaurado no es el esperado.");
     }
 
     @Test

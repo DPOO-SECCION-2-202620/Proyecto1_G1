@@ -148,6 +148,19 @@ public class GeneradorReportesTest
     }
 
     @Test
+    void testReporteVentasIgnoraVentasSinRubroOSinFecha()
+    {
+        List<LineaVenta> sinLineas = new ArrayList<LineaVenta>();
+        ventas.add(new Venta(LocalDate.of(2026, 11, 5), 0, 9999, 0, 0, null, ana, sinLineas, 0.19));
+        ventas.add(new Venta(null, 0, 8888, 0, 0, Rubro.TIENDA, ana, sinLineas, 0.19));
+
+        Map<LocalDate, Map<Rubro, Double>> reporte = generador.reporteVentas(ventas, null, Periodo.DIARIO);
+
+        assertEquals(4, reporte.size(), "Las ventas sin rubro o sin fecha no deben aparecer en el reporte.");
+        assertFalse(reporte.containsKey(LocalDate.of(2026, 11, 5)), "La venta sin rubro no debe generar un día en el reporte.");
+    }
+
+    @Test
     void testReporteVentasRubroSinVentas()
     {
         assertTrue(generador.reporteVentas(ventas, Rubro.MENSUALIDAD, Periodo.DIARIO).isEmpty(), "Un rubro sin ventas debe dar un reporte vacío.");
