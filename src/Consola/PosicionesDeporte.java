@@ -14,7 +14,6 @@ public final class PosicionesDeporte {
 	private PosicionesDeporte() {
 	}
 
-	/** Devuelve las posiciones del deporte, o una lista vacía si no se conocen. */
 	public static List<String> de(String nombreDeporte) {
 		if (nombreDeporte == null) {
 			return List.of();

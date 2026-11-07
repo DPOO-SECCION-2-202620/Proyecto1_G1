@@ -36,7 +36,7 @@ public class OpcionVerificarMinimoJugadores implements OpcionMenu {
 					+ equipo.getCategoria() + ") - " + equipo.getInscripciones().size() + " inscritos");
 		}
 
-		Equipo equipo = equipos.get(lector.leerIndice("Elija el equipo", equipos.size()));
+		Equipo equipo = equipos.get(lector.leerIndice("\nElija el equipo", equipos.size()));
 		int habilitados = equipo.contarJugadoresHabilitados();
 		int minimo = equipo.getDeporte().getMinimoJugadores();
 

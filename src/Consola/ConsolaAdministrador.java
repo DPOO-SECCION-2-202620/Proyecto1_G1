@@ -28,6 +28,10 @@ public class ConsolaAdministrador extends ConsolaBase {
 		Administrador administrador = (Administrador) usuario;
 		List<OpcionMenu> opciones = new ArrayList<>();
 		opciones.add(new OpcionRevisarSolicitudesTurno(club, administrador, lector));
+		opciones.add(new OpcionCrearTorneo(club, lector));
+		opciones.add(new OpcionIniciarTorneo(club, lector));
+		opciones.add(new OpcionRegistrarGanadorTorneo(club, lector));
+		opciones.add(new OpcionConsultarTorneos(club, lector));
 		return opciones;
 	}
 

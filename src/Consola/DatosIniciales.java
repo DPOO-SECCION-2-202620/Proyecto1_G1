@@ -1,12 +1,22 @@
 package Consola;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import DeportesConjunto_Competencias.Baloncesto;
 import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Equipo;
 import DeportesConjunto_Competencias.Futbol;
+import DeportesIndividuales.Modalidad;
+import DeportesIndividuales.NivelJugador;
+import DeportesIndividuales.Tenis;
+import Instalaciones.CanchaTenis;
 import NucleoSistema.ClubSeneca;
+import TorneosInternos.PremiacionCompetitiva;
+import TorneosInternos.PremiacionRecreativa;
+import TorneosInternos.TorneoConjunto;
+import TorneosInternos.TorneoIndividual;
 import TurnosEmpleados.Turno;
 import Usuarios.Administrador;
 import Usuarios.Entrenador;
@@ -70,6 +80,29 @@ public class DatosIniciales {
 			club.inscribirJugador(jugadores[numero], basket, "Posicion " + numero, numero);
 		}
 		basket.getInscripcionDe(jugadores[5]).registrarTarjetas(0, 1); // 4 habilitados (CA-2 de ENT-02)
+
+		// Torneos internos: disciplina individual, jugadores con nivel y torneos de ejemplo
+		Tenis tenis = new Tenis(2, "Tenis");
+		new CanchaTenis("Cancha Tenis 1", false, 1, tenis);
+		new CanchaTenis("Cancha Tenis 2", true, 1, tenis);
+		club.registrarDisciplina(tenis);
+		for (int numero = 1; numero <= 3; numero++) {
+			club.inscribirEnDisciplina(jugadores[numero], tenis, NivelJugador.INTERMEDIO);
+		}
+		Socio ana = club.buscarSocio("ana");
+		club.inscribirEnDisciplina(ana, tenis, NivelJugador.INTERMEDIO);
+		club.getRanking(tenis, ana).setPuntajeElo(1100); // mejor ranking: puede tomar el cupo preferencial
+		club.inscribirEnDisciplina(carla, tenis, NivelJugador.INTERMEDIO); // un empleado que puede jugar
+
+		// Un domingo (ningun empleado tiene turno ese dia), al menos 14 dias adelante
+		LocalDate domingo = LocalDate.now().plusDays(14);
+		while (domingo.getDayOfWeek() != DayOfWeek.SUNDAY) {
+			domingo = domingo.plusDays(1);
+		}
+		club.agregarTorneo(new TorneoIndividual("Copa Tenis Intermedio", 4, domingo, domingo.minusDays(7),
+				new PremiacionRecreativa(), tenis, NivelJugador.INTERMEDIO, Modalidad.SENCILLOS));
+		club.agregarTorneo(new TorneoConjunto("Mini-campeonato Futbol Mayores", 4, domingo, domingo.minusDays(7),
+				new PremiacionCompetitiva(50000), cerros.getDeporte(), Categoria.MAYORES));
 
 		club.guardarDatos();
 		System.out.println("Datos iniciales creados en datos/club.json");

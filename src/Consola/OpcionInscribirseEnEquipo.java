@@ -40,7 +40,7 @@ public class OpcionInscribirseEnEquipo implements OpcionMenu {
 					+ equipo.getCategoria() + ") - cupos libres: " + cuposLibres);
 		}
 
-		Equipo equipo = equipos.get(lector.leerIndice("Elija el equipo", equipos.size()));
+		Equipo equipo = equipos.get(lector.leerIndice("\nElija el equipo", equipos.size()));
 		String posicion = elegirPosicion(equipo);
 		int dorsal = lector.leerEntero("Número de camiseta", 1, 99);
 

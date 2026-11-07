@@ -19,7 +19,6 @@ public abstract class ConsolaBase {
 		this.lector = lector;
 	}
 
-	/** Indica si este tipo de usuario puede entrar a esta consola. */
 	protected abstract boolean aceptaUsuario(Usuario usuario);
 
 	protected abstract String getNombreConsola();
@@ -78,7 +77,7 @@ public abstract class ConsolaBase {
 				System.out.println((i + 1) + ". " + opciones.get(i).getTitulo());
 			}
 			System.out.println("0. Salir");
-			int eleccion = lector.leerEntero("Elija una opción", 0, opciones.size());
+			int eleccion = lector.leerEntero("\nElija una opción", 0, opciones.size());
 			if (eleccion == 0) {
 				System.out.println("Guardando datos. Hasta luego.");
 				return;

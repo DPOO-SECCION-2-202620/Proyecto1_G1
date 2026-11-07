@@ -39,7 +39,7 @@ public class OpcionRevisarSolicitudesTurno implements OpcionMenu {
 			System.out.println((i + 1) + ". " + describir(pendientes.get(i)));
 		}
 
-		SolicitudCambioTurno solicitud = pendientes.get(lector.leerIndice("Elija la solicitud a revisar", pendientes.size()));
+		SolicitudCambioTurno solicitud = pendientes.get(lector.leerIndice("\nElija la solicitud a revisar", pendientes.size()));
 		int decision = lector.leerEntero("Decisión (1 = aprobar, 2 = rechazar, 0 = cancelar)", 0, 2);
 		if (decision == 0) {
 			System.out.println("Operación cancelada.");
