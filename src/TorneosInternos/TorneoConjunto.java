@@ -1,6 +1,7 @@
 package TorneosInternos;
 
 import java.time.LocalDate;
+import org.json.JSONObject;
 
 import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.DeporteConjunto;
@@ -58,6 +59,15 @@ public class TorneoConjunto extends Torneo{
 
 	public Categoria getCategoria() {
 		return categoria;
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+	    JSONObject json = super.toJSON();
+	    json.put("tipo", "CONJUNTO");
+	    json.put("deporte", deporte.getNombre());
+	    json.put("categoria", categoria.name());
+	    return json;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package TorneosInternos;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONObject;
 
 public class InscripcionTorneoIndividual extends InscripcionTorneo{
 
@@ -24,6 +25,17 @@ public class InscripcionTorneoIndividual extends InscripcionTorneo{
 
 	public boolean esPareja() {
 		return companero != null;
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+	    JSONObject json = super.toJSON();
+	    json.put("tipo", "INDIVIDUAL");
+	    json.put("jugador", jugador.getLogin());
+	    if (companero != null) {
+	        json.put("companero", companero.getLogin());
+	    }
+	    return json;
 	}
 
 	@Override

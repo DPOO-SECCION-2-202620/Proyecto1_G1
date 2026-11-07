@@ -1,6 +1,7 @@
 package TorneosInternos;
 
 import java.time.LocalDate;
+import org.json.JSONObject;
 
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Modalidad;
@@ -46,6 +47,16 @@ public class TorneoIndividual extends Torneo{
 	        }
 	    }
 		
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+	    JSONObject json = super.toJSON();
+	    json.put("tipo", "INDIVIDUAL");
+	    json.put("disciplina", disciplina.getNombre());
+	    json.put("nivel", nivel.name());
+	    json.put("modalidad", modalidad.name());
+	    return json;
 	}
 
 	@Override

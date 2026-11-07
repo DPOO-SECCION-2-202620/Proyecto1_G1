@@ -151,6 +151,12 @@ public JSONObject toJSON() {
 		jsonInscripcionesIndividuales.put(inscripcion.toJSON());
 	}
 	json.put("inscripcionesIndividuales", jsonInscripcionesIndividuales);
+	
+	JSONArray jsonBonos = new JSONArray();
+	for (BonoDescuento bono : bonos) {
+	    jsonBonos.put(bono.toJSON());
+	}
+	json.put("bonos", jsonBonos);
 	return json;
 }
 
@@ -180,6 +186,13 @@ protected void restaurarEstadoSocio(JSONObject json, Map<String, DisciplinaIndiv
 		}
 		NivelJugador nivel = NivelJugador.valueOf(jsonInscripcion.getString("nivel"));
 		this.inscripcionesIndividuales.add(new InscripcionIndividual(disciplina, nivel));
+	}
+	
+	JSONArray jsonBonos = json.optJSONArray("bonos");
+	if (jsonBonos != null) {
+	    for (int indice = 0; indice < jsonBonos.length(); indice++) {
+	        this.bonos.add(BonoDescuento.fromJSON(jsonBonos.getJSONObject(indice)));
+	    }
 	}
 }
 

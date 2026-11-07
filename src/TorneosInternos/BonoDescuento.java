@@ -1,6 +1,7 @@
 package TorneosInternos;
 
 import Excepciones.ReglaNegocioException;
+import org.json.JSONObject;
 
 public class BonoDescuento {
 
@@ -36,5 +37,19 @@ public class BonoDescuento {
 
 	public void setUsado(boolean usado) {
 		this.usado = usado;
+	}
+	
+	public JSONObject toJSON() {
+	    JSONObject json = new JSONObject();
+	    json.put("porcentaje", porcentaje);
+	    json.put("usado", usado);
+	    json.put("torneoOrigen", torneoOrigen);
+	    return json;
+	}
+
+	public static BonoDescuento fromJSON(JSONObject json) {
+	    BonoDescuento bono = new BonoDescuento(json.getDouble("porcentaje"), json.getString("torneoOrigen"));
+	    bono.usado = json.getBoolean("usado");
+	    return bono;
 	}
 }

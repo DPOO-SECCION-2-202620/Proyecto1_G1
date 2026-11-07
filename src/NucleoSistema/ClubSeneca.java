@@ -59,6 +59,17 @@ import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
 import Usuarios.Usuario;
+import TorneosInternos.BonoDescuento;
+import TorneosInternos.Encuentro;
+import TorneosInternos.InscripcionTorneo;
+import TorneosInternos.InscripcionTorneoEquipo;
+import TorneosInternos.InscripcionTorneoIndividual;
+import TorneosInternos.Premiacion;
+import TorneosInternos.PremiacionCompetitiva;
+import TorneosInternos.PremiacionRecreativa;
+import TorneosInternos.Torneo;
+import TorneosInternos.TorneoConjunto;
+import TorneosInternos.TorneoIndividual;
 
 public class ClubSeneca {
 
@@ -98,6 +109,8 @@ public class ClubSeneca {
 	
 	private List<RankingJugadorDisciplina> rankings;
 
+	private List<Torneo> torneos;
+	
 	public ClubSeneca(String nombre) {
 		super();
 		this.nombre = nombre;
@@ -106,6 +119,7 @@ public class ClubSeneca {
 		this.deportes = new ArrayList<>();
 		this.disciplinas = new ArrayList<>();
 		this.rankings = new ArrayList<>();
+		this.torneos = new ArrayList<>();
 		this.inventarios = new ArrayList<>();
 		this.equipos = new ArrayList<>();
 		this.competencias = new ArrayList<>();
@@ -590,6 +604,7 @@ public class ClubSeneca {
 			this.tienda = cargado.tienda;
 			this.cafeteria = cargado.cafeteria;
 			this.historial = cargado.historial;
+			this.torneos = cargado.torneos;
 		} catch (IOException excepcion) {
 			throw new UncheckedIOException("No se pudieron cargar los datos del club", excepcion);
 		}
@@ -743,7 +758,11 @@ public class ClubSeneca {
 	    json.put("sugerencias", jsonSugerencias);
 	    
 	    json.put("historial", historial.toJSON());
-	    
+	    JSONArray jsonTorneos = new JSONArray();
+	    for (Torneo torneo : torneos) {
+	        jsonTorneos.put(torneo.toJSON());
+	    }
+	    json.put("torneos", jsonTorneos);
 	    return json;
 	}
 	
@@ -834,6 +853,12 @@ public class ClubSeneca {
 		JSONArray jsonSugerencias = leerLista(json, "sugerencias");
 		for (int indice = 0; indice < jsonSugerencias.length(); indice++) {
 			club.sugerencias.add(SugerenciaArticulo.fromJSON(jsonSugerencias.getJSONObject(indice)));
+		}
+		
+		JSONArray jsonTorneos = leerLista(json, "torneos");
+		for (int indice = 0; indice < jsonTorneos.length(); indice++) {
+			club.torneos.add(Torneo.fromJSON(jsonTorneos.getJSONObject(indice),
+					mapaDeportes, mapaDisciplinas, mapaUsuarios, mapaEquipos));
 		}
 
 		if (json.has("historial")) {

@@ -5,6 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import DeportesConjunto_Competencias.Categoria;
+import DeportesConjunto_Competencias.DeporteConjunto;
+import DeportesConjunto_Competencias.Equipo;
+import DeportesIndividuales.DisciplinaIndividual;
+import DeportesIndividuales.Modalidad;
+import DeportesIndividuales.NivelJugador;
+import Usuarios.Usuario;
+
 import Excepciones.ReglaNegocioException;
 
 public abstract class Torneo {
@@ -335,6 +346,102 @@ public abstract class Torneo {
 
 	public List<PremioEntregado> getPremios() {
 		return Collections.unmodifiableList(premios);
+	}
+	
+	public JSONObject toJSON() {
+	    JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+	    json.put("cupos", cupos);
+	    json.put("fechaInicio", fechaInicio.toString());
+	    json.put("fechaLimitePreferencial", fechaLimitePreferencial.toString());
+	    json.put("competitivo", esCompetitivo());
+	    if (premiacion instanceof PremiacionCompetitiva) {
+	        json.put("tarifa", ((PremiacionCompetitiva) premiacion).getTarifaBase());
+	    }
+	    json.put("estado", estado.name());
+	    json.put("rondaActual", rondaActual);
+
+	    JSONArray jsonInscripciones = new JSONArray();
+	    for (InscripcionTorneo inscripcion : inscripciones) {
+	        jsonInscripciones.put(inscripcion.toJSON());
+	    }
+	    json.put("inscripciones", jsonInscripciones);
+
+	    JSONArray jsonEncuentros = new JSONArray();
+	    for (Encuentro encuentro : encuentros) {
+	        jsonEncuentros.put(encuentro.toJSON(inscripciones));
+	    }
+	    json.put("encuentros", jsonEncuentros);
+
+	    JSONArray jsonPremios = new JSONArray();
+	    for (PremioEntregado premio : premios) {
+	        jsonPremios.put(premio.toJSON());
+	    }
+	    json.put("premios", jsonPremios);
+	    return json;
+	}
+
+	public static Torneo fromJSON(JSONObject json, Map<String, DeporteConjunto> mapaDeportes,
+	        Map<String, DisciplinaIndividual> mapaDisciplinas, Map<String, Usuario> mapaUsuarios,
+	        Map<String, Equipo> mapaEquipos) {
+	    try {
+	        String nombre = json.getString("nombre");
+	        int cupos = json.getInt("cupos");
+	        LocalDate fechaInicio = LocalDate.parse(json.getString("fechaInicio"));
+	        LocalDate fechaLimite = LocalDate.parse(json.getString("fechaLimitePreferencial"));
+	        Premiacion premiacion;
+	        if (json.getBoolean("competitivo")) {
+	            premiacion = new PremiacionCompetitiva(json.getDouble("tarifa"));
+	        } else {
+	            premiacion = new PremiacionRecreativa();
+	        }
+
+	        Torneo torneo;
+	        String tipo = json.getString("tipo");
+	        if (tipo.equals("CONJUNTO")) {
+	            DeporteConjunto deporte = mapaDeportes.get(json.getString("deporte"));
+	            if (deporte == null) {
+	                throw new IllegalStateException("Deporte inexistente en el torneo: " + json.getString("deporte"));
+	            }
+	            torneo = new TorneoConjunto(nombre, cupos, fechaInicio, fechaLimite, premiacion, deporte,
+	                    Categoria.valueOf(json.getString("categoria")));
+	        } else if (tipo.equals("INDIVIDUAL")) {
+	            DisciplinaIndividual disciplina = mapaDisciplinas.get(json.getString("disciplina"));
+	            if (disciplina == null) {
+	                throw new IllegalStateException("Disciplina inexistente en el torneo: " + json.getString("disciplina"));
+	            }
+	            torneo = new TorneoIndividual(nombre, cupos, fechaInicio, fechaLimite, premiacion, disciplina,
+	                    NivelJugador.valueOf(json.getString("nivel")), Modalidad.valueOf(json.getString("modalidad")));
+	        } else {
+	            throw new IllegalArgumentException("Tipo de torneo desconocido: " + tipo);
+	        }
+
+	        torneo.estado = EstadoTorneo.valueOf(json.getString("estado"));
+	        torneo.rondaActual = json.getInt("rondaActual");
+
+	        JSONArray jsonInscripciones = json.optJSONArray("inscripciones");
+	        if (jsonInscripciones != null) {
+	            for (int indice = 0; indice < jsonInscripciones.length(); indice++) {
+	                torneo.inscripciones.add(InscripcionTorneo.fromJSON(jsonInscripciones.getJSONObject(indice),
+	                        mapaUsuarios, mapaEquipos));
+	            }
+	        }
+	        JSONArray jsonEncuentros = json.optJSONArray("encuentros");
+	        if (jsonEncuentros != null) {
+	            for (int indice = 0; indice < jsonEncuentros.length(); indice++) {
+	                torneo.encuentros.add(Encuentro.fromJSON(jsonEncuentros.getJSONObject(indice), torneo.inscripciones));
+	            }
+	        }
+	        JSONArray jsonPremios = json.optJSONArray("premios");
+	        if (jsonPremios != null) {
+	            for (int indice = 0; indice < jsonPremios.length(); indice++) {
+	                torneo.premios.add(PremioEntregado.fromJSON(jsonPremios.getJSONObject(indice), mapaUsuarios));
+	            }
+	        }
+	        return torneo;
+	    } catch (ReglaNegocioException excepcion) {
+	        throw new IllegalStateException("Torneo inválido en los datos: " + excepcion.getMessage(), excepcion);
+	    }
 	}
 
 	@Override

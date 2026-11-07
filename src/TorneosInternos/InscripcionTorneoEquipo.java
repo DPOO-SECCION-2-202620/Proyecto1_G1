@@ -2,6 +2,7 @@ package TorneosInternos;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONObject;
 import DeportesConjunto_Competencias.Equipo;
 import DeportesConjunto_Competencias.InscripcionEquipo;
 
@@ -15,6 +16,13 @@ public class InscripcionTorneoEquipo extends InscripcionTorneo {
 
 	public Equipo getEquipo() {
 		return equipo;
+	}
+	@Override
+	public JSONObject toJSON() {
+	    JSONObject json = super.toJSON();
+	    json.put("tipo", "EQUIPO");
+	    json.put("equipo", equipo.getNombre());
+	    return json;
 	}
 
 	@Override
