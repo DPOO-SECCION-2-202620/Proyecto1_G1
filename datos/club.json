@@ -315,15 +315,6 @@
             "estado": "SUSPENDIDO"
           },
           "jugador": "jugador08"
-        },
-        {
-          "posicion": "delantero",
-          "numeroCamiseta": 9,
-          "controlSanciones": {
-            "amarillasAcumuladas": 0,
-            "estado": "HABILITADO"
-          },
-          "jugador": "jugador09"
         }
       ],
       "categoria": "MAYORES",
@@ -345,15 +336,7 @@
         "minimoJugadores": 7,
         "nombre": "Futbol"
       },
-      "inscripciones": [{
-        "posicion": "extremo",
-        "numeroCamiseta": 3,
-        "controlSanciones": {
-          "amarillasAcumuladas": 0,
-          "estado": "HABILITADO"
-        },
-        "jugador": "nino"
-      }],
+      "inscripciones": [],
       "categoria": "SUB17",
       "nombre": "Seneca Sub17"
     },
@@ -408,15 +391,6 @@
             "estado": "SUSPENDIDO"
           },
           "jugador": "jugador05"
-        },
-        {
-          "posicion": "base",
-          "numeroCamiseta": 6,
-          "controlSanciones": {
-            "amarillasAcumuladas": 0,
-            "estado": "HABILITADO"
-          },
-          "jugador": "jugador06"
         }
       ],
       "categoria": "MAYORES",
