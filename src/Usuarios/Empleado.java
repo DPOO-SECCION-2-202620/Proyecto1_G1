@@ -1,5 +1,8 @@
 package Usuarios;
 
+import java.text.Normalizer;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +61,37 @@ public class Empleado extends Socio{
 		if (posicion >= 0) {
 			turnos.set(posicion, nuevo);
 		}
+	}
+	
+	@Override
+	public boolean esEmpleado() {
+		return true;
+	}
+	
+	public boolean tieneTurnoEl(LocalDate fecha) {
+		String dia = nombreDia(fecha.getDayOfWeek());
+		for (Turno turno : turnos) {
+			if (sinTildes(turno.getDiaSemana()).equalsIgnoreCase(dia)) {
+				return true;
+			}
+		}
+		return false;
+	}
+ 
+	private static String nombreDia(DayOfWeek dia) {
+		switch (dia) {
+		case MONDAY: return "Lunes";
+		case TUESDAY: return "Martes";
+		case WEDNESDAY: return "Miercoles";
+		case THURSDAY: return "Jueves";
+		case FRIDAY: return "Viernes";
+		case SATURDAY: return "Sabado";
+		default: return "Domingo";
+		}
+	}
+ 
+	private static String sinTildes(String texto) {
+		return Normalizer.normalize(texto.trim(), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
 	}
 	
 	@Override

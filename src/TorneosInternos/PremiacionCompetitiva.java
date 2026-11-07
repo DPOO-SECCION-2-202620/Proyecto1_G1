@@ -1,6 +1,7 @@
 package TorneosInternos;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import Excepciones.ReglaNegocioException;
 
@@ -43,6 +44,9 @@ public class PremiacionCompetitiva implements Premiacion{
 	}
 	
 	private void repartir(List<PremioEntregado> premios, int puesto, InscripcionTorneo inscripcion, double premio) {
+	    if (inscripcion == null) {
+			return;
+		}
 		List<JugadorTorneo> jugadores = inscripcion.getJugadores();
 	    double parte = premio / jugadores.size();
 	    for (JugadorTorneo j : jugadores) {
