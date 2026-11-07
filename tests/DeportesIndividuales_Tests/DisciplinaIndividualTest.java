@@ -28,6 +28,7 @@ public class DisciplinaIndividualTest
 
     private CanchaTenis cancha1;
     private CanchaTenis cancha2;
+    private CanchaTenis cancha3;
     private CanchaTenis canchaUnica;
 
     private Socio socio;
@@ -42,6 +43,7 @@ public class DisciplinaIndividualTest
 
         cancha1 = new CanchaTenis("Cancha 1", true, 1, (Tenis) tenis);
         cancha2 = new CanchaTenis("Cancha 2", true, 1, (Tenis) tenis);
+        cancha3 = new CanchaTenis("Cancha 3", true, 1, (Tenis) tenis);
         canchaUnica = new CanchaTenis("Cancha Unica", true, 1, (Tenis) disciplinaUnaCancha);
 
         socio = new Socio(20, "Ana Torres", "ana", "1234");
@@ -76,7 +78,7 @@ public class DisciplinaIndividualTest
     @Test
     void testInstalacionesRegistradas()
     {
-        assertEquals(3, tenis.getInstalaciones().size(), "La disciplina debe tener tres instalaciones.");
+        assertEquals(3, tenis.getInstalaciones().size(), "La disciplina debe tener dos instalaciones.");
         assertSame(cancha1, tenis.getInstalaciones().get(0), "La primera instalación no es la esperada.");
     }
 
@@ -114,8 +116,8 @@ public class DisciplinaIndividualTest
     @Test
     void testHayCupoReservasNoSolapadas()
     {
-        reservas.add(crearReserva(cancha1, fecha, 8, 9));
-        reservas.add(crearReserva(cancha2, fecha, 12, 13));
+        reservas.add(crearReserva(cancha2, fecha, 8, 9));
+        reservas.add(crearReserva(cancha3, fecha, 12, 13));
 
         assertTrue(tenis.hayCupo(reservas, fecha, LocalTime.of(10, 0), LocalTime.of(11, 0)), "Las reservas en otros horarios no cuentan.");
     }

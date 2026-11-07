@@ -43,6 +43,7 @@ public class AdministradorTest
 
     private Futbol futbol;
     private Socio ana;
+    private Socio pedro;
 
     @BeforeEach
     void setUp() throws Exception
@@ -56,6 +57,7 @@ public class AdministradorTest
 
         futbol = new Futbol();
         ana = club.crearSocio(20, "Ana Torres", "ana", "1234");
+        pedro = club.crearSocio(25, "Pedro Gil", "pgil", "5678");
     }
 
     @AfterEach
@@ -122,6 +124,14 @@ public class AdministradorTest
         assertTrue(administrador.darDeBajaSocio(ana), "El socio debe poder darse de baja.");
 
         assertNull(club.iniciarSesion("ana", "1234"), "El socio dado de baja no debe poder iniciar sesión.");
+    }
+    
+    @Test
+    void testDarDeBajaSocioSinEquipos()
+    {
+        assertTrue(administrador.darDeBajaSocio(pedro), "Un socio sin equipos también debe poder darse de baja.");
+
+        assertNull(club.iniciarSesion("pgil", "5678"), "El socio dado de baja no debe poder iniciar sesión.");
     }
 
     @Test
@@ -242,7 +252,7 @@ public class AdministradorTest
     }
 
     @Test
-    void testsinClubNoSePuedeOperar()
+    void testSinClubNoSePuedeOperar()
     {
         assertThrows(NullPointerException.class, () -> administradorSinClub.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES), "Sin club asignado no se puede crear un equipo.");
         assertThrows(NullPointerException.class, () -> administradorSinClub.darDeBajaEquipo(null), "Sin club asignado no se puede dar de baja un equipo.");
@@ -251,7 +261,7 @@ public class AdministradorTest
     }
 
     @Test
-    void testsetClubCambiaDeClub() throws Exception
+    void testSetClubCambiaDeClub() throws Exception
     {
         ClubSeneca otroClub = new ClubSeneca("Otro Club");
         otroClub.setPersistencia(new Persistencia(new File(carpetaTemporal, "otro").getAbsolutePath()));

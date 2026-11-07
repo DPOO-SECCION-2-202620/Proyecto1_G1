@@ -526,34 +526,31 @@ public class ClubSeneca {
 	    if (socio == null || !usuarios.contains(socio)) {
 	        return false;
 	    }
-	    if (socio.getInscripcionesEquipo().isEmpty()) {
-	        return false;
-	    }
 	    usuarios.remove(socio);
 	    rankings.removeIf(ranking -> ranking.getJugador().equals(socio));
-		for (Equipo equipo : equipos) {
-			equipo.getInscripciones().removeIf(inscripcion -> inscripcion.getJugador() == socio);
-		}
-		for (Competencia competencia : competencias) {
-			for (InscripcionCompetencia inscripcion : competencia.getInscripciones()) {
-				inscripcion.getNomina().removeIf(registro -> registro.getInscripcionEquipo().getJugador() == socio);
-			}
-			for (PartidoExterno partido : competencia.getListaPartidos()) {
-				partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
-			}
-		}
-		for (Partido partido : historial.getPartidos()) {
-			partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
-		}
-		historial.getReservas().removeIf(reserva -> reserva.getJugador() == socio);
-		historial.getPartidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
-		historial.getSesiones().removeIf(sesion -> sesion.getEntrenador() == socio);
-		for (SesionEntrenamiento sesion : historial.getSesiones()) {
-			sesion.getConvocados().remove(socio);
-			sesion.getAsistencias().removeIf(asistencia -> asistencia.getJugador() == socio);
-		}
-		solicitudes.removeIf(solicitud -> solicitud.getSolicitante() == socio);
-		guardarDatos();
+	    for (Equipo equipo : equipos) {
+	        equipo.getInscripciones().removeIf(inscripcion -> inscripcion.getJugador() == socio);
+	    }
+	    for (Competencia competencia : competencias) {
+	        for (InscripcionCompetencia inscripcion : competencia.getInscripciones()) {
+	            inscripcion.getNomina().removeIf(registro -> registro.getInscripcionEquipo().getJugador() == socio);
+	        }
+	        for (PartidoExterno partido : competencia.getListaPartidos()) {
+	            partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+	        }
+	    }
+	    for (Partido partido : historial.getPartidos()) {
+	        partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+	    }
+	    historial.getReservas().removeIf(reserva -> reserva.getJugador() == socio);
+	    historial.getPartidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
+	    historial.getSesiones().removeIf(sesion -> sesion.getEntrenador() == socio);
+	    for (SesionEntrenamiento sesion : historial.getSesiones()) {
+	        sesion.getConvocados().remove(socio);
+	        sesion.getAsistencias().removeIf(asistencia -> asistencia.getJugador() == socio);
+	    }
+	    solicitudes.removeIf(solicitud -> solicitud.getSolicitante() == socio);
+	    guardarDatos();
 	    return true;
 	}
 	

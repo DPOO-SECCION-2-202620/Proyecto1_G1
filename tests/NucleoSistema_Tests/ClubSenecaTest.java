@@ -136,10 +136,6 @@ public class ClubSenecaTest
     {
     }
 
-    // ---------------------------------------------------------------------
-    // Métodos auxiliares
-    // ---------------------------------------------------------------------
-
     private void llenarEquipo(Equipo equipo, String prefijo, int cantidad)
     {
         for(int i = 1; i <= cantidad; i++)
@@ -198,10 +194,6 @@ public class ClubSenecaTest
         return club.toJSON();
     }
 
-    // ---------------------------------------------------------------------
-    // Estado inicial
-    // ---------------------------------------------------------------------
-
     @Test
     void testClubNuevo()
     {
@@ -210,11 +202,7 @@ public class ClubSenecaTest
         assertEquals(0, jsonDelClub().getJSONArray("equipos").length(), "Un club nuevo no debe tener equipos.");
         assertEquals(0, jsonDelClub().getJSONArray("ventas").length(), "Un club nuevo no debe tener ventas.");
     }
-
-    // ---------------------------------------------------------------------
-    // Usuarios y sesión
-    // ---------------------------------------------------------------------
-
+    
     @Test
     void testCrearSocio()
     {
@@ -254,10 +242,6 @@ public class ClubSenecaTest
         assertNull(club.iniciarSesion("nadie", "1234"), "Con un login inexistente no debe iniciar sesión.");
         assertNull(club.iniciarSesion(null, null), "Con datos nulos no debe iniciar sesión.");
     }
-
-    // ---------------------------------------------------------------------
-    // Equipos
-    // ---------------------------------------------------------------------
 
     @Test
     void testCrearEquipo()
@@ -359,10 +343,6 @@ public class ClubSenecaTest
         assertEquals(0, torneo.getTablaPosiciones().size(), "Después de la baja no debe haber equipos en la tabla.");
     }
 
-    // ---------------------------------------------------------------------
-    // Baja de socios
-    // ---------------------------------------------------------------------
-
     @Test
     void testDarDeBajaSocioNuloOInexistente()
     {
@@ -375,8 +355,34 @@ public class ClubSenecaTest
     @Test
     void testDarDeBajaSocioSinEquipos()
     {
-        assertFalse(club.darDeBajaSocio(ana), "Según la implementación actual un socio sin inscripciones a equipos no se da de baja.");
-        assertNotNull(club.iniciarSesion("ana", "1234"), "El socio debe seguir en el club.");
+        assertTrue(club.darDeBajaSocio(ana), "Un socio sin equipos también debe poder darse de baja.");
+
+        assertNull(club.iniciarSesion("ana", "1234"), "El socio dado de baja no debe poder iniciar sesión.");
+        assertNotNull(club.iniciarSesion("pgil", "5678"), "Los demás socios deben conservarse.");
+        assertEquals(1, jsonDelClub().getJSONArray("usuarios").length(), "El club debe quedar con un solo usuario.");
+    }
+
+    @Test
+    void testDarDeBajaSocioSinEquiposLimpiaSusDatosIndividuales()
+    {
+        club.inscribirEnDisciplina(ana, tenis, NivelJugador.INTERMEDIO);
+        club.inscribirEnDisciplina(pedro, tenis, NivelJugador.INTERMEDIO);
+        club.reservar(ana, tenis, canchaTenis1, fecha, LocalTime.of(10, 0), LocalTime.of(11, 0), 2, Modalidad.SENCILLOS);
+        club.programarPartidoPractica(tenis, canchaTenis2, fecha, listaDe(ana, pedro));
+
+        assertTrue(club.darDeBajaSocio(ana), "Un socio solo con disciplinas individuales debe poder darse de baja.");
+
+        assertNull(club.getRanking(tenis, ana), "El ranking del socio debe eliminarse.");
+        assertNotNull(club.getRanking(tenis, pedro), "El ranking del otro socio debe conservarse.");
+        assertEquals(0, club.getHistorial().getReservas().size(), "Las reservas del socio deben eliminarse.");
+        assertEquals(0, club.getHistorial().getPartidosPractica().size(), "Los partidos de práctica del socio deben eliminarse.");
+    }
+
+    @Test
+    void testDarDeBajaSocioDosVeces()
+    {
+        assertTrue(club.darDeBajaSocio(ana), "La primera baja debe funcionar.");
+        assertFalse(club.darDeBajaSocio(ana), "La segunda baja del mismo socio debe fallar.");
     }
 
     @Test
@@ -507,10 +513,6 @@ public class ClubSenecaTest
         assertNull(club.iniciarSesion("jruiz", "pass"), "El entrenador dado de baja no debe poder iniciar sesión.");
     }
 
-    // ---------------------------------------------------------------------
-    // Disciplinas individuales y rankings
-    // ---------------------------------------------------------------------
-
     @Test
     void testInscribirEnDisciplina()
     {
@@ -565,10 +567,6 @@ public class ClubSenecaTest
     {
         assertNull(club.getRanking(tenis, ana), "Sin inscripción no existe el ranking.");
     }
-
-    // ---------------------------------------------------------------------
-    // Competencias
-    // ---------------------------------------------------------------------
 
     @Test
     void testInscribirEquipoEnCompetencia()
@@ -631,10 +629,6 @@ public class ClubSenecaTest
         assertEquals(2, torneo.getInscripciones().size(), "La competencia debe tener dos inscripciones.");
         assertEquals(1, jsonDelClub().getJSONArray("competencias").length(), "La competencia debe aparecer una sola vez en el club.");
     }
-
-    // ---------------------------------------------------------------------
-    // Partidos internos
-    // ---------------------------------------------------------------------
 
     @Test
     void testRegistrarPartidoInterno()
@@ -737,10 +731,6 @@ public class ClubSenecaTest
         assertNull(club.registrarPartidoInterno(completo, incompleto, 1, 0, null), "Un equipo sin los jugadores mínimos no puede jugar.");
         assertNull(club.registrarPartidoInterno(incompleto, completo, 1, 0, null), "Un equipo sin los jugadores mínimos no puede jugar.");
     }
-
-    // ---------------------------------------------------------------------
-    // Partidos externos
-    // ---------------------------------------------------------------------
 
     @Test
     void testRegistrarPartidoExterno()
@@ -861,10 +851,6 @@ public class ClubSenecaTest
         assertEquals(1, torneo.getListaPartidos().size(), "La competencia debe tener el partido.");
     }
 
-    // ---------------------------------------------------------------------
-    // Reservas
-    // ---------------------------------------------------------------------
-
     @Test
     void testReservar()
     {
@@ -939,10 +925,6 @@ public class ClubSenecaTest
 
         assertNotNull(club.reservar(pedro, tenis, canchaTenis2, fecha, LocalTime.of(10, 0), LocalTime.of(11, 0), 2, Modalidad.SENCILLOS), "Con máximo de dos instalaciones simultáneas se puede reservar la segunda.");
     }
-
-    // ---------------------------------------------------------------------
-    // Partidos de práctica y ranking
-    // ---------------------------------------------------------------------
 
     @Test
     void testProgramarPartidoPractica()
@@ -1073,10 +1055,6 @@ public class ClubSenecaTest
         assertEquals(1000, club.getRanking(tenis, ana).getPuntajeElo(), 0.001, "Sin rival con ranking el puntaje no debe cambiar.");
     }
 
-    // ---------------------------------------------------------------------
-    // Sesiones de entrenamiento
-    // ---------------------------------------------------------------------
-
     @Test
     void testPlanearSesion()
     {
@@ -1172,10 +1150,6 @@ public class ClubSenecaTest
 
         assertEquals(0, sesion.getAsistencias().size(), "No debe registrarse la asistencia de un socio no convocado.");
     }
-
-    // ---------------------------------------------------------------------
-    // Ventas
-    // ---------------------------------------------------------------------
 
     @Test
     void testRegistrarVentaDeTienda()
@@ -1433,10 +1407,6 @@ public class ClubSenecaTest
         assertTrue(club.generarReporteDeportivo().isEmpty(), "Sin rankings el reporte debe estar vacío.");
     }
 
-    // ---------------------------------------------------------------------
-    // Tienda, cafetería e inventarios
-    // ---------------------------------------------------------------------
-
     @Test
     void testReabastecerTienda()
     {
@@ -1540,10 +1510,6 @@ public class ClubSenecaTest
         assertTrue(inventarioBodega.tieneArticulo(conos), "El artículo debe seguir en la bodega.");
     }
 
-    // ---------------------------------------------------------------------
-    // Sugerencias
-    // ---------------------------------------------------------------------
-
     @Test
     void testRegistrarSugerencia() throws Exception
     {
@@ -1604,10 +1570,6 @@ public class ClubSenecaTest
         assertEquals(EstadoSugerencia.PENDIENTE, ajena.getEstado(), "Una sugerencia que no está en el club no debe cambiar.");
         assertEquals(0, jsonDelClub().getJSONObject("tienda").getJSONArray("articulos").length(), "La tienda no debe tener artículos nuevos.");
     }
-
-    // ---------------------------------------------------------------------
-    // Turnos
-    // ---------------------------------------------------------------------
 
     @Test
     void testAsignarTurno() throws Exception
@@ -1770,10 +1732,6 @@ public class ClubSenecaTest
 
         assertEquals(EstadoSolicitud.RECHAZADA, solicitud.getEstado(), "Una solicitud ya resuelta no debe cambiar de estado.");
     }
-
-    // ---------------------------------------------------------------------
-    // Persistencia
-    // ---------------------------------------------------------------------
 
     @Test
     void testGuardarDatos() throws Exception
