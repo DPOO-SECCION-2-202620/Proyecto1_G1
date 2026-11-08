@@ -1,5 +1,54 @@
 {
   "instalacionesConjunto": [],
+  "torneos": [
+    {
+      "rondaActual": 0,
+      "estado": "INSCRIPCIONES_ABIERTAS",
+      "tipo": "INDIVIDUAL",
+      "inscripciones": [],
+      "premios": [],
+      "encuentros": [],
+      "cupos": 4,
+      "competitivo": false,
+      "nombre": "Copa Tenis Intermedio",
+      "fechaInicio": "2026-11-22",
+      "modalidad": "SENCILLOS",
+      "disciplina": "Tenis",
+      "fechaLimitePreferencial": "2026-11-15",
+      "nivel": "INTERMEDIO"
+    },
+    {
+      "tarifa": 50000,
+      "rondaActual": 0,
+      "estado": "INSCRIPCIONES_ABIERTAS",
+      "tipo": "CONJUNTO",
+      "deporte": "Futbol",
+      "inscripciones": [],
+      "premios": [],
+      "categoria": "MAYORES",
+      "encuentros": [],
+      "cupos": 4,
+      "competitivo": true,
+      "nombre": "Mini-campeonato Futbol Mayores",
+      "fechaInicio": "2026-11-22",
+      "fechaLimitePreferencial": "2026-11-15"
+    },
+    {
+      "rondaActual": 0,
+      "estado": "INSCRIPCIONES_ABIERTAS",
+      "tipo": "CONJUNTO",
+      "deporte": "Futbol",
+      "inscripciones": [],
+      "premios": [],
+      "categoria": "SUB13",
+      "encuentros": [],
+      "cupos": 2,
+      "competitivo": false,
+      "nombre": "ascun",
+      "fechaInicio": "2026-11-08",
+      "fechaLimitePreferencial": "2026-11-08"
+    }
+  ],
   "deportes": [],
   "inventarios": [],
   "usuarios": [
@@ -17,11 +66,12 @@
       "inscripcionesIndividuales": [],
       "turnos": [{
         "diaSemana": "Lunes",
-        "horaFinal": "12:00",
-        "horaInicio": "08:00"
+        "horaFinal": "18:00",
+        "horaInicio": "14:00"
       }],
       "puntosFidelidad": 0,
       "login": "luis",
+      "bonos": [],
       "nombre": "Luis Perez",
       "edad": 38
     },
@@ -30,7 +80,10 @@
       "tipo": "Entrenador",
       "codigoEmpleado": "EMP-002",
       "codigoDescuento": {"codigo": "DESC-EMP-002"},
-      "inscripcionesIndividuales": [],
+      "inscripcionesIndividuales": [{
+        "disciplina": "Tenis",
+        "nivel": "INTERMEDIO"
+      }],
       "turnos": [{
         "diaSemana": "Lunes",
         "horaFinal": "12:00",
@@ -38,6 +91,7 @@
       }],
       "puntosFidelidad": 0,
       "login": "carla",
+      "bonos": [],
       "nombre": "Carla Gomez",
       "edad": 34
     },
@@ -54,6 +108,7 @@
       }],
       "puntosFidelidad": 0,
       "login": "pablo",
+      "bonos": [],
       "nombre": "Pablo Rios",
       "edad": 41
     },
@@ -70,6 +125,7 @@
       }],
       "puntosFidelidad": 0,
       "login": "marta",
+      "bonos": [],
       "nombre": "Marta Diaz",
       "edad": 36
     },
@@ -86,33 +142,46 @@
       }],
       "puntosFidelidad": 0,
       "login": "diego",
+      "bonos": [],
       "nombre": "Diego Castro",
       "edad": 39
     },
     {
       "password": "clave1",
       "tipo": "Socio",
-      "inscripcionesIndividuales": [],
+      "inscripcionesIndividuales": [{
+        "disciplina": "Tenis",
+        "nivel": "INTERMEDIO"
+      }],
       "puntosFidelidad": 0,
       "login": "jugador01",
+      "bonos": [],
       "nombre": "Jugador 1",
       "edad": 20
     },
     {
       "password": "clave2",
       "tipo": "Socio",
-      "inscripcionesIndividuales": [],
+      "inscripcionesIndividuales": [{
+        "disciplina": "Tenis",
+        "nivel": "INTERMEDIO"
+      }],
       "puntosFidelidad": 0,
       "login": "jugador02",
+      "bonos": [],
       "nombre": "Jugador 2",
       "edad": 21
     },
     {
       "password": "clave3",
       "tipo": "Socio",
-      "inscripcionesIndividuales": [],
+      "inscripcionesIndividuales": [{
+        "disciplina": "Tenis",
+        "nivel": "INTERMEDIO"
+      }],
       "puntosFidelidad": 0,
       "login": "jugador03",
+      "bonos": [],
       "nombre": "Jugador 3",
       "edad": 22
     },
@@ -122,6 +191,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador04",
+      "bonos": [],
       "nombre": "Jugador 4",
       "edad": 23
     },
@@ -131,6 +201,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador05",
+      "bonos": [],
       "nombre": "Jugador 5",
       "edad": 24
     },
@@ -140,6 +211,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador06",
+      "bonos": [],
       "nombre": "Jugador 6",
       "edad": 25
     },
@@ -149,6 +221,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador07",
+      "bonos": [],
       "nombre": "Jugador 7",
       "edad": 26
     },
@@ -158,6 +231,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador08",
+      "bonos": [],
       "nombre": "Jugador 8",
       "edad": 27
     },
@@ -167,15 +241,20 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "jugador09",
+      "bonos": [],
       "nombre": "Jugador 9",
       "edad": 28
     },
     {
       "password": "clave-ana",
       "tipo": "Socio",
-      "inscripcionesIndividuales": [],
+      "inscripcionesIndividuales": [{
+        "disciplina": "Tenis",
+        "nivel": "INTERMEDIO"
+      }],
       "puntosFidelidad": 0,
       "login": "ana",
+      "bonos": [],
       "nombre": "Ana Torres",
       "edad": 24
     },
@@ -185,6 +264,7 @@
       "inscripcionesIndividuales": [],
       "puntosFidelidad": 0,
       "login": "nino",
+      "bonos": [],
       "nombre": "Nino Sub17",
       "edad": 15
     }
@@ -197,7 +277,7 @@
   "competencias": [],
   "solicitudes": [
     {
-      "estado": "PENDIENTE",
+      "estado": "ACEPTADA",
       "turnoActual": {
         "diaSemana": "Lunes",
         "horaFinal": "12:00",
@@ -225,8 +305,53 @@
       }
     }
   ],
-  "disciplinas": [],
-  "rankings": [],
+  "disciplinas": [{
+    "maxInstalacionesSimultaneas": 2,
+    "instalaciones": [
+      {
+        "tipo": "CanchaTenis",
+        "techado": false,
+        "capacidadMaxima": 4,
+        "nombre": "Cancha Tenis 1",
+        "salon": 1
+      },
+      {
+        "tipo": "CanchaTenis",
+        "techado": true,
+        "capacidadMaxima": 4,
+        "nombre": "Cancha Tenis 2",
+        "salon": 1
+      }
+    ],
+    "nombre": "Tenis"
+  }],
+  "rankings": [
+    {
+      "puntajeElo": 1000,
+      "jugador": "jugador01",
+      "disciplina": "Tenis"
+    },
+    {
+      "puntajeElo": 1000,
+      "jugador": "jugador02",
+      "disciplina": "Tenis"
+    },
+    {
+      "puntajeElo": 1000,
+      "jugador": "jugador03",
+      "disciplina": "Tenis"
+    },
+    {
+      "puntajeElo": 1100,
+      "jugador": "ana",
+      "disciplina": "Tenis"
+    },
+    {
+      "puntajeElo": 1000,
+      "jugador": "carla",
+      "disciplina": "Tenis"
+    }
+  ],
   "tienda": {"articulos": []},
   "historial": {
     "sesiones": [],
