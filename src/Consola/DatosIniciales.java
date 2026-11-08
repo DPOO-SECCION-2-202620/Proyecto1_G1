@@ -3,7 +3,12 @@ package Consola;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
+import Tienda_Cafeteria_Inventario.Alergeno;
+import Tienda_Cafeteria_Inventario.Articulo;
+import Tienda_Cafeteria_Inventario.Bebida;
+import Tienda_Cafeteria_Inventario.Snack;
 import DeportesConjunto_Competencias.Baloncesto;
 import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Equipo;
@@ -103,6 +108,11 @@ public class DatosIniciales {
 				new PremiacionRecreativa(), tenis, NivelJugador.INTERMEDIO, Modalidad.SENCILLOS));
 		club.agregarTorneo(new TorneoConjunto("Mini-campeonato Futbol Mayores", 4, domingo, domingo.minusDays(7),
 				new PremiacionCompetitiva(50000), cerros.getDeporte(), Categoria.MAYORES));
+		
+		club.reabastecerTienda(new Articulo("Pelotas de tenis (x3)", "Equipamiento", 15000, 20), 1);
+		club.reabastecerTienda(new Articulo("Camiseta Seneca", "Ropa", 45000, 10), 1);
+		club.reabasteceCafeteriaSocios(new Bebida("Agua", "Bebida fría", 3000, 30, false), 1);
+		club.reabasteceCafeteriaSocios(new Snack("Barra de cereal", "Snack", 4000, 25, List.of(Alergeno.GLUTEN)), 1);
 
 		club.guardarDatos();
 		System.out.println("Datos iniciales creados en datos/club.json");

@@ -407,6 +407,48 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
+	public List<Producto> getProductosDisponibles(Rubro rubro) {
+	    List<Producto> catalogo = new ArrayList<>();
+	    if (rubro == Rubro.TIENDA) {
+	        catalogo.addAll(tienda.getArticulos());
+	    } else if (rubro == Rubro.CAFETERIA) {
+	        catalogo.addAll(cafeteria.getProductos());
+	    }
+	    List<Producto> disponibles = new ArrayList<>();
+	    for (Producto producto : catalogo) {
+	        if (producto.getCantidad() > 0 && !disponibles.contains(producto)) {
+	            disponibles.add(producto);
+	        }
+	    }
+	    return disponibles;
+	}
+
+	public Venta registrarVentaConBono(Socio comprador, Map<Producto, Integer> productos, Rubro rubro,
+	        Instalacion instalacionActual, BonoDescuento bono, double propina) throws ReglaNegocioException {
+	    if (comprador == null || bono == null) {
+	        throw new ReglaNegocioException("Debe indicar el comprador y el bono");
+	    }
+	    if (!comprador.getBonos().contains(bono)) {
+	        throw new ReglaNegocioException("El bono no pertenece al socio");
+	    }
+	    if (bono.estaUsado()) {
+	        throw new ReglaNegocioException("El bono ya fue usado");
+	    }
+	    int ventasAntes = ventas.size();
+	    registrarVenta(comprador, productos, rubro, instalacionActual, null, 0, propina);
+	    if (ventas.size() == ventasAntes) {
+	        throw new ReglaNegocioException("No se pudo registrar la compra: revise los productos y las cantidades");
+	    }
+	    Venta venta = ventas.get(ventas.size() - 1);
+	    int puntosDeMas = venta.aplicarBono(bono.getPorcentaje());
+	    if (puntosDeMas > 0) {
+	        comprador.redimirPuntos(puntosDeMas);
+	    }
+	    bono.setUsado(true);
+	    guardarDatos();
+	    return venta;
+	}
+	
 	public void reabastecerTienda(Articulo articulo, int cantidad) {
 		if (articulo == null || cantidad <= 0) {
 			return;

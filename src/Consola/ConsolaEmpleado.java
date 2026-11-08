@@ -7,6 +7,7 @@ import NucleoSistema.ClubSeneca;
 import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Usuario;
+import Usuarios.Socio;
 
 public class ConsolaEmpleado extends ConsolaBase {
 
@@ -26,11 +27,19 @@ public class ConsolaEmpleado extends ConsolaBase {
 
 	@Override
 	protected List<OpcionMenu> crearOpciones(Usuario usuario) {
-		List<OpcionMenu> opciones = new ArrayList<>();
-		if (usuario instanceof Entrenador) {
-			opciones.add(new OpcionVerificarMinimoJugadores(club, lector));
-		}
-		return opciones;
+	    Socio empleado = (Socio) usuario;
+	    List<OpcionMenu> opciones = new ArrayList<>();
+	    if (usuario instanceof Entrenador) {
+	        opciones.add(new OpcionVerificarMinimoJugadores(club, lector));
+	        opciones.add(new OpcionInscribirEquipoTorneo(club, lector));
+	        opciones.add(new OpcionRetirarEquipoTorneo(club, lector));
+	    }
+	    opciones.add(new OpcionInscribirseTorneo(club, empleado, lector));
+	    opciones.add(new OpcionRetirarseTorneo(club, empleado, lector));
+	    opciones.add(new OpcionConsultarTorneos(club, lector));
+	    opciones.add(new OpcionVerBonos(empleado, lector));
+	    opciones.add(new OpcionComprarConBono(club, empleado, lector));
+	    return opciones;
 	}
 
 	public static void main(String[] args) {

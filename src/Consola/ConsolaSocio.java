@@ -29,6 +29,11 @@ public class ConsolaSocio extends ConsolaBase {
 		Socio socio = (Socio) usuario;
 		List<OpcionMenu> opciones = new ArrayList<>();
 		opciones.add(new OpcionInscribirseEnEquipo(club, socio, lector));
+		opciones.add(new OpcionInscribirseTorneo(club, socio, lector));
+		opciones.add(new OpcionRetirarseTorneo(club, socio, lector));
+		opciones.add(new OpcionConsultarTorneos(club, lector));
+		opciones.add(new OpcionVerBonos(socio, lector));
+		opciones.add(new OpcionComprarConBono(club, socio, lector));
 		return opciones;
 	}
 

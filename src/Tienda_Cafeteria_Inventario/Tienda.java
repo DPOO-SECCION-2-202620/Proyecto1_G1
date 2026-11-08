@@ -25,6 +25,10 @@ public class Tienda {
 		articulos.add(articulo);
 	}
 	
+	public List<Articulo> getArticulos() {
+	    return new ArrayList<>(articulos);
+	}
+	
 	public void reabastecer(Articulo articulo, int cantidad) {
 		for (int i = 0; i < cantidad; i++) {
 			agregarArticulo(articulo);
