@@ -71,8 +71,8 @@ public class TorneoConjuntoTest
     {
     }
 
-    private Equipo crearEquipo(String nombre, DeporteConjunto deporte, Categoria categoria, String prefijo, int jugadores)
-    {
+    private Equipo crearEquipo(String nombre, DeporteConjunto deporte, Categoria categoria, String prefijo, int jugadores) throws Exception 
+    { 
         Equipo equipo = new Equipo(nombre, 10, deporte, categoria);
         int edad = 25;
         if(categoria == Categoria.SUB17)
