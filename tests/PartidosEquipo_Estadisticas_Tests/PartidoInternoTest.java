@@ -55,7 +55,7 @@ public class PartidoInternoTest
     {
     }
 
-    private void llenarEquipo(Equipo equipo, String prefijo, int cantidad)
+    private void llenarEquipo(Equipo equipo, String prefijo, int cantidad) throws Exception
     {
         for(int i = 1; i <= cantidad; i++)
         {

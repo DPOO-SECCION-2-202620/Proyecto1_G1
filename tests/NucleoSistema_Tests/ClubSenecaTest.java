@@ -136,7 +136,7 @@ public class ClubSenecaTest
     {
     }
 
-    private void llenarEquipo(Equipo equipo, String prefijo, int cantidad)
+    private void llenarEquipo(Equipo equipo, String prefijo, int cantidad) throws Exception
     {
         for(int i = 1; i <= cantidad; i++)
         {
@@ -273,11 +273,11 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testInscribirJugador()
+    void testInscribirJugador() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
 
-        assertTrue(club.inscribirJugador(ana, equipo, "Delantero", 9), "El jugador debe poder inscribirse.");
+        club.inscribirJugador(ana, equipo, "Delantero", 9);
 
         assertEquals(1, equipo.getInscripciones().size(), "El equipo debe tener un jugador.");
         assertEquals(1, jsonDelClub().getJSONArray("equipos").getJSONObject(0).getJSONArray("inscripciones").length(), "El estado guardado debe incluir la inscripción.");
@@ -288,12 +288,12 @@ public class ClubSenecaTest
     {
         Equipo equipo = club.crearEquipo("Cerritos", 12, futbol, Categoria.SUB15);
 
-        assertFalse(club.inscribirJugador(ana, equipo, "Delantero", 9), "Un adulto no puede inscribirse en SUB15.");
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirJugador(ana, equipo, "Delantero", 9), "Un adulto no puede inscribirse en SUB15.");
         assertEquals(0, equipo.getInscripciones().size(), "El equipo debe seguir vacío.");
     }
 
     @Test
-    void testDarDeBajaEquipo()
+    void testDarDeBajaEquipo() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -314,7 +314,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaEquipoDosVeces()
+    void testDarDeBajaEquipoDosVeces() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
 
@@ -323,7 +323,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaEquipoLimpiaPartidosYCompetencias()
+    void testDarDeBajaEquipoLimpiaPartidosYCompetencias() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -363,7 +363,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioSinEquiposLimpiaSusDatosIndividuales()
+    void testDarDeBajaSocioSinEquiposLimpiaSusDatosIndividuales() throws Exception
     {
         club.inscribirEnDisciplina(ana, tenis, NivelJugador.INTERMEDIO);
         club.inscribirEnDisciplina(pedro, tenis, NivelJugador.INTERMEDIO);
@@ -379,14 +379,14 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioDosVeces()
+    void testDarDeBajaSocioDosVeces() throws Exception
     {
         assertTrue(club.darDeBajaSocio(ana), "La primera baja debe funcionar.");
         assertFalse(club.darDeBajaSocio(ana), "La segunda baja del mismo socio debe fallar.");
     }
 
     @Test
-    void testDarDeBajaSocio()
+    void testDarDeBajaSocio() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -404,7 +404,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioEliminaPartidosDePractica()
+    void testDarDeBajaSocioEliminaPartidosDePractica() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -418,7 +418,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioLimpiaNominasYEstadisticasDeCompetencias()
+    void testDarDeBajaSocioLimpiaNominasYEstadisticasDeCompetencias() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -446,7 +446,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioLimpiaEstadisticasDePartidosInternos()
+    void testDarDeBajaSocioLimpiaEstadisticasDePartidosInternos() throws Exception
     {
         Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
         Equipo visitante = club.crearEquipo("Visitante", 8, baloncesto, Categoria.MAYORES);
@@ -468,7 +468,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testDarDeBajaSocioLimpiaSesionesDeEntrenamiento()
+    void testDarDeBajaSocioLimpiaSesionesDeEntrenamiento() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -563,13 +563,13 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testGetRankingInexistente()
+    void testGetRankingInexistente() throws Exception
     {
         assertNull(club.getRanking(tenis, ana), "Sin inscripción no existe el ranking.");
     }
 
     @Test
-    void testInscribirEquipoEnCompetencia()
+    void testInscribirEquipoEnCompetencia() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -593,7 +593,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testInscribirEquipoEnCompetenciaSinRequisitos()
+    void testInscribirEquipoEnCompetenciaSinRequisitos() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -606,7 +606,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testInscribirEquipoEnCompetenciaRepetida()
+    void testInscribirEquipoEnCompetenciaRepetida() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         TorneoCerros torneo = new TorneoCerros("Liga 2026", 2026, 0, Categoria.MAYORES, futbol);
@@ -617,7 +617,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testInscribirDosEquiposEnLaMismaCompetencia()
+    void testInscribirDosEquiposEnLaMismaCompetencia() throws Exception
     {
         Equipo equipoA = club.crearEquipo("Equipo A", 12, futbol, Categoria.MAYORES);
         Equipo equipoB = club.crearEquipo("Equipo B", 12, futbol, Categoria.MAYORES);
@@ -631,7 +631,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInterno()
+    void testRegistrarPartidoInterno() throws Exception
     {
         Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
         Equipo visitante = club.crearEquipo("Visitante", 8, baloncesto, Categoria.MAYORES);
@@ -648,7 +648,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoConEstadisticas()
+    void testRegistrarPartidoInternoConEstadisticas() throws Exception
     {
         Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
         Equipo visitante = club.crearEquipo("Visitante", 8, baloncesto, Categoria.MAYORES);
@@ -665,7 +665,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoRegistraTarjetas()
+    void testRegistrarPartidoInternoRegistraTarjetas() throws Exception
     {
         Equipo local = club.crearEquipo("Local", 8, futbol, Categoria.MAYORES);
         Equipo visitante = club.crearEquipo("Visitante", 8, futbol, Categoria.MAYORES);
@@ -684,7 +684,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoConEquiposNulosOIguales()
+    void testRegistrarPartidoInternoConEquiposNulosOIguales() throws Exception
     {
         Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
         llenarEquipo(local, "l", 5);
@@ -696,7 +696,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoConDeportesDistintos()
+    void testRegistrarPartidoInternoConDeportesDistintos() throws Exception
     {
         Equipo basket = club.crearEquipo("Basket", 8, baloncesto, Categoria.MAYORES);
         Equipo soccer = club.crearEquipo("Soccer", 8, futbol, Categoria.MAYORES);
@@ -707,7 +707,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoConCategoriasDistintas()
+    void testRegistrarPartidoInternoConCategoriasDistintas() throws Exception
     {
         Equipo mayores = club.crearEquipo("Mayores", 8, baloncesto, Categoria.MAYORES);
         Equipo juvenil = club.crearEquipo("Juvenil", 8, baloncesto, Categoria.SUB17);
@@ -721,7 +721,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoInternoConEquipoIncompleto()
+    void testRegistrarPartidoInternoConEquipoIncompleto() throws Exception
     {
         Equipo completo = club.crearEquipo("Completo", 8, baloncesto, Categoria.MAYORES);
         Equipo incompleto = club.crearEquipo("Incompleto", 8, baloncesto, Categoria.MAYORES);
@@ -733,7 +733,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExterno()
+    void testRegistrarPartidoExterno() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -752,7 +752,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoConDatosNulos()
+    void testRegistrarPartidoExternoConDatosNulos() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         TorneoCerros torneo = new TorneoCerros("Liga 2026", 2026, 0, Categoria.MAYORES, futbol);
@@ -763,7 +763,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoConJugadorFueraDeLaNomina()
+    void testRegistrarPartidoExternoConJugadorFueraDeLaNomina() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -780,7 +780,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoConJugadorEnLaNomina()
+    void testRegistrarPartidoExternoConJugadorEnLaNomina() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -800,7 +800,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoConJugadorSuspendido()
+    void testRegistrarPartidoExternoConJugadorSuspendido() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -817,7 +817,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoRegistraTarjetasEnLaNomina()
+    void testRegistrarPartidoExternoRegistraTarjetasEnLaNomina() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);
@@ -836,7 +836,7 @@ public class ClubSenecaTest
     }
 
     @Test
-    void testRegistrarPartidoExternoSinInscripcionEnLaCompetencia()
+    void testRegistrarPartidoExternoSinInscripcionEnLaCompetencia() throws Exception
     {
         Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
         club.inscribirJugador(ana, equipo, "Delantero", 9);

@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import Usuarios.Socio;
 import Usuarios.Usuario;
 
+import Excepciones.ReglaNegocioException;
+
 public class Equipo {
 	
 private String nombre;
@@ -27,24 +29,23 @@ public Equipo(String nombre, int cupoMaximo, DeporteConjunto deporte,
 	this.categoria = categoria;
 }
 
-public boolean agregarJugador(Socio jugador, String posicion, int numeroCamiseta) {
+public void agregarJugador(Socio jugador, String posicion, int numeroCamiseta) throws ReglaNegocioException {
+	
 	if (inscripciones.size() >= cupoMaximo) {
-		return false;
+		throw new ReglaNegocioException("El equipo no tiene cupos libres");
 	}
 	if (!categoria.admiteEdad(jugador.getEdad())) {
-		return false;
+		throw new ReglaNegocioException("La edad del socio no corresponde a la categoría del equipo");
 	}
 	if (jugador.tieneEquipoEn(deporte)) {
-		return false;
+		throw new ReglaNegocioException("El socio ya pertenece a un equipo de este deporte; solo puede pertenecer a un único equipo por disciplina");
 	}
 	if (camisetaOcupada(numeroCamiseta)) {
-		return false;
+		throw new ReglaNegocioException("El dorsal ya fue asignado a otro jugador del equipo; elija un dorsal libre");
 	}
-	
 	InscripcionEquipo inscripcion = new InscripcionEquipo(jugador, this, posicion, numeroCamiseta);
 	inscripciones.add(inscripcion);
 	jugador.agregarInscripcionEquipo(inscripcion);
-	return true;
 	
 }
 

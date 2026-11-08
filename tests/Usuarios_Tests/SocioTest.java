@@ -177,18 +177,18 @@ public class SocioTest
     }
 
     @Test
-    void testTieneEquipoEn()
+    void testTieneEquipoEn() throws Exception
     {
         assertFalse(socio.tieneEquipoEn(futbol), "Un socio sin equipos no tiene equipo en ningún deporte.");
 
-        assertTrue(equipoFutbol.agregarJugador(socio, "Delantero", 9), "El socio debería poder inscribirse al equipo.");
+        equipoFutbol.agregarJugador(socio, "Delantero", 9);
 
         assertTrue(socio.tieneEquipoEn(futbol), "El socio debe tener equipo en fútbol.");
         assertFalse(socio.tieneEquipoEn(baloncesto), "El socio no debe tener equipo en baloncesto.");
     }
 
     @Test
-    void testAgregarInscripcionEquipo()
+    void testAgregarInscripcionEquipo() throws Exception
     {
         equipoFutbol.agregarJugador(socio, "Delantero", 9);
 

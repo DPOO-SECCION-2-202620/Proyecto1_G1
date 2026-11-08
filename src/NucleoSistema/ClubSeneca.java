@@ -13,6 +13,9 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import DeportesConjunto_Competencias.Baloncesto;
+import DeportesConjunto_Competencias.Futbol;
+import DeportesConjunto_Competencias.Voleibol;
 import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Competencia;
 import DeportesConjunto_Competencias.DeporteConjunto;
@@ -60,6 +63,19 @@ import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
 import Usuarios.Usuario;
+import Usuarios.Administrador;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
+import TorneosInternos.Encuentro;
+import TorneosInternos.InscripcionTorneo;
+import TorneosInternos.InscripcionTorneoEquipo;
+import TorneosInternos.InscripcionTorneoIndividual;
+import TorneosInternos.Premiacion;
+import TorneosInternos.PremiacionCompetitiva;
+import TorneosInternos.PremiacionRecreativa;
+import TorneosInternos.Torneo;
+import TorneosInternos.TorneoConjunto;
+import TorneosInternos.TorneoIndividual;
+import TorneosInternos.JugadorTorneo;
 
 public class ClubSeneca {
 
@@ -127,12 +143,10 @@ public class ClubSeneca {
 		this.persistencia = new Persistencia("datos");
 	}
 	
-	public boolean inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta) {
-		boolean inscrito = equipo.agregarJugador(socio, posicion, numeroCamiseta);
-		if (inscrito) {
-			guardarDatos();
-		}
-		return inscrito;
+	public void inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta)
+			throws ReglaNegocioException {
+		equipo.agregarJugador(socio, posicion, numeroCamiseta);
+		guardarDatos();
 	}
 	
 	public PartidoInterno registrarPartidoInterno(Equipo equipoLocal, Equipo equipoVisitante,
@@ -393,6 +407,48 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
+	public List<Producto> getProductosDisponibles(Rubro rubro) {
+	    List<Producto> catalogo = new ArrayList<>();
+	    if (rubro == Rubro.TIENDA) {
+	        catalogo.addAll(tienda.getArticulos());
+	    } else if (rubro == Rubro.CAFETERIA) {
+	        catalogo.addAll(cafeteria.getProductos());
+	    }
+	    List<Producto> disponibles = new ArrayList<>();
+	    for (Producto producto : catalogo) {
+	        if (producto.getCantidad() > 0 && !disponibles.contains(producto)) {
+	            disponibles.add(producto);
+	        }
+	    }
+	    return disponibles;
+	}
+
+	public Venta registrarVentaConBono(Socio comprador, Map<Producto, Integer> productos, Rubro rubro,
+	        Instalacion instalacionActual, BonoDescuento bono, double propina) throws ReglaNegocioException {
+	    if (comprador == null || bono == null) {
+	        throw new ReglaNegocioException("Debe indicar el comprador y el bono");
+	    }
+	    if (!comprador.getBonos().contains(bono)) {
+	        throw new ReglaNegocioException("El bono no pertenece al socio");
+	    }
+	    if (bono.estaUsado()) {
+	        throw new ReglaNegocioException("El bono ya fue usado");
+	    }
+	    int ventasAntes = ventas.size();
+	    registrarVenta(comprador, productos, rubro, instalacionActual, null, 0, propina);
+	    if (ventas.size() == ventasAntes) {
+	        throw new ReglaNegocioException("No se pudo registrar la compra: revise los productos y las cantidades");
+	    }
+	    Venta venta = ventas.get(ventas.size() - 1);
+	    int puntosDeMas = venta.aplicarBono(bono.getPorcentaje());
+	    if (puntosDeMas > 0) {
+	        comprador.redimirPuntos(puntosDeMas);
+	    }
+	    bono.setUsado(true);
+	    guardarDatos();
+	    return venta;
+	}
+	
 	public void reabastecerTienda(Articulo articulo, int cantidad) {
 		if (articulo == null || cantidad <= 0) {
 			return;
@@ -461,23 +517,23 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
-	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada) {
+	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada)
+			throws ReglaNegocioException {
 		if (solicitud == null || !solicitudes.contains(solicitud)
 				|| solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
+			throw new ReglaNegocioException("La solicitud no existe o ya fue resuelta");
+		}
+		if (!aprobada) {
+			solicitud.rechazar();
+			guardarDatos();
 			return;
 		}
-		List<Empleado> todosEmpleados = new ArrayList<>();
-		for (Usuario usuario : usuarios) {
-			if (usuario instanceof Empleado) {
-				todosEmpleados.add((Empleado) usuario);
-			}
+		if (!gestorTurnos.puedeAprobar(solicitud, getEmpleados())) {
+			throw new ReglaNegocioException(
+					"La aprobación dejaría menos de 2 entrenadores o menos de 1 fisioterapeuta disponibles");
 		}
-		if (aprobada && gestorTurnos.puedeAprobar(solicitud, todosEmpleados)) {
-			solicitud.aprobar();
-			solicitud.getSolicitante().cambiarTurno(solicitud.getTurnoActual(), solicitud.getTurnoNuevo());
-		} else {
-			solicitud.rechazar();
-		}
+		solicitud.aprobar();
+		solicitud.getSolicitante().cambiarTurno(solicitud.getTurnoActual(), solicitud.getTurnoNuevo());
 		guardarDatos();
 	}
 	
@@ -609,6 +665,23 @@ public class ClubSeneca {
 		return socio;
 	}
 	
+	public boolean registrarUsuario(Usuario usuario) {
+		if (usuario == null) {
+			return false;
+		}
+		for (Usuario existente : usuarios) {
+			if (existente.getLogin().equals(usuario.getLogin())) {
+				return false;
+			}
+		}
+		usuarios.add(usuario);
+		if (usuario instanceof Administrador) {
+			((Administrador) usuario).setClub(this);
+		}
+		guardarDatos();
+		return true;
+	}
+	
 	public InscripcionIndividual inscribirEnDisciplina(Socio socio, DisciplinaIndividual disciplina, NivelJugador nivel) {
 		if (socio == null || disciplina == null) {
 			return null;
@@ -644,12 +717,136 @@ public class ClubSeneca {
 		guardarDatos();
 	}
 	
+	public List<Torneo> getTorneos() {
+		return new ArrayList<>(torneos);
+	}
+
+	public void agregarTorneo(Torneo torneo) throws ReglaNegocioException {
+		if (torneo == null) {
+			throw new ReglaNegocioException("El torneo no puede ser nulo");
+		}
+		for (Torneo existente : torneos) {
+			if (existente.getNombre().equalsIgnoreCase(torneo.getNombre())) {
+				throw new ReglaNegocioException("Ya existe un torneo con el nombre " + torneo.getNombre());
+			}
+		}
+		torneos.add(torneo);
+		guardarDatos();
+	}
+
+	public void inscribirEnTorneo(Torneo torneo, InscripcionTorneo inscripcion) throws ReglaNegocioException {
+		boolean elegible = esElegiblePreferencial(torneo, inscripcion);
+		torneo.inscribir(inscripcion, LocalDate.now(), elegible);
+		guardarDatos();
+	}
+
+	public void retirarJugadorDeTorneo(Torneo torneo, JugadorTorneo jugador) throws ReglaNegocioException {
+		torneo.retirar(jugador);
+		guardarDatos();
+	}
+
+	public void retirarEquipoDeTorneo(Torneo torneo, Equipo equipo) throws ReglaNegocioException {
+		torneo.retirarEquipo(equipo);
+		guardarDatos();
+	}
+
+	public void iniciarTorneo(Torneo torneo) throws ReglaNegocioException {
+		torneo.iniciar();
+		guardarDatos();
+	}
+
+	public void registrarGanadorTorneo(Torneo torneo, Encuentro encuentro, InscripcionTorneo ganador)
+			throws ReglaNegocioException {
+		torneo.registrarGanador(encuentro, ganador);
+		guardarDatos();
+	}
+
+	public boolean esElegiblePreferencial(Torneo torneo, InscripcionTorneo inscripcion) {
+		return new ClasificacionPreferencial().esElegible(torneo, inscripcion, rankings, historial.getPartidos(),
+				equipos);
+	}
+
+	public List<DisciplinaIndividual> getDisciplinas() {
+		return new ArrayList<>(disciplinas);
+	}
+
+	public void registrarDisciplina(DisciplinaIndividual disciplina) {
+		if (disciplina != null && !disciplinas.contains(disciplina)) {
+			disciplinas.add(disciplina);
+			guardarDatos();
+		}
+	}
+
+	/** Devuelve la instancia del deporte de conjunto (la crea y registra si aún no existe). */
+	public DeporteConjunto obtenerDeporte(String nombre) {
+		for (DeporteConjunto deporte : deportes) {
+			if (deporte.getNombre().equalsIgnoreCase(nombre)) {
+				return deporte;
+			}
+		}
+		for (Equipo equipo : equipos) {
+			if (equipo.getDeporte().getNombre().equalsIgnoreCase(nombre)) {
+				return equipo.getDeporte();
+			}
+		}
+		DeporteConjunto nuevo;
+		switch (nombre) {
+		case "Futbol":
+			nuevo = new Futbol();
+			break;
+		case "Baloncesto":
+			nuevo = new Baloncesto();
+			break;
+		case "Voleibol":
+			nuevo = new Voleibol();
+			break;
+		default:
+			return null;
+		}
+		deportes.add(nuevo);
+		guardarDatos();
+		return nuevo;
+	}
+
+	public Socio buscarSocio(String login) {
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof Socio && usuario.getLogin().equals(login)) {
+				return (Socio) usuario;
+			}
+		}
+		return null;
+	}
+	
 	public List<Inventario> getInventario() {
 		return inventarios;
 	}
 	
 	public Historial getHistorial() {
 		return historial;
+	}
+	
+	public List<Equipo> getEquipos() {
+		return new ArrayList<>(equipos);
+	}
+
+	public List<SolicitudCambioTurno> getSolicitudesPendientes() {
+		List<SolicitudCambioTurno> pendientes = new ArrayList<>();
+		for (SolicitudCambioTurno solicitud : solicitudes) {
+			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				pendientes.add(solicitud);
+			}
+		}
+		return pendientes;
+	}
+
+	public List<Empleado> getEmpleados() {
+		List<Empleado> empleados = new ArrayList<>();
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof Empleado) {
+				empleados.add((Empleado) usuario);
+			}
+		}
+		return empleados;
 	}
 	
 	public void setPersistencia(Persistencia persistencia) {

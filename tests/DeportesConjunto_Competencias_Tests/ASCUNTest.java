@@ -52,7 +52,7 @@ public class ASCUNTest
     {
     }
 
-    private Equipo crearEquipo(String nombre, String prefijo)
+    private Equipo crearEquipo(String nombre, String prefijo) throws Exception
     {
         Equipo equipo = new Equipo(nombre, 10, futbol, Categoria.MAYORES);
         equipo.agregarJugador(new Socio(20, "Jugador " + prefijo, prefijo, "x"), "Delantero", 9);
@@ -143,7 +143,7 @@ public class ASCUNTest
     }
 
     @Test
-    void testDeterminarClasificadosSoloEquiposInscritos()
+    void testDeterminarClasificadosSoloEquiposInscritos() throws Exception
     {
         Equipo noInscrito = crearEquipo("No Inscrito", "n");
         ascun.registrarPartido(crearPartido(noInscrito, 5, 0));

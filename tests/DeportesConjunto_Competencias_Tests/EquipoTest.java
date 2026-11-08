@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
+import Excepciones.ReglaNegocioException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ public class EquipoTest
     }
 
     @Test
-    void testGetters()
+    void testGetters() throws Exception
     {
         assertEquals("Los Cerros FC", equipoMayores.getNombre(), "El nombre del equipo no es el esperado.");
         assertEquals(2, equipoMayores.getCupoMaximo(), "El cupo del equipo no es el esperado.");
@@ -83,15 +84,15 @@ public class EquipoTest
     }
 
     @Test
-    void testToString()
+    void testToString() throws Exception
     {
         assertEquals("Los Cerros FC (Futbol, MAYORES)", equipoMayores.toString(), "El texto del equipo no es el esperado.");
     }
 
     @Test
-    void testAgregarJugador()
+    void testAgregarJugador () throws Exception
     {
-        assertTrue(equipoMayores.agregarJugador(ana, "Delantero", 9), "El jugador debe poder inscribirse.");
+        equipoMayores.agregarJugador(ana, "Delantero", 9);
 
         assertEquals(1, equipoMayores.getInscripciones().size(), "El equipo debe tener una inscripción.");
         assertEquals("Delantero", equipoMayores.getInscripciones().get(0).getPosicion(), "La posición de la inscripción no es la esperada.");
@@ -101,54 +102,54 @@ public class EquipoTest
     }
 
     @Test
-    void testAgregarJugadorConCupoLleno()
+    void testAgregarJugadorConCupoLleno() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
         equipoMayores.agregarJugador(pedro, "Portero", 1);
 
-        assertFalse(equipoMayores.agregarJugador(luis, "Defensa", 4), "No se puede inscribir un jugador si el cupo está lleno.");
+        assertThrows(ReglaNegocioException.class, () -> equipoMayores.agregarJugador(luis, "Defensa", 4), "No se puede inscribir un jugador si el cupo está lleno.");
         assertEquals(2, equipoMayores.getInscripciones().size(), "El equipo debe seguir con dos inscripciones.");
         assertEquals(0, luis.getInscripcionesEquipo().size(), "El socio no debe tener inscripciones.");
     }
 
     @Test
-    void testAgregarJugadorFueraDeCategoria()
+    void testAgregarJugadorFueraDeCategoria() throws Exception
     {
-        assertFalse(equipoMayores.agregarJugador(menor, "Delantero", 9), "Un menor no puede inscribirse en mayores.");
-        assertTrue(equipoSub15.agregarJugador(menor, "Delantero", 9), "Un jugador de 14 años puede inscribirse en SUB15.");
-        assertFalse(equipoSub15.agregarJugador(ana, "Defensa", 4), "Un adulto no puede inscribirse en SUB15.");
+        assertThrows(ReglaNegocioException. class, () -> equipoMayores.agregarJugador(menor, "Delantero", 9), "Un menor no puede inscribirse en mayores.");
+        equipoSub15.agregarJugador(menor, "Delantero", 9);
+        assertThrows(ReglaNegocioException. class, () -> equipoSub15.agregarJugador(ana, "Defensa", 4), "Un adulto no puede inscribirse en SUB15.");
     }
 
     @Test
-    void testAgregarJugadorConEquipoEnElMismoDeporte()
+    void testAgregarJugadorConEquipoEnElMismoDeporte() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
         Equipo otroEquipo = new Equipo("Otro FC", 10, futbol, Categoria.MAYORES);
 
-        assertFalse(otroEquipo.agregarJugador(ana, "Defensa", 4), "Un socio no puede estar en dos equipos del mismo deporte.");
+        assertThrows(ReglaNegocioException. class, () -> otroEquipo.agregarJugador(ana, "Defensa", 4), "Un socio no puede estar en dos equipos del mismo deporte.");
         assertEquals(0, otroEquipo.getInscripciones().size(), "El otro equipo no debe tener inscripciones.");
     }
 
     @Test
-    void testAgregarJugadorConEquipoEnOtroDeporte()
+    void testAgregarJugadorConEquipoEnOtroDeporte() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
 
-        assertTrue(equipoBaloncesto.agregarJugador(ana, "Alero", 9), "Un socio sí puede estar en equipos de deportes distintos.");
+        equipoBaloncesto.agregarJugador(ana, "Alero", 9);
         assertEquals(2, ana.getInscripcionesEquipo().size(), "El socio debe tener dos inscripciones.");
     }
 
     @Test
-    void testAgregarJugadorConCamisetaOcupada()
+    void testAgregarJugadorConCamisetaOcupada() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
 
-        assertFalse(equipoMayores.agregarJugador(pedro, "Portero", 9), "No se puede repetir el número de camiseta.");
+        assertThrows(ReglaNegocioException. class, () -> equipoMayores.agregarJugador(pedro, "Portero", 9), "No se puede repetir el número de camiseta.");
         assertEquals(1, equipoMayores.getInscripciones().size(), "El equipo debe seguir con una inscripción.");
     }
 
     @Test
-    void testCamisetaOcupada()
+    void testCamisetaOcupada() throws Exception
     {
         assertFalse(equipoMayores.camisetaOcupada(9), "Con el equipo vacío ninguna camiseta está ocupada.");
 
@@ -159,7 +160,7 @@ public class EquipoTest
     }
 
     @Test
-    void testGetInscripcionDe()
+    void testGetInscripcionDe() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
 
@@ -169,7 +170,7 @@ public class EquipoTest
     }
 
     @Test
-    void testEstaHabilitado()
+    void testEstaHabilitado() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
 
@@ -181,13 +182,13 @@ public class EquipoTest
     }
 
     @Test
-    void testEstaHabilitadoJugadorNoInscrito()
+    void testEstaHabilitadoJugadorNoInscrito() throws Exception
     {
         assertFalse(equipoMayores.estaHabilitado(pedro), "Un jugador no inscrito no está habilitado.");
     }
 
     @Test
-    void testContarJugadoresHabilitados()
+    void testContarJugadoresHabilitados() throws Exception
     {
         assertEquals(0, equipoMayores.contarJugadoresHabilitados(), "Un equipo vacío no tiene jugadores habilitados.");
 
@@ -200,7 +201,7 @@ public class EquipoTest
     }
 
     @Test
-    void testPuedeJugar()
+    void testPuedeJugar() throws Exception
     {
         assertFalse(equipoBaloncesto.puedeJugar(), "Un equipo vacío no puede jugar.");
 
@@ -215,7 +216,7 @@ public class EquipoTest
     }
 
     @Test
-    void testPuedeJugarConSuspendidos()
+    void testPuedeJugarConSuspendidos() throws Exception
     {
         for(int i = 1; i <= 5; i++)
         {
@@ -228,7 +229,7 @@ public class EquipoTest
     }
 
     @Test
-    void testGetInscripcionesSuspendidas()
+    void testGetInscripcionesSuspendidas() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
         equipoMayores.agregarJugador(pedro, "Portero", 1);
@@ -242,7 +243,7 @@ public class EquipoTest
     }
 
     @Test
-    void testToJSON()
+    void testToJSON() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
 
@@ -256,7 +257,7 @@ public class EquipoTest
     }
 
     @Test
-    void testFromJSONConDeporteComoObjeto()
+    void testFromJSONConDeporteComoObjeto() throws Exception
     {
         equipoMayores.agregarJugador(ana, "Delantero", 9);
         Socio anaNueva = new Socio(20, "Ana Torres", "ana", "1");
@@ -274,7 +275,7 @@ public class EquipoTest
     }
 
     @Test
-    void testFromJSONConDeporteComoTexto()
+    void testFromJSONConDeporteComoTexto() throws Exception
     {
         JSONObject json = equipoMayores.toJSON();
         json.put("deporte", "Futbol");
@@ -285,7 +286,7 @@ public class EquipoTest
     }
 
     @Test
-    void testFromJSONDeporteTextoInexistente()
+    void testFromJSONDeporteTextoInexistente() throws Exception
     {
         JSONObject json = equipoMayores.toJSON();
         json.put("deporte", "Golf");
@@ -296,7 +297,7 @@ public class EquipoTest
     }
 
     @Test
-    void testFromJSONSinInscripciones()
+    void testFromJSONSinInscripciones() throws Exception
     {
         JSONObject json = equipoMayores.toJSON();
         json.remove("inscripciones");

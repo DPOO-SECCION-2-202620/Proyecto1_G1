@@ -203,7 +203,7 @@ public class CompetenciaTest
     }
 
     @Test
-    void testGetGoleadorBaloncestoCuentaPuntos()
+    void testGetGoleadorBaloncestoCuentaPuntos() throws Exception
     {
         Equipo basket = new Equipo("Cerros Basket", 10, baloncesto, Categoria.MAYORES);
         basket.agregarJugador(ana, "Alero", 7);
@@ -219,7 +219,7 @@ public class CompetenciaTest
     }
 
     @Test
-    void testGetGoleadorVoleibolCuentaAcesYBloqueos()
+    void testGetGoleadorVoleibolCuentaAcesYBloqueos() throws Exception
     {
         Equipo voley = new Equipo("Cerros Voley", 10, new Voleibol(), Categoria.MAYORES);
         voley.agregarJugador(ana, "Central", 3);

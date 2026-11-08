@@ -41,6 +41,12 @@ public class CafeteriaSocios {
 		}
 	}
 	
+	public List<Producto> getProductos() {
+	    List<Producto> productos = new ArrayList<>(bebidas);
+	    productos.addAll(snacks);
+	    return productos;
+	}
+	
 	public void reabastecer(Producto producto, int cantidad) {
 		for (int i = 0; i < cantidad; i++) {
 			agregarProducto(producto);
