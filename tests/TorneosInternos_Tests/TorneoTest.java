@@ -761,7 +761,6 @@ public class TorneoTest
     }
 
     @Test
-    @Disabled("Error conocido en Torneo.corregirGanador: reemplaza al participante de la ronda siguiente antes de validar al nuevo ganador. Quita esta anotación para verlo fallar.")
     void testCorregirGanadorConParticipanteAjenoNoAlteraLaSiguienteRonda() throws Exception
     {
         llenar(torneo, 4);

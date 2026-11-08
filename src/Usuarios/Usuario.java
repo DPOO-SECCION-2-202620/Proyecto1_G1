@@ -45,20 +45,22 @@ public abstract class Usuario {
 	}
 
 	public static Usuario fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
-		String tipo = json.getString("tipo");
+	    String tipo = json.getString("tipo");
 
-		switch (tipo) {
-			case "Socio":
-				return Socio.fromJSON(json, mapaDisciplinas);
-			case "Entrenador":
-				return Entrenador.fromJSON(json, mapaDisciplinas);
-			case "Fisioterapeuta":
-				return Fisioterapeuta.fromJSON(json, mapaDisciplinas);
-			case "Administrador":
-				return Administrador.fromJSON(json);
-			default:
-				throw new IllegalArgumentException("Tipo de usuario desconocido: " + tipo);
-		}
+	    switch (tipo) {
+	        case "Socio":
+	            return Socio.fromJSON(json, mapaDisciplinas);
+	        case "Empleado":                                       
+	            return Empleado.fromJSON(json, mapaDisciplinas);    
+	        case "Entrenador":
+	            return Entrenador.fromJSON(json, mapaDisciplinas);
+	        case "Fisioterapeuta":
+	            return Fisioterapeuta.fromJSON(json, mapaDisciplinas);
+	        case "Administrador":
+	            return Administrador.fromJSON(json);
+	        default:
+	            throw new IllegalArgumentException("Tipo de usuario desconocido: " + tipo);
+	    }
 	}
 	
 }

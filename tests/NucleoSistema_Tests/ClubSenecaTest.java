@@ -71,11 +71,25 @@ import Tienda_Cafeteria_Inventario.Ubicacion;
 import TurnosEmpleados.EstadoSolicitud;
 import TurnosEmpleados.SolicitudCambioTurno;
 import TurnosEmpleados.Turno;
+import Usuarios.Administrador;
 import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Fisioterapeuta;
 import Usuarios.Socio;
 import Usuarios.Usuario;
+import DeportesConjunto_Competencias.DeporteConjunto;
+import DeportesConjunto_Competencias.Voleibol;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
+import Tienda_Cafeteria_Inventario.Venta;
+import TorneosInternos.Encuentro;
+import TorneosInternos.EstadoTorneo;
+import TorneosInternos.InscripcionTorneoEquipo;
+import TorneosInternos.InscripcionTorneoIndividual;
+import TorneosInternos.PremiacionCompetitiva;
+import TorneosInternos.PremiacionRecreativa;
+import TorneosInternos.Torneo;
+import TorneosInternos.TorneoConjunto;
+import TorneosInternos.TorneoIndividual;
 
 public class ClubSenecaTest
 {
@@ -1695,11 +1709,12 @@ public class ClubSenecaTest
         SolicitudCambioTurno segunda = obtenerSolicitudes().get(1);
 
         club.resolverSolicitud(primera, true);
-        club.resolverSolicitud(segunda, true);
+
+        assertThrows(ReglaNegocioException.class, () -> club.resolverSolicitud(segunda, true), "La segunda dejaría a un solo entrenador y no puede aprobarse.");
 
         assertEquals(EstadoSolicitud.ACEPTADA, primera.getEstado(), "La primera solicitud deja a dos entrenadores y debe aceptarse.");
-        assertEquals(EstadoSolicitud.RECHAZADA, segunda.getEstado(), "La segunda dejaría a un solo entrenador y debe rechazarse.");
-        assertSame(actual3, entrenadores[2].getTurnos().get(0), "El turno del empleado no debe cambiar si se rechaza.");
+        assertEquals(EstadoSolicitud.PENDIENTE, segunda.getEstado(), "La solicitud que no se pudo aprobar debe seguir pendiente.");
+        assertSame(actual3, entrenadores[2].getTurnos().get(0), "El turno del empleado no debe cambiar si no se aprueba.");
     }
 
     @Test
@@ -1711,8 +1726,8 @@ public class ClubSenecaTest
         empleado.agregarTurno(actual);
         SolicitudCambioTurno ajena = empleado.solicitarCambioTurno(actual, nuevo);
 
-        club.resolverSolicitud(ajena, true);
-        club.resolverSolicitud(null, true);
+        assertThrows(ReglaNegocioException.class, () -> club.resolverSolicitud(ajena, true), "Una solicitud que no está en el club no puede resolverse.");
+        assertThrows(ReglaNegocioException.class, () -> club.resolverSolicitud(null, true), "Una solicitud nula no puede resolverse.");
 
         assertEquals(EstadoSolicitud.PENDIENTE, ajena.getEstado(), "Una solicitud que no está en el club no debe cambiar.");
     }
@@ -1728,7 +1743,7 @@ public class ClubSenecaTest
         SolicitudCambioTurno solicitud = obtenerSolicitudes().get(0);
         club.resolverSolicitud(solicitud, false);
 
-        club.resolverSolicitud(solicitud, true);
+        assertThrows(ReglaNegocioException.class, () -> club.resolverSolicitud(solicitud, true), "Una solicitud ya resuelta no puede resolverse otra vez.");
 
         assertEquals(EstadoSolicitud.RECHAZADA, solicitud.getEstado(), "Una solicitud ya resuelta no debe cambiar de estado.");
     }
@@ -1958,6 +1973,1074 @@ public class ClubSenecaTest
         assertTrue(restaurado.getHistorial().getPartidosPractica().get(0).isFinalizado(), "El partido restaurado debe estar finalizado.");
         assertEquals(2, restaurado.generarReporteDeportivo().size(), "Deben restaurarse los dos rankings.");
         assertEquals(1016, restaurado.generarReporteDeportivo().get(0).getPuntajeElo(), 0.001, "El puntaje restaurado de la ganadora no es el esperado.");
+    }
+
+    @Test
+    void testGetEquipos() throws Exception
+    {
+        assertEquals(0, club.getEquipos().size(), "Un club nuevo no debe tener equipos.");
+
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+
+        assertEquals(1, club.getEquipos().size(), "El club debe tener un equipo.");
+        assertSame(equipo, club.getEquipos().get(0), "El equipo devuelto no es el esperado.");
+    }
+
+    @Test
+    void testGetEquiposDevuelveUnaCopia() throws Exception
+    {
+        club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+
+        club.getEquipos().clear();
+
+        assertEquals(1, club.getEquipos().size(), "Modificar la lista devuelta no debe afectar al club.");
+    }
+
+    @Test
+    void testBuscarSocio()
+    {
+        assertSame(ana, club.buscarSocio("ana"), "Debe encontrar al socio por su login.");
+        assertSame(pedro, club.buscarSocio("pgil"), "Debe encontrar al socio por su login.");
+    }
+
+    @Test
+    void testBuscarSocioInexistente()
+    {
+        assertNull(club.buscarSocio("nadie"), "Un login inexistente no debe devolver socio.");
+        assertNull(club.buscarSocio(null), "Un login nulo no debe devolver socio.");
+    }
+
+    @Test
+    void testBuscarSocioEncuentraEmpleados() throws Exception
+    {
+        cargarClubConUsuarios(new Empleado(30, "Luis Mora", "lmora", "abc", "E01"));
+
+        assertNotNull(club.buscarSocio("lmora"), "Un empleado también es un socio y debe encontrarse.");
+        assertEquals("Luis Mora", club.buscarSocio("lmora").getNombre(), "El empleado encontrado no es el esperado.");
+    }
+
+    @Test
+    void testBuscarSocioIgnoraUsuariosQueNoSonSocios() throws Exception
+    {
+        assertTrue(club.registrarUsuario(new Administrador("Admin Club", "admin", "root")), "El administrador debe registrarse.");
+
+        assertNull(club.buscarSocio("admin"), "Un administrador no es un socio.");
+    }
+
+    @Test
+    void testBuscarSocioDadoDeBaja()
+    {
+        club.darDeBajaSocio(ana);
+
+        assertNull(club.buscarSocio("ana"), "Un socio dado de baja no debe encontrarse.");
+        assertSame(pedro, club.buscarSocio("pgil"), "Los demás socios deben conservarse.");
+    }
+
+    @Test
+    void testGetEmpleados() throws Exception
+    {
+        cargarClubConUsuarios(new Entrenador(30, "Entrenador Uno", "e1", "1", "E1"), new Empleado(31, "Luis Mora", "lmora", "abc", "E01"));
+        club.crearSocio(20, "Ana Torres", "ana", "1234");
+
+        List<Empleado> empleados = club.getEmpleados();
+
+        assertEquals(2, empleados.size(), "Solo los empleados deben devolverse.");
+        assertEquals("e1", empleados.get(0).getLogin(), "El primer empleado no es el esperado.");
+        assertEquals("lmora", empleados.get(1).getLogin(), "El segundo empleado no es el esperado.");
+    }
+
+    @Test
+    void testGetEmpleadosSinEmpleados()
+    {
+        assertTrue(club.getEmpleados().isEmpty(), "Sin empleados la lista debe estar vacía.");
+    }
+
+    @Test
+    void testGetSolicitudesPendientes() throws Exception
+    {
+        Entrenador[] entrenadores = prepararEquipoDeTurnos();
+        Entrenador e3 = entrenadores[2];
+        Turno actual = e3.getTurnos().get(0);
+        Turno nuevo = new Turno("MARTES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        club.registrarSolicitudTurno(e3, actual, nuevo);
+
+        assertEquals(1, club.getSolicitudesPendientes().size(), "Debe haber una solicitud pendiente.");
+        assertSame(obtenerSolicitudes().get(0), club.getSolicitudesPendientes().get(0), "La solicitud pendiente no es la esperada.");
+    }
+
+    @Test
+    void testGetSolicitudesPendientesSinSolicitudes()
+    {
+        assertTrue(club.getSolicitudesPendientes().isEmpty(), "Sin solicitudes la lista debe estar vacía.");
+    }
+
+    @Test
+    void testGetSolicitudesPendientesExcluyeLasResueltas() throws Exception
+    {
+        Entrenador[] entrenadores = prepararEquipoDeTurnos();
+        Entrenador e3 = entrenadores[2];
+        Turno actual = e3.getTurnos().get(0);
+        Turno nuevo = new Turno("MARTES", LocalTime.of(8, 0), LocalTime.of(12, 0));
+        club.registrarSolicitudTurno(e3, actual, nuevo);
+
+        club.resolverSolicitud(obtenerSolicitudes().get(0), false);
+
+        assertEquals(0, club.getSolicitudesPendientes().size(), "Una solicitud resuelta no debe aparecer como pendiente.");
+    }
+
+    @Test
+    void testRegistrarDisciplina()
+    {
+        club.registrarDisciplina(tenis);
+
+        assertEquals(1, club.getDisciplinas().size(), "El club debe tener una disciplina.");
+        assertSame(tenis, club.getDisciplinas().get(0), "La disciplina registrada no es la esperada.");
+        assertEquals(1, jsonDelClub().getJSONArray("disciplinas").length(), "El estado guardado debe incluir la disciplina.");
+    }
+
+    @Test
+    void testRegistrarDisciplinaRepetidaONula()
+    {
+        club.registrarDisciplina(tenis);
+
+        club.registrarDisciplina(tenis);
+        club.registrarDisciplina(null);
+
+        assertEquals(1, club.getDisciplinas().size(), "No debe duplicarse ni registrarse una disciplina nula.");
+    }
+
+    @Test
+    void testRegistrarVariasDisciplinas()
+    {
+        club.registrarDisciplina(tenis);
+        club.registrarDisciplina(padel);
+
+        assertEquals(2, club.getDisciplinas().size(), "El club debe tener dos disciplinas.");
+    }
+
+    @Test
+    void testGetDisciplinasDevuelveUnaCopia()
+    {
+        club.registrarDisciplina(tenis);
+
+        club.getDisciplinas().clear();
+
+        assertEquals(1, club.getDisciplinas().size(), "Modificar la lista devuelta no debe afectar al club.");
+    }
+
+    @Test
+    void testObtenerDeporte()
+    {
+        assertTrue(club.obtenerDeporte("Futbol") instanceof Futbol, "Debe crearse un fútbol.");
+        assertTrue(club.obtenerDeporte("Baloncesto") instanceof Baloncesto, "Debe crearse un baloncesto.");
+        assertTrue(club.obtenerDeporte("Voleibol") instanceof Voleibol, "Debe crearse un voleibol.");
+        assertEquals(3, jsonDelClub().getJSONArray("deportes").length(), "El club debe registrar los tres deportes.");
+    }
+
+    @Test
+    void testObtenerDeporteReutilizaLaInstancia()
+    {
+        DeporteConjunto primero = club.obtenerDeporte("Futbol");
+
+        assertSame(primero, club.obtenerDeporte("Futbol"), "Debe devolver la misma instancia.");
+        assertSame(primero, club.obtenerDeporte("futbol"), "El nombre se compara sin distinguir mayúsculas.");
+        assertEquals(1, jsonDelClub().getJSONArray("deportes").length(), "El deporte no debe duplicarse.");
+    }
+
+    @Test
+    void testObtenerDeporteDeUnEquipoExistente()
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+
+        assertSame(futbol, club.obtenerDeporte("Futbol"), "Debe reutilizar el deporte de un equipo existente.");
+        assertEquals(0, jsonDelClub().getJSONArray("deportes").length(), "No debe registrarse un deporte nuevo.");
+        assertSame(futbol, equipo.getDeporte(), "El deporte del equipo no debe cambiar.");
+    }
+
+    @Test
+    void testObtenerDeporteInexistente()
+    {
+        assertNull(club.obtenerDeporte("Ajedrez"), "Un deporte desconocido no debe crearse.");
+        assertEquals(0, jsonDelClub().getJSONArray("deportes").length(), "No debe registrarse ningún deporte.");
+    }
+
+    @Test
+    void testGetProductosDisponiblesDeTienda()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        club.reabastecerTienda(pelotas, 2);
+
+        List<Producto> disponibles = club.getProductosDisponibles(Rubro.TIENDA);
+
+        assertEquals(1, disponibles.size(), "El producto no debe repetirse.");
+        assertSame(pelotas, disponibles.get(0), "El producto disponible no es el esperado.");
+    }
+
+    @Test
+    void testGetProductosDisponiblesDeCafeteria()
+    {
+        Snack galletas = new Snack("Galletas", "Snacks", 3000, 10, new ArrayList<Tienda_Cafeteria_Inventario.Alergeno>());
+        club.reabasteceCafeteriaSocios(galletas, 2);
+
+        List<Producto> disponibles = club.getProductosDisponibles(Rubro.CAFETERIA);
+
+        assertEquals(1, disponibles.size(), "El producto no debe repetirse.");
+        assertSame(galletas, disponibles.get(0), "El producto disponible no es el esperado.");
+    }
+
+    @Test
+    void testGetProductosDisponiblesExcluyeLosAgotados()
+    {
+        Empleado empleado = new Empleado(30, "Luis Mora", "lmora", "abc", "E01");
+        SugerenciaArticulo sugerencia = club.registrarSugerencia(empleado, "Gorra", "Accesorios", 35000);
+        club.resolverSugerencia(sugerencia, true);
+
+        assertTrue(club.getProductosDisponibles(Rubro.TIENDA).isEmpty(), "Un artículo sin existencias no está disponible.");
+    }
+
+    @Test
+    void testGetProductosDisponiblesConRubroNoVendible()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        club.reabastecerTienda(pelotas, 1);
+
+        assertTrue(club.getProductosDisponibles(Rubro.MENSUALIDAD).isEmpty(), "Un rubro no vendible no tiene productos.");
+        assertTrue(club.getProductosDisponibles(null).isEmpty(), "Un rubro nulo no tiene productos.");
+    }
+
+    @Test
+    void testGetProductosDisponiblesSinProductos()
+    {
+        assertTrue(club.getProductosDisponibles(Rubro.TIENDA).isEmpty(), "Una tienda vacía no tiene productos.");
+        assertTrue(club.getProductosDisponibles(Rubro.CAFETERIA).isEmpty(), "Una cafetería vacía no tiene productos.");
+    }
+
+    @Test
+    void testRegistrarVentaConBonoSinDatos()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(null, crearCompra(pelotas, 1), Rubro.TIENDA, null, null, 0), "Sin comprador ni bono no se registra la venta.");
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(ana, crearCompra(pelotas, 1), Rubro.TIENDA, null, null, 0), "Sin bono no se registra la venta.");
+        assertEquals(50, pelotas.getCantidad(), "El inventario no debe cambiar.");
+        assertEquals(0, jsonDelClub().getJSONArray("ventas").length(), "No debe registrarse ninguna venta.");
+    }
+
+    @Test
+    void testGetTorneosInicial()
+    {
+        assertTrue(club.getTorneos().isEmpty(), "Un club nuevo no debe tener torneos.");
+        assertEquals(0, jsonDelClub().getJSONArray("torneos").length(), "El estado guardado no debe tener torneos.");
+    }
+
+    @Test
+    void testAgregarTorneoNulo()
+    {
+        assertThrows(ReglaNegocioException.class, () -> club.agregarTorneo(null), "Un torneo nulo no puede agregarse.");
+
+        assertTrue(club.getTorneos().isEmpty(), "No debe haber torneos.");
+    }
+
+    private TorneoConjunto crearTorneoConjunto(String nombre) throws Exception
+    {
+        return new TorneoConjunto(nombre, 8, fecha, fecha.minusDays(5), new PremiacionRecreativa(), futbol, Categoria.MAYORES);
+    }
+
+    private TorneoIndividual crearTorneoIndividual(String nombre) throws Exception
+    {
+        return new TorneoIndividual(nombre, 8, fecha, fecha.minusDays(5), new PremiacionCompetitiva(50000), tenis, NivelJugador.INTERMEDIO, Modalidad.SENCILLOS);
+    }
+
+    @Test
+    void testAgregarTorneo() throws Exception
+    {
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        club.agregarTorneo(torneo);
+
+        assertEquals(1, club.getTorneos().size(), "El club debe tener un torneo.");
+        assertSame(torneo, club.getTorneos().get(0), "El torneo agregado no es el esperado.");
+        assertEquals(1, jsonDelClub().getJSONArray("torneos").length(), "El estado guardado debe incluir el torneo.");
+    }
+
+    @Test
+    void testAgregarTorneoGuardaEnDisco() throws Exception
+    {
+        club.agregarTorneo(crearTorneoConjunto("Copa Seneca"));
+
+        String contenido = Files.readString(carpetaTemporal.toPath().resolve("club.json"));
+
+        assertTrue(contenido.contains("Copa Seneca"), "El archivo guardado debe contener el torneo.");
+    }
+
+    @Test
+    void testAgregarTorneoConNombreRepetido() throws Exception
+    {
+        club.agregarTorneo(crearTorneoConjunto("Copa Seneca"));
+
+        assertThrows(ReglaNegocioException.class, () -> club.agregarTorneo(crearTorneoConjunto("Copa Seneca")), "No se puede repetir el nombre del torneo.");
+        assertThrows(ReglaNegocioException.class, () -> club.agregarTorneo(crearTorneoIndividual("COPA SENECA")), "El nombre se compara sin distinguir mayúsculas.");
+        assertEquals(1, club.getTorneos().size(), "El club debe seguir con un torneo.");
+    }
+
+    @Test
+    void testAgregarVariosTorneos() throws Exception
+    {
+        club.agregarTorneo(crearTorneoConjunto("Copa Seneca"));
+        club.agregarTorneo(crearTorneoIndividual("Abierto de Tenis"));
+
+        assertEquals(2, club.getTorneos().size(), "El club debe tener dos torneos.");
+    }
+
+    @Test
+    void testGetTorneosDevuelveUnaCopia() throws Exception
+    {
+        club.agregarTorneo(crearTorneoConjunto("Copa Seneca"));
+
+        club.getTorneos().clear();
+
+        assertEquals(1, club.getTorneos().size(), "Modificar la lista devuelta no debe afectar al club.");
+    }
+
+    @Test
+    void testCrearTorneoConDatosInvalidos() throws Exception
+    {
+        assertThrows(ReglaNegocioException.class, () -> new TorneoConjunto(" ", 8, fecha, fecha.minusDays(5), new PremiacionRecreativa(), futbol, Categoria.MAYORES), "El torneo debe tener nombre.");
+        assertThrows(ReglaNegocioException.class, () -> new TorneoConjunto("Copa", 1, fecha, fecha.minusDays(5), new PremiacionRecreativa(), futbol, Categoria.MAYORES), "Con menos de dos cupos no es válido.");
+        assertThrows(ReglaNegocioException.class, () -> new TorneoConjunto("Copa", 33, fecha, fecha.minusDays(5), new PremiacionRecreativa(), futbol, Categoria.MAYORES), "Con más de 32 cupos no es válido.");
+        assertThrows(ReglaNegocioException.class, () -> new TorneoConjunto("Copa", 8, fecha, fecha.plusDays(1), new PremiacionRecreativa(), futbol, Categoria.MAYORES), "El límite preferencial no puede ser posterior al inicio.");
+    }
+
+    @Test
+    void testTorneoNuevoTieneInscripcionesAbiertas() throws Exception
+    {
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertEquals(EstadoTorneo.INSCRIPCIONES_ABIERTAS, torneo.getEstado(), "El torneo nuevo debe tener las inscripciones abiertas.");
+        assertEquals(8, torneo.getCuposLibres(), "Todos los cupos deben estar libres.");
+        assertEquals(2, torneo.getCuposPreferenciales(), "El 20% de 8 cupos son 2 preferenciales.");
+    }
+
+    @Test
+    void testIniciarTorneoSinInscritos() throws Exception
+    {
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+        club.agregarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.iniciarTorneo(torneo), "Sin inscritos no se puede iniciar el torneo.");
+
+        assertEquals(EstadoTorneo.INSCRIPCIONES_ABIERTAS, torneo.getEstado(), "El torneo no debe cambiar de estado.");
+        assertEquals(0, torneo.getRondaActual(), "El torneo no debe tener ronda.");
+    }
+
+    @Test
+    void testRegistrarGanadorTorneoQueNoHaIniciado() throws Exception
+    {
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+        club.agregarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarGanadorTorneo(torneo, null, null), "No se puede registrar un ganador si el torneo no está en curso.");
+    }
+
+    @Test
+    void testRetirarJugadorDeTorneoNoInscrito() throws Exception
+    {
+        TorneoIndividual torneo = crearTorneoIndividual("Abierto de Tenis");
+        club.agregarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.retirarJugadorDeTorneo(torneo, ana), "Un jugador no inscrito no puede retirarse.");
+    }
+
+    @Test
+    void testRetirarEquipoDeTorneoNoInscrito() throws Exception
+    {
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+        club.agregarTorneo(torneo);
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+
+        assertThrows(ReglaNegocioException.class, () -> club.retirarEquipoDeTorneo(torneo, equipo), "Un equipo no inscrito no puede retirarse.");
+    }
+
+    @Test
+    void testToJSONIncluyeLosTorneos() throws Exception
+    {
+        club.agregarTorneo(crearTorneoConjunto("Copa Seneca"));
+        club.agregarTorneo(crearTorneoIndividual("Abierto de Tenis"));
+
+        JSONArray torneos = jsonDelClub().getJSONArray("torneos");
+
+        assertEquals(2, torneos.length(), "El JSON debe tener dos torneos.");
+        assertEquals("CONJUNTO", torneos.getJSONObject(0).getString("tipo"), "El tipo del primer torneo no es el esperado.");
+        assertEquals("INDIVIDUAL", torneos.getJSONObject(1).getString("tipo"), "El tipo del segundo torneo no es el esperado.");
+    }
+
+    @Test
+    void testIdaYVueltaConTorneoDeConjunto() throws Exception
+    {
+        DeporteConjunto deporte = club.obtenerDeporte("Futbol");
+        club.agregarTorneo(new TorneoConjunto("Copa Seneca", 8, fecha, fecha.minusDays(5), new PremiacionRecreativa(), deporte, Categoria.MAYORES));
+
+        ClubSeneca restaurado = ClubSeneca.fromJSON(new JSONObject(jsonDelClub().toString()));
+
+        assertEquals(1, restaurado.getTorneos().size(), "Debe restaurarse el torneo.");
+        Torneo torneo = restaurado.getTorneos().get(0);
+        assertEquals("Copa Seneca", torneo.getNombre(), "El nombre restaurado no es el esperado.");
+        assertEquals("Futbol MAYORES", torneo.getDescripcion(), "La descripción restaurada no es la esperada.");
+        assertEquals(8, torneo.getCupos(), "Los cupos restaurados no son los esperados.");
+        assertFalse(torneo.esCompetitivo(), "El torneo debe seguir siendo recreativo.");
+        assertEquals(EstadoTorneo.INSCRIPCIONES_ABIERTAS, torneo.getEstado(), "El estado restaurado no es el esperado.");
+    }
+
+    @Test
+    void testIdaYVueltaConTorneoIndividual() throws Exception
+    {
+        club.registrarDisciplina(tenis);
+        club.agregarTorneo(crearTorneoIndividual("Abierto de Tenis"));
+
+        ClubSeneca restaurado = ClubSeneca.fromJSON(new JSONObject(jsonDelClub().toString()));
+
+        assertEquals(1, restaurado.getTorneos().size(), "Debe restaurarse el torneo.");
+        Torneo torneo = restaurado.getTorneos().get(0);
+        assertEquals("Abierto de Tenis", torneo.getNombre(), "El nombre restaurado no es el esperado.");
+        assertEquals("Tenis INTERMEDIO SENCILLOS", torneo.getDescripcion(), "La descripción restaurada no es la esperada.");
+        assertTrue(torneo.esCompetitivo(), "El torneo debe seguir siendo competitivo.");
+    }
+
+    @Test
+    void testRegistrarVentaConBonoQueNoEsDelSocio()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        BonoDescuento bono = new BonoDescuento(0.10, "Copa Seneca");
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(ana, crearCompra(pelotas, 1), Rubro.TIENDA, null, bono, 0), "El bono debe pertenecer al socio.");
+
+        assertFalse(bono.estaUsado(), "El bono no debe quedar usado.");
+        assertEquals(50, pelotas.getCantidad(), "El inventario no debe cambiar.");
+        assertEquals(0, jsonDelClub().getJSONArray("ventas").length(), "No debe registrarse ninguna venta.");
+    }
+
+    @Test
+    void testRegistrarVentaConBonoYaUsado()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        BonoDescuento bono = new BonoDescuento(0.10, "Copa Seneca");
+        bono.setUsado(true);
+        ana.agregarBono(bono);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(ana, crearCompra(pelotas, 1), Rubro.TIENDA, null, bono, 0), "Un bono usado no se puede volver a usar.");
+
+        assertEquals(50, pelotas.getCantidad(), "El inventario no debe cambiar.");
+        assertEquals(0, jsonDelClub().getJSONArray("ventas").length(), "No debe registrarse ninguna venta.");
+    }
+
+    @Test
+    void testRegistrarVentaConBono() throws Exception
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        BonoDescuento bono = new BonoDescuento(0.10, "Copa Seneca");
+        ana.agregarBono(bono);
+
+        Venta venta = club.registrarVentaConBono(ana, crearCompra(pelotas, 2), Rubro.TIENDA, null, bono, 0);
+
+        assertNotNull(venta, "La venta debe registrarse.");
+        assertTrue(bono.estaUsado(), "El bono debe quedar usado.");
+        assertEquals(48, pelotas.getCantidad(), "El inventario del artículo debe reducirse.");
+        assertEquals(1, jsonDelClub().getJSONArray("ventas").length(), "El club debe tener una venta.");
+        assertEquals(23800 * 0.90, venta.toJSON().getDouble("total"), 0.001, "El bono debe descontar el 10% del total.");
+    }
+
+    @Test
+    void testRegistrarVentaConBonoNoSePuedeUsarDosVeces() throws Exception
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 50);
+        BonoDescuento bono = new BonoDescuento(0.10, "Copa Seneca");
+        ana.agregarBono(bono);
+        club.registrarVentaConBono(ana, crearCompra(pelotas, 1), Rubro.TIENDA, null, bono, 0);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(ana, crearCompra(pelotas, 1), Rubro.TIENDA, null, bono, 0), "El bono solo se puede usar una vez.");
+
+        assertEquals(49, pelotas.getCantidad(), "Solo la primera compra debe descontar inventario.");
+        assertEquals(1, jsonDelClub().getJSONArray("ventas").length(), "Debe haber una sola venta.");
+    }
+
+    @Test
+    void testRegistrarVentaConBonoSinExistencias()
+    {
+        Articulo pelotas = new Articulo("Pelotas", "Pelotas", 10000, 3);
+        BonoDescuento bono = new BonoDescuento(0.10, "Copa Seneca");
+        ana.agregarBono(bono);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarVentaConBono(ana, crearCompra(pelotas, 4), Rubro.TIENDA, null, bono, 0), "Si no hay existencias no se registra la compra.");
+
+        assertFalse(bono.estaUsado(), "El bono no debe quedar usado si la compra falla.");
+        assertEquals(3, pelotas.getCantidad(), "El inventario no debe cambiar.");
+    }
+
+    private void inscribirEnTenis(Socio... socios)
+    {
+        for(Socio socio : socios)
+        {
+            club.inscribirEnDisciplina(socio, tenis, NivelJugador.INTERMEDIO);
+        }
+    }
+
+    private Socio crearSocioDeTenis(String login) throws Exception
+    {
+        Socio socio = club.crearSocio(22, "Socio " + login, login, "x");
+        club.inscribirEnDisciplina(socio, tenis, NivelJugador.INTERMEDIO);
+        return socio;
+    }
+
+    private TorneoIndividual crearTorneoAbierto(String nombre, int cupos, boolean antesDelLimite) throws Exception
+    {
+        LocalDate hoy = LocalDate.now();
+        LocalDate limite = antesDelLimite ? hoy.plusDays(10) : hoy.minusDays(1);
+        return new TorneoIndividual(nombre, cupos, hoy.plusDays(30), limite, new PremiacionRecreativa(), tenis, NivelJugador.INTERMEDIO, Modalidad.SENCILLOS);
+    }
+
+    private InscripcionTorneoIndividual sencillos(Socio socio)
+    {
+        return new InscripcionTorneoIndividual(socio, null);
+    }
+
+    // ----------------------- inscribirEnTorneo -----------------------
+
+    @Test
+    void testInscribirEnTorneoIndividual() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.agregarTorneo(torneo);
+
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+
+        assertEquals(1, torneo.getInscripciones().size(), "El torneo debe tener una inscripción.");
+        assertEquals(7, torneo.getCuposLibres(), "Debe quedar un cupo menos.");
+        assertEquals(1, jsonDelClub().getJSONArray("torneos").getJSONObject(0).getJSONArray("inscripciones").length(), "El estado guardado debe incluir la inscripción.");
+    }
+
+    @Test
+    void testInscribirEnTorneoDeConjunto() throws Exception
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        llenarEquipo(equipo, "j", 7);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+        club.agregarTorneo(torneo);
+
+        club.inscribirEnTorneo(torneo, new InscripcionTorneoEquipo(equipo));
+
+        assertEquals(1, torneo.getInscripciones().size(), "El torneo debe tener una inscripción.");
+        assertEquals("Los Cerros FC", torneo.getInscripciones().get(0).getNombre(), "La inscripción no es la esperada.");
+    }
+
+    @Test
+    void testInscribirEnTorneoJugadorRepetido() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(ana)), "Un jugador no puede inscribirse dos veces.");
+
+        assertEquals(1, torneo.getInscripciones().size(), "El torneo debe seguir con una inscripción.");
+    }
+
+    @Test
+    void testInscribirEnTorneoConNivelIncorrecto() throws Exception
+    {
+        club.inscribirEnDisciplina(ana, tenis, NivelJugador.AVANZADO);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(ana)), "El jugador debe tener el nivel del torneo.");
+
+        assertEquals(0, torneo.getInscripciones().size(), "No debe haber inscripciones.");
+    }
+
+    @Test
+    void testInscribirEnTorneoDeSencillosConCompanero() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, new InscripcionTorneoIndividual(ana, pedro)), "En sencillos no se admite compañero.");
+    }
+
+    @Test
+    void testInscribirEnTorneoDeDoblesSinCompanero() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoIndividual dobles = new TorneoIndividual("Dobles", 8, LocalDate.now().plusDays(30), LocalDate.now().minusDays(1), new PremiacionRecreativa(), tenis, NivelJugador.INTERMEDIO, Modalidad.DOBLES);
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(dobles, sencillos(ana)), "En dobles debe indicarse un compañero.");
+    }
+
+    @Test
+    void testInscribirEnTorneoDeDoblesConPareja() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual dobles = new TorneoIndividual("Dobles", 8, LocalDate.now().plusDays(30), LocalDate.now().minusDays(1), new PremiacionRecreativa(), tenis, NivelJugador.INTERMEDIO, Modalidad.DOBLES);
+
+        club.inscribirEnTorneo(dobles, new InscripcionTorneoIndividual(ana, pedro));
+
+        assertEquals(1, dobles.getInscripciones().size(), "La pareja debe quedar inscrita.");
+        assertEquals("Ana Torres / Pedro Gil", dobles.getInscripciones().get(0).getNombre(), "El nombre de la pareja no es el esperado.");
+    }
+
+    @Test
+    void testInscribirEquipoEnTorneoIndividual() throws Exception
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        llenarEquipo(equipo, "j", 7);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, new InscripcionTorneoEquipo(equipo)), "Un equipo no puede inscribirse en un torneo individual.");
+    }
+
+    @Test
+    void testInscribirJugadorEnTorneoDeConjunto() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(ana)), "En un torneo de conjunto se inscriben equipos completos.");
+    }
+
+    @Test
+    void testInscribirEmpleadoEnTorneoDeConjunto() throws Exception
+    {
+        Empleado empleado = new Empleado(30, "Luis Mora", "lmora", "abc", "E01");
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, new InscripcionTorneoIndividual(empleado, null)), "Los empleados solo pueden participar en torneos individuales.");
+        assertEquals(0, torneo.getInscripciones().size(), "No debe haber inscripciones.");
+    }
+
+    @Test
+    void testInscribirEquipoDeOtroDeporte() throws Exception
+    {
+        Equipo basket = club.crearEquipo("Basket", 8, baloncesto, Categoria.MAYORES);
+        llenarEquipo(basket, "b", 5);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, new InscripcionTorneoEquipo(basket)), "El equipo debe ser del deporte del torneo.");
+    }
+
+    @Test
+    void testInscribirEquipoSinLosJugadoresMinimos() throws Exception
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        llenarEquipo(equipo, "j", 6);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, new InscripcionTorneoEquipo(equipo)), "El equipo debe tener los jugadores mínimos.");
+    }
+
+    @Test
+    void testInscribirEnTorneoLleno() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 2, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(carlos)), "No se puede inscribir en un torneo lleno.");
+
+        assertEquals(2, torneo.getInscripciones().size(), "El torneo debe seguir con dos inscripciones.");
+    }
+
+    @Test
+    void testInscribirEnTorneoSoloQuedanCuposPreferenciales() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        inscribirEnTenis(pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 2, true);
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(carlos)), "El cupo que queda es preferencial.");
+    }
+
+    @Test
+    void testInscribirEnTorneoYaIniciado() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.inscribirEnTorneo(torneo, sencillos(carlos)), "Con el torneo iniciado las inscripciones están cerradas.");
+    }
+
+    @Test
+    void testInscribirEnTorneoPreferencial() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+        InscripcionTorneoIndividual deAna = sencillos(ana);
+        InscripcionTorneoIndividual dePedro = sencillos(pedro);
+
+        club.inscribirEnTorneo(torneo, deAna);
+        club.inscribirEnTorneo(torneo, dePedro);
+
+        assertTrue(deAna.esPreferencial(), "La jugadora de élite debe ocupar un cupo preferencial.");
+        assertFalse(dePedro.esPreferencial(), "El jugador sin ranking alto no es preferencial.");
+    }
+
+    @Test
+    void testInscribirEnTorneoDespuesDelLimitePreferencial() throws Exception
+    {
+        inscribirEnTenis(ana);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        InscripcionTorneoIndividual deAna = sencillos(ana);
+
+        club.inscribirEnTorneo(torneo, deAna);
+
+        assertFalse(deAna.esPreferencial(), "Después del límite ya no hay cupo preferencial.");
+    }
+
+    // ----------------------- retirar -----------------------
+
+    @Test
+    void testRetirarJugadorDeTorneo() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+
+        club.retirarJugadorDeTorneo(torneo, ana);
+
+        assertEquals(0, torneo.getInscripciones().size(), "El torneo no debe tener inscripciones.");
+        assertEquals(8, torneo.getCuposLibres(), "Todos los cupos deben quedar libres.");
+    }
+
+    @Test
+    void testRetirarJugadorDeTorneoYaIniciado() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.retirarJugadorDeTorneo(torneo, ana), "Con el torneo iniciado no se puede retirar.");
+
+        assertEquals(2, torneo.getInscripciones().size(), "Las inscripciones no deben cambiar.");
+    }
+
+    @Test
+    void testRetirarEquipoDeTorneo() throws Exception
+    {
+        Equipo equipo = club.crearEquipo("Los Cerros FC", 12, futbol, Categoria.MAYORES);
+        llenarEquipo(equipo, "j", 7);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+        club.inscribirEnTorneo(torneo, new InscripcionTorneoEquipo(equipo));
+
+        club.retirarEquipoDeTorneo(torneo, equipo);
+
+        assertEquals(0, torneo.getInscripciones().size(), "El torneo no debe tener inscripciones.");
+    }
+
+    // ----------------------- iniciar y registrar ganador -----------------------
+
+    @Test
+    void testIniciarTorneo() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+
+        club.iniciarTorneo(torneo);
+
+        assertEquals(EstadoTorneo.EN_CURSO, torneo.getEstado(), "El torneo debe quedar en curso.");
+        assertEquals(1, torneo.getRondaActual(), "El torneo debe estar en la primera ronda.");
+        assertEquals(1, torneo.getEncuentros().size(), "Con dos inscritos debe haber un encuentro.");
+    }
+
+    @Test
+    void testIniciarTorneoConInscritosInvalidos() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.inscribirEnTorneo(torneo, sencillos(carlos));
+
+        assertThrows(ReglaNegocioException.class, () -> club.iniciarTorneo(torneo), "Con tres inscritos no se puede iniciar.");
+
+        assertEquals(EstadoTorneo.INSCRIPCIONES_ABIERTAS, torneo.getEstado(), "El torneo no debe cambiar de estado.");
+    }
+
+    @Test
+    void testIniciarTorneoDosVeces() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+
+        assertThrows(ReglaNegocioException.class, () -> club.iniciarTorneo(torneo), "Un torneo iniciado no puede iniciarse otra vez.");
+    }
+
+    @Test
+    void testRegistrarGanadorTorneoFinalizaElTorneo() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        InscripcionTorneoIndividual deAna = sencillos(ana);
+        InscripcionTorneoIndividual dePedro = sencillos(pedro);
+        club.inscribirEnTorneo(torneo, deAna);
+        club.inscribirEnTorneo(torneo, dePedro);
+        club.iniciarTorneo(torneo);
+        Encuentro laFinal = torneo.getEncuentros().get(0);
+
+        club.registrarGanadorTorneo(torneo, laFinal, deAna);
+
+        assertEquals(EstadoTorneo.FINALIZADO, torneo.getEstado(), "El torneo debe quedar finalizado.");
+        assertSame(deAna, laFinal.getGanador(), "El ganador del encuentro no es el esperado.");
+        assertSame(deAna, torneo.getPosiciones().get(0), "La campeona debe ser la primera.");
+        assertSame(dePedro, torneo.getPosiciones().get(1), "El subcampeón debe ser el segundo.");
+    }
+
+    @Test
+    void testRegistrarGanadorTorneoPasaALaSiguienteRonda() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        Socio dani = crearSocioDeTenis("dani");
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        InscripcionTorneoIndividual deAna = sencillos(ana);
+        InscripcionTorneoIndividual dePedro = sencillos(pedro);
+        InscripcionTorneoIndividual deCarlos = sencillos(carlos);
+        InscripcionTorneoIndividual deDani = sencillos(dani);
+        club.inscribirEnTorneo(torneo, deAna);
+        club.inscribirEnTorneo(torneo, dePedro);
+        club.inscribirEnTorneo(torneo, deCarlos);
+        club.inscribirEnTorneo(torneo, deDani);
+        club.iniciarTorneo(torneo);
+
+        club.registrarGanadorTorneo(torneo, torneo.getEncuentros().get(0), deAna);
+        assertEquals(1, torneo.getRondaActual(), "Mientras falte un encuentro se sigue en la primera ronda.");
+
+        club.registrarGanadorTorneo(torneo, torneo.getEncuentros().get(1), deCarlos);
+
+        assertEquals(EstadoTorneo.EN_CURSO, torneo.getEstado(), "El torneo debe seguir en curso.");
+        assertEquals(2, torneo.getRondaActual(), "El torneo debe pasar a la segunda ronda.");
+        assertEquals(1, torneo.getEncuentrosDeRonda(2).size(), "La segunda ronda debe tener la final.");
+    }
+
+    @Test
+    void testRegistrarGanadorTorneoQueNoParticipa() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+        Encuentro encuentro = torneo.getEncuentros().get(0);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarGanadorTorneo(torneo, encuentro, sencillos(carlos)), "El ganador debe ser uno de los participantes.");
+
+        assertFalse(encuentro.tieneGanador(), "El encuentro no debe tener ganador.");
+    }
+
+    @Test
+    void testRegistrarGanadorTorneoDeOtroTorneo() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        InscripcionTorneoIndividual deAna = sencillos(ana);
+        club.inscribirEnTorneo(torneo, deAna);
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+        Encuentro ajeno = new Encuentro(1, deAna, deAna);
+
+        assertThrows(ReglaNegocioException.class, () -> club.registrarGanadorTorneo(torneo, ajeno, deAna), "El encuentro debe pertenecer al torneo.");
+    }
+
+    @Test
+    void testIdaYVueltaConTorneoEnCurso() throws Exception
+    {
+        club.registrarDisciplina(tenis);
+        inscribirEnTenis(ana, pedro);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, false);
+        club.agregarTorneo(torneo);
+        club.inscribirEnTorneo(torneo, sencillos(ana));
+        club.inscribirEnTorneo(torneo, sencillos(pedro));
+        club.iniciarTorneo(torneo);
+
+        ClubSeneca restaurado = ClubSeneca.fromJSON(new JSONObject(jsonDelClub().toString()));
+
+        Torneo restauradoTorneo = restaurado.getTorneos().get(0);
+        assertEquals(EstadoTorneo.EN_CURSO, restauradoTorneo.getEstado(), "El estado restaurado no es el esperado.");
+        assertEquals(2, restauradoTorneo.getInscripciones().size(), "Deben restaurarse las inscripciones.");
+        assertEquals(1, restauradoTorneo.getEncuentros().size(), "Debe restaurarse el encuentro.");
+        assertEquals(1, restauradoTorneo.getRondaActual(), "La ronda restaurada no es la esperada.");
+    }
+
+    // ----------------------- esElegiblePreferencial -----------------------
+
+    @Test
+    void testEsElegiblePreferencialJugadorDeElite() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+
+        assertTrue(club.esElegiblePreferencial(torneo, sencillos(ana)), "Un jugador sobre el puntaje inicial y entre los mejores es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialSinPuntajeSuperior() throws Exception
+    {
+        inscribirEnTenis(ana);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+
+        assertFalse(club.esElegiblePreferencial(torneo, sencillos(ana)), "Con el puntaje inicial no es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialSinRanking() throws Exception
+    {
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+
+        assertFalse(club.esElegiblePreferencial(torneo, sencillos(ana)), "Sin ranking no es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialFueraDeLosMejores() throws Exception
+    {
+        Socio carlos = crearSocioDeTenis("carlos");
+        Socio dani = crearSocioDeTenis("dani");
+        Socio eva = crearSocioDeTenis("eva");
+        inscribirEnTenis(ana);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        club.getRanking(tenis, carlos).setPuntajeElo(1300);
+        club.getRanking(tenis, dani).setPuntajeElo(1400);
+        club.getRanking(tenis, eva).setPuntajeElo(1500);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+
+        assertFalse(club.esElegiblePreferencial(torneo, sencillos(ana)), "Con tres jugadores mejores y dos cupos preferenciales no es elegible.");
+        assertFalse(club.esElegiblePreferencial(torneo, sencillos(carlos)), "Con dos jugadores mejores y dos cupos preferenciales ya está fuera de los dos primeros.");
+        assertTrue(club.esElegiblePreferencial(torneo, sencillos(dani)), "Con un solo jugador mejor y dos cupos preferenciales es elegible.");
+        assertTrue(club.esElegiblePreferencial(torneo, sencillos(eva)), "El mejor jugador es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialParejaRequiereAmbosJugadores() throws Exception
+    {
+        inscribirEnTenis(ana, pedro);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        TorneoIndividual torneo = crearTorneoAbierto("Abierto de Tenis", 8, true);
+
+        assertFalse(club.esElegiblePreferencial(torneo, new InscripcionTorneoIndividual(ana, pedro)), "Si uno de los dos no cumple la pareja no es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialEquipoConVictorias() throws Exception
+    {
+        Equipo local = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
+        Equipo visitante = club.crearEquipo("Visitante", 8, baloncesto, Categoria.MAYORES);
+        llenarEquipo(local, "l", 5);
+        llenarEquipo(visitante, "v", 5);
+        club.registrarPartidoInterno(local, visitante, 80, 75, null);
+        TorneoConjunto torneo = new TorneoConjunto("Copa Basket", 8, LocalDate.now().plusDays(30), LocalDate.now().plusDays(10), new PremiacionRecreativa(), baloncesto, Categoria.MAYORES);
+
+        assertTrue(club.esElegiblePreferencial(torneo, new InscripcionTorneoEquipo(local)), "Un equipo con victorias entre los mejores es elegible.");
+        assertFalse(club.esElegiblePreferencial(torneo, new InscripcionTorneoEquipo(visitante)), "Un equipo sin victorias no es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialEquipoSinPartidos() throws Exception
+    {
+        Equipo equipo = club.crearEquipo("Local", 8, baloncesto, Categoria.MAYORES);
+        llenarEquipo(equipo, "l", 5);
+        TorneoConjunto torneo = new TorneoConjunto("Copa Basket", 8, LocalDate.now().plusDays(30), LocalDate.now().plusDays(10), new PremiacionRecreativa(), baloncesto, Categoria.MAYORES);
+
+        assertFalse(club.esElegiblePreferencial(torneo, new InscripcionTorneoEquipo(equipo)), "Sin victorias no es elegible.");
+    }
+
+    @Test
+    void testEsElegiblePreferencialConInscripcionDeOtroTipo() throws Exception
+    {
+        inscribirEnTenis(ana);
+        club.getRanking(tenis, ana).setPuntajeElo(1100);
+        TorneoConjunto torneo = crearTorneoConjunto("Copa Seneca");
+
+        assertFalse(club.esElegiblePreferencial(torneo, sencillos(ana)), "Una inscripción individual no es elegible en un torneo de conjunto.");
+    }
+
+    @Test
+    void testRegistrarUsuarioNuloDevuelveFalse()
+    {
+        assertFalse(club.registrarUsuario(null), "No se puede registrar un usuario nulo.");
+    }
+
+    @Test
+    void testRegistrarUsuarioNuevoLoAgrega() throws Exception
+    {
+        Socio luis = new Socio(30, "Luis Mora", "lmora", "abc");
+
+        assertTrue(club.registrarUsuario(luis), "Un usuario con login nuevo debe registrarse.");
+        assertSame(luis, club.buscarSocio("lmora"), "El usuario registrado debe poder buscarse por login.");
+        assertSame(luis, club.iniciarSesion("lmora", "abc"), "El usuario registrado debe poder iniciar sesión.");
+    }
+
+    @Test
+    void testRegistrarUsuarioConLoginRepetidoDevuelveFalse() throws Exception
+    {
+        Socio repetido = new Socio(31, "Otra Ana", "ana", "zzz");
+
+        assertFalse(club.registrarUsuario(repetido), "No se puede registrar un login que ya existe.");
+        assertSame(ana, club.buscarSocio("ana"), "El usuario original no debe reemplazarse.");
+    }
+
+    @Test
+    void testRegistrarUsuarioRepetidoNoSeRegistraDosVeces() throws Exception
+    {
+        Entrenador coach = new Entrenador(35, "Marta Paz", "mpaz", "pw", "ENT02");
+
+        assertTrue(club.registrarUsuario(coach), "La primera vez debe registrarse.");
+        assertFalse(club.registrarUsuario(coach), "La segunda vez debe rechazarse por login repetido.");
+    }
+
+    @Test
+    void testRegistrarUsuarioGuardaLosDatos() throws Exception
+    {
+        Socio luis = new Socio(30, "Luis Mora", "lmora", "abc");
+        club.registrarUsuario(luis);
+
+        ClubSeneca otroClub = persistencia.cargar();
+
+        assertNotNull(otroClub.buscarSocio("lmora"), "El usuario debe quedar guardado en disco.");
+    }
+
+    @Test
+    void testRegistrarUsuarioRechazadoNoGuardaCambios() throws Exception
+    {
+        Socio repetido = new Socio(31, "Otra Ana", "ana", "zzz");
+        club.registrarUsuario(repetido);
+
+        assertEquals("Ana Torres", club.buscarSocio("ana").getNombre(), "Un registro rechazado no debe alterar al usuario existente.");
+    }
+
+    @Test
+    void testRegistrarAdministradorLeAsignaElClub() throws Exception
+    {
+        Administrador admin = new Administrador("Admin Club", "admin", "root");
+
+        assertTrue(club.registrarUsuario(admin), "El administrador debe registrarse.");
+        Equipo equipo = admin.crearEquipo("Titanes", 8, futbol, Categoria.MAYORES);
+
+        assertNotNull(equipo, "El administrador registrado debe poder operar sobre el club.");
+        assertTrue(club.getEquipos().contains(equipo), "El equipo creado por el administrador debe estar en el club.");
     }
 
     @SuppressWarnings("unchecked")

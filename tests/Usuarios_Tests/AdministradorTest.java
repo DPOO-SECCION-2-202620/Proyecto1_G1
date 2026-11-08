@@ -1,6 +1,11 @@
 package Usuarios_Tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.time.LocalTime;
@@ -16,6 +21,7 @@ import DeportesConjunto_Competencias.Categoria;
 import DeportesConjunto_Competencias.Equipo;
 import DeportesConjunto_Competencias.Futbol;
 import DeportesConjunto_Competencias.TorneoCerros;
+import Excepciones.ReglaNegocioException;
 import Instalaciones.Instalacion;
 import NucleoSistema.ClubSeneca;
 import NucleoSistema.Persistencia;
@@ -234,7 +240,7 @@ public class AdministradorTest
         empleado.agregarTurno(actual);
         SolicitudCambioTurno solicitud = empleado.solicitarCambioTurno(actual, nuevo);
 
-        administrador.resolverSolicitudTurno(solicitud, true);
+        assertThrows(ReglaNegocioException.class, () -> administrador.resolverSolicitudTurno(solicitud, true), "Una solicitud que no está en el club no puede resolverse.");
 
         assertEquals(EstadoSolicitud.PENDIENTE, solicitud.getEstado(), "Una solicitud que no está en el club no debe cambiar.");
     }

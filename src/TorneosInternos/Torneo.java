@@ -198,11 +198,14 @@ public abstract class Torneo {
 	}
 
 	public void corregirGanador(Encuentro encuentro, InscripcionTorneo nuevoGanador) throws ReglaNegocioException {
-		if (estado == EstadoTorneo.FINALIZADO) {
+	    if (estado == EstadoTorneo.FINALIZADO) {
 	        throw new ReglaNegocioException("El resultado ya no se puede cambiar");
 	    }
 	    if (!encuentro.tieneGanador()) {
 	        throw new ReglaNegocioException("El encuentro todavía no tiene ganador");
+	    }
+	    if (nuevoGanador != encuentro.getParticipanteA() && nuevoGanador != encuentro.getParticipanteB()) {
+	        throw new ReglaNegocioException("El ganador debe ser uno de los dos participantes del encuentro");
 	    }
 
 	    InscripcionTorneo ganadorActual = encuentro.getGanador();

@@ -5,10 +5,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import DeportesIndividuales.DisciplinaIndividual;
 import Excepciones.ReglaNegocioException;
 import Tienda_Cafeteria_Inventario.CodigoDescuento;
 import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
@@ -97,6 +99,7 @@ public class Empleado extends Socio{
 	@Override
 	public JSONObject toJSON() {
 		JSONObject json = super.toJSON();
+		json.put("tipo", "Empleado");
 		json.put("codigoEmpleado", codigoEmpleado);
 		json.put("codigoDescuento", codigoDescuento.toJSON());
 		JSONArray jsonTurnos = new JSONArray();
@@ -105,6 +108,18 @@ public class Empleado extends Socio{
 	    }
 	    json.put("turnos", jsonTurnos);
 		return json;
+	}
+	
+	public static Empleado fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+	    Empleado empleado = new Empleado(
+	            json.getInt("edad"),
+	            json.getString("nombre"),
+	            json.getString("login"),
+	            json.getString("password"),
+	            json.getString("codigoEmpleado"));
+	    empleado.restaurarEstadoSocio(json, mapaDisciplinas);
+	    empleado.restaurarEstadoEmpleado(json);
+	    return empleado;
 	}
 	
 	protected void restaurarEstadoEmpleado(JSONObject json) {
