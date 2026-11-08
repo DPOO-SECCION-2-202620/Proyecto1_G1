@@ -2,7 +2,7 @@ package Consola;
 
 import java.util.List;
 
-import TorneosInternos.BonoDescuento;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
 import Usuarios.Socio;
 
 public class OpcionVerBonos implements OpcionMenu {

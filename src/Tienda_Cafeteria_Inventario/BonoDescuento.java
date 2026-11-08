@@ -1,4 +1,4 @@
-package TorneosInternos;
+package Tienda_Cafeteria_Inventario;
 
 import Excepciones.ReglaNegocioException;
 import org.json.JSONObject;

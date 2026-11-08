@@ -3,7 +3,7 @@ package Consola;
 import java.util.List;
 import java.util.Locale;
 
-import TorneosInternos.BonoDescuento;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
 import TorneosInternos.Encuentro;
 import TorneosInternos.EstadoTorneo;
 import TorneosInternos.InscripcionTorneo;

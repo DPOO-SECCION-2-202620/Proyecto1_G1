@@ -3,6 +3,8 @@ package TorneosInternos;
 import java.util.ArrayList;
 import java.util.List;
 
+import Tienda_Cafeteria_Inventario.BonoDescuento;
+
 public class PremiacionRecreativa implements Premiacion{
 	
 	public static final double BONO_PRIMERO = 0.25;

@@ -1,6 +1,9 @@
 package TorneosInternos;
 
 import org.json.JSONObject;
+
+import Tienda_Cafeteria_Inventario.BonoDescuento;
+
 import java.util.Map;
 import Usuarios.Usuario;
 
