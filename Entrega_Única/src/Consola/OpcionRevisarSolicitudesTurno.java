@@ -58,7 +58,10 @@ public class OpcionRevisarSolicitudesTurno implements OpcionMenu {
 	}
 
 	private String describir(SolicitudCambioTurno solicitud) {
-		String cargo = solicitud.getSolicitante() instanceof Entrenador ? "Entrenador" : "Fisioterapeuta";
+		String cargo = "Fisioterapeuta";
+		if (solicitud.getSolicitante() instanceof Entrenador) {
+		    cargo = "Entrenador";
+		}
 		return solicitud.getSolicitante().getNombre() + " (" + cargo + "): "
 				+ describirTurno(solicitud.getTurnoActual()) + " -> " + describirTurno(solicitud.getTurnoNuevo());
 	}

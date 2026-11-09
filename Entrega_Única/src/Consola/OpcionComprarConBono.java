@@ -56,7 +56,11 @@ public class OpcionComprarConBono implements OpcionMenu {
             System.out.println("Operación cancelada.");
             return;
         }
-        Rubro rubro = lugar == 1 ? Rubro.TIENDA : Rubro.CAFETERIA;
+        
+        Rubro rubro = Rubro.CAFETERIA;
+        if (lugar == 1) {
+            rubro = Rubro.TIENDA;
+        
 
         List<Producto> catalogo = club.getProductosDisponibles(rubro);
         if (catalogo.isEmpty()) {
@@ -83,7 +87,11 @@ public class OpcionComprarConBono implements OpcionMenu {
                 continue;
             }
             int cantidad = lector.leerEntero("Cantidad", 1, restantes);
-            carrito.merge(producto, cantidad, Integer::sum);
+            if (carrito.containsKey(producto)) {
+                carrito.put(producto, carrito.get(producto) + cantidad);
+            } else {
+                carrito.put(producto, cantidad);
+            }
         }
         if (carrito.isEmpty()) {
             System.out.println("No eligió ningún producto. Operación cancelada.");
@@ -110,7 +118,11 @@ public class OpcionComprarConBono implements OpcionMenu {
     }
 
     private int restantes(Producto producto, Map<Producto, Integer> carrito) {
-        return producto.getCantidad() - carrito.getOrDefault(producto, 0);
+        int enElCarrito = 0;
+        if (carrito.containsKey(producto)) {
+            enElCarrito = carrito.get(producto);
+        }
+        return producto.getCantidad() - enElCarrito;
     }
 
     private long porcentaje(BonoDescuento bono) {

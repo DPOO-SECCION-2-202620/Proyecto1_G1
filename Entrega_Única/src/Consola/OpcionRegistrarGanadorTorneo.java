@@ -46,7 +46,10 @@ public class OpcionRegistrarGanadorTorneo extends OpcionTorneo {
 		System.out.println("1. " + encuentro.getParticipanteA().getNombre());
 		System.out.println("2. " + encuentro.getParticipanteB().getNombre());
 		int eleccion = lector.leerEntero("¿Quién ganó?", 1, 2);
-		InscripcionTorneo ganador = eleccion == 1 ? encuentro.getParticipanteA() : encuentro.getParticipanteB();
+		InscripcionTorneo ganador = encuentro.getParticipanteB();
+		  if (eleccion == 1) {
+		      ganador = encuentro.getParticipanteA();
+		  }
 
 		int rondaAntes = torneo.getRondaActual();
 		club.registrarGanadorTorneo(torneo, encuentro, ganador);

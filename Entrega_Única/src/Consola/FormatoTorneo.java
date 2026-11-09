@@ -17,21 +17,19 @@ public final class FormatoTorneo {
 	}
 
 	public static String estado(EstadoTorneo estado) {
-		switch (estado) {
-		case INSCRIPCIONES_ABIERTAS:
+		if (estado == EstadoTorneo.INSCRIPCIONES_ABIERTAS) {
 			return "Inscripciones abiertas";
-		case EN_CURSO:
-			return "En curso";
-		default:
-			return "Finalizado";
 		}
+		if (estado == EstadoTorneo.EN_CURSO) {
+			return "En curso";
+		}
+		return "Finalizado";
 	}
 
 	public static String dinero(double valor) {
-		return String.format(Locale.forLanguageTag("es-CO"), "$%,.0f", valor);
+		return "$" + Math.round(valor);
 	}
 
-	/** Una línea para listas numeradas. */
 	public static String linea(Torneo torneo) {
 		return torneo.getNombre() + " | " + torneo.getDescripcion() + " | "
 				+ (torneo.esCompetitivo() ? "Competitivo" : "Recreativo") + " | " + estado(torneo.getEstado())
@@ -44,7 +42,6 @@ public final class FormatoTorneo {
 		}
 	}
 
-	/** Historial detallado: datos, participantes, encuentros, posiciones y premios. */
 	public static void imprimirDetalle(Torneo torneo) {
 		System.out.println("\n=== " + torneo.getNombre() + " ===");
 		System.out.println("Deporte/disciplina: " + torneo.getDescripcion());
@@ -68,9 +65,15 @@ public final class FormatoTorneo {
 		}
 		int numero = 1;
 		for (InscripcionTorneo inscripcion : torneo.getInscripciones()) {
-			System.out.println("  " + numero++ + ". " + inscripcion.getNombre()
-					+ (inscripcion.esPreferencial() ? " [cupo preferencial]" : "")
-					+ (torneo.esCompetitivo() ? " - inscripción: " + dinero(inscripcion.getMontoPagado()) : ""));
+			String linea = "  " + numero + ". " + inscripcion.getNombre();
+			if (inscripcion.esPreferencial()) {
+				linea = linea + " [cupo preferencial]";
+			}
+			if (torneo.esCompetitivo()) {
+				linea = linea + " - inscripción: " + dinero(inscripcion.getMontoPagado());
+			}
+			System.out.println(linea);
+			numero++;
 		}
 
 		System.out.println("Encuentros:");

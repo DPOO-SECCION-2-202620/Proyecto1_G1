@@ -1,6 +1,5 @@
 package Consola;
 
-import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +17,10 @@ public final class PosicionesDeporte {
 		if (nombreDeporte == null) {
 			return List.of();
 		}
-		String clave = Normalizer.normalize(nombreDeporte.trim().toLowerCase(), Normalizer.Form.NFD)
-				.replaceAll("\\p{M}", "");
-		return POSICIONES.getOrDefault(clave, List.of());
+		String clave = nombreDeporte.trim().toLowerCase();
+		if (POSICIONES.containsKey(clave)) {
+			return POSICIONES.get(clave);
+		}
+		return List.of();
 	}
 }

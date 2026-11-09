@@ -95,7 +95,7 @@ public class LectorConsola {
 	}
 
 	private String formatear(double valor) {
-		return new java.math.BigDecimal(valor).stripTrailingZeros().toPlainString();
+		return String.valueOf((long) valor);
 	}
 
 	private String leerLinea() {
