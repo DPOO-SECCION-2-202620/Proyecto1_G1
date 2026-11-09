@@ -7,15 +7,16 @@ import Excepciones.ReglaNegocioException;
 import NucleoSistema.ClubSeneca;
 import TorneosInternos.EstadoTorneo;
 import TorneosInternos.InscripcionTorneoIndividual;
+import TorneosInternos.JugadorTorneo;
 import TorneosInternos.Torneo;
 import TorneosInternos.TorneoIndividual;
 import Usuarios.Socio;
 
 public class OpcionInscribirseTorneo extends OpcionTorneo {
 
-	private final Socio jugador;
+	private final JugadorTorneo jugador;
 
-	public OpcionInscribirseTorneo(ClubSeneca club, Socio jugador, LectorConsola lector) {
+	public OpcionInscribirseTorneo(ClubSeneca club, JugadorTorneo jugador, LectorConsola lector) {
 		super(club, lector);
 		this.jugador = jugador;
 	}
@@ -39,12 +40,12 @@ public class OpcionInscribirseTorneo extends OpcionTorneo {
 		}
 		TorneoIndividual torneo = (TorneoIndividual) elegido;
 
-		Socio companero = null;
+		JugadorTorneo companero = null;
 		if (torneo.esDobles()) {
 			String login = lector.leerTexto("Usuario (login) de su compañero de dobles");
-			companero = club.buscarSocio(login);
+			companero = club.buscarJugadorTorneo(login);
 			if (companero == null) {
-				throw new ReglaNegocioException("No existe un socio con el usuario " + login);
+				throw new ReglaNegocioException("No existe un jugador con el usuario " + login);
 			}
 			if (companero.getLogin().equals(jugador.getLogin())) {
 				throw new ReglaNegocioException("No puede ser su propio compañero");

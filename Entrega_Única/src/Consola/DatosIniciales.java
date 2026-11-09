@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import Tienda_Cafeteria_Inventario.Alergeno;
 import Tienda_Cafeteria_Inventario.Articulo;
@@ -98,6 +99,8 @@ public class DatosIniciales {
 		club.inscribirEnDisciplina(ana, tenis, NivelJugador.INTERMEDIO);
 		club.getRanking(tenis, ana).setPuntajeElo(1100); // mejor ranking: puede tomar el cupo preferencial
 		club.inscribirEnDisciplina(carla, tenis, NivelJugador.INTERMEDIO); // un empleado que puede jugar
+		club.registrarParticipanteExterno(20, "Valentina Ruiz", "valentina", "clave-valentina", true,
+				Map.of(tenis, NivelJugador.INTERMEDIO)); // una estudiante de la universidad que entra a la consola de jugadores
 
 		// Un domingo (ningun empleado tiene turno ese dia), al menos 14 dias adelante
 		LocalDate domingo = LocalDate.now().plusDays(14);
