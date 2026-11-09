@@ -56,7 +56,6 @@ import Tienda_Cafeteria_Inventario.Tienda;
 import Tienda_Cafeteria_Inventario.Ubicacion;
 import Tienda_Cafeteria_Inventario.Venta;
 import TorneosInternos.Encuentro;
-import TorneosInternos.EstadoTorneo;
 import TorneosInternos.InscripcionTorneo;
 import TorneosInternos.JugadorTorneo;
 import TorneosInternos.Torneo;
@@ -68,7 +67,6 @@ import Usuarios.Administrador;
 import Usuarios.Empleado;
 import Usuarios.Entrenador;
 import Usuarios.Socio;
-import Usuarios.ParticipanteExterno;
 import Usuarios.Usuario;
 
 public class ClubSeneca {
@@ -715,17 +713,6 @@ public class ClubSeneca {
 		return new ArrayList<>(torneos);
 	}
 
-	/** HU-TINT-10 CA-1: torneos en el estado indicado (si estado es null, todos). */
-	public List<Torneo> getTorneos(EstadoTorneo estado) {
-		List<Torneo> resultado = new ArrayList<>();
-		for (Torneo torneo : torneos) {
-			if (estado == null || torneo.getEstado() == estado) {
-				resultado.add(torneo);
-			}
-		}
-		return resultado;
-	}
-
 	public void agregarTorneo(Torneo torneo) throws ReglaNegocioException {
 		if (torneo == null) {
 			throw new ReglaNegocioException("El torneo no puede ser nulo");
@@ -764,64 +751,6 @@ public class ClubSeneca {
 			throws ReglaNegocioException {
 		torneo.registrarGanador(encuentro, ganador);
 		guardarDatos();
-	}
-
-	/** HU-TINT-07 CA-6 y CA-7: corrige el ganador de un encuentro mientras el siguiente no se haya jugado. */
-	public void corregirGanadorTorneo(Torneo torneo, Encuentro encuentro, InscripcionTorneo nuevoGanador)
-			throws ReglaNegocioException {
-		torneo.corregirGanador(encuentro, nuevoGanador);
-		guardarDatos();
-	}
-
-	/**
-	 * HU-TINT-02: registra a un estudiante de la universidad o a una persona externa para que pueda iniciar sesión
-	 * en la consola de jugadores e inscribirse en torneos individuales.
-	 * Debe indicar el nivel en al menos una disciplina individual del club.
-	 */
-	public ParticipanteExterno registrarParticipanteExterno(int edad, String nombre, String login, String password,
-			boolean estudiante, Map<DisciplinaIndividual, NivelJugador> niveles) throws ReglaNegocioException {
-		if (nombre == null || nombre.isBlank()) {
-			throw new ReglaNegocioException("El nombre no puede estar vacío");
-		}
-		if (edad < ParticipanteExterno.EDAD_MINIMA || edad > ParticipanteExterno.EDAD_MAXIMA) {
-			throw new ReglaNegocioException("La edad debe estar entre " + ParticipanteExterno.EDAD_MINIMA + " y "
-					+ ParticipanteExterno.EDAD_MAXIMA);
-		}
-		if (login == null || login.isBlank() || password == null || password.isBlank()) {
-			throw new ReglaNegocioException("El login y la contraseña no pueden estar vacíos");
-		}
-		if (existeLogin(login)) {
-			throw new ReglaNegocioException("El login " + login + " ya se encuentra ocupado por otro usuario");
-		}
-		if (niveles == null || niveles.isEmpty()) {
-			throw new ReglaNegocioException("Debe indicar el nivel en al menos una disciplina");
-		}
-		ParticipanteExterno participante = new ParticipanteExterno(edad, nombre.trim(), login, password, estudiante);
-		for (Map.Entry<DisciplinaIndividual, NivelJugador> nivel : niveles.entrySet()) {
-			participante.asignarNivel(nivel.getKey(), nivel.getValue());
-		}
-		usuarios.add(participante);
-		guardarDatos();
-		return participante;
-	}
-
-	public boolean existeLogin(String login) {
-		for (Usuario usuario : usuarios) {
-			if (usuario.getLogin().equals(login)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/** Socio, empleado o participante externo con ese login (para elegir compañero de dobles). */
-	public JugadorTorneo buscarJugadorTorneo(String login) {
-		for (Usuario usuario : usuarios) {
-			if (usuario instanceof JugadorTorneo && usuario.getLogin().equals(login)) {
-				return (JugadorTorneo) usuario;
-			}
-		}
-		return null;
 	}
 
 	public boolean esElegiblePreferencial(Torneo torneo, InscripcionTorneo inscripcion) {

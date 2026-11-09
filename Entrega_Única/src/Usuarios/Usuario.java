@@ -58,8 +58,6 @@ public abstract class Usuario {
 	            return Fisioterapeuta.fromJSON(json, mapaDisciplinas);
 	        case "Administrador":
 	            return Administrador.fromJSON(json);
-	        case "ParticipanteExterno":
-	            return ParticipanteExterno.fromJSON(json, mapaDisciplinas);
 	        default:
 	            throw new IllegalArgumentException("Tipo de usuario desconocido: " + tipo);
 	    }

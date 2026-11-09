@@ -1,0 +1,131 @@
+package Usuarios;
+
+import java.text.Normalizer;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import DeportesIndividuales.DisciplinaIndividual;
+import Excepciones.ReglaNegocioException;
+import Tienda_Cafeteria_Inventario.CodigoDescuento;
+import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
+import TurnosEmpleados.SolicitudCambioTurno;
+import TurnosEmpleados.Turno;
+
+public class Empleado extends Socio{
+
+	private String codigoEmpleado;
+	private CodigoDescuento codigoDescuento;
+	private List<Turno> turnos;
+	
+	public Empleado(int edad, String nombre, String login, String password, String codigoEmpleado) {
+		super(edad, nombre, login, password);
+		this.codigoEmpleado = codigoEmpleado;
+		this.codigoDescuento = new CodigoDescuento("DESC-" + codigoEmpleado);
+		this.turnos = new ArrayList<>();
+	}
+
+	public String getCodigoEmpleado() {
+		return codigoEmpleado;
+	}
+
+	public CodigoDescuento getCodigoDescuento() {
+		return codigoDescuento;
+	}
+
+	public List<Turno> getTurnos() {
+		return turnos;
+	}
+	
+	public SugerenciaArticulo sugerirArticulo(String nombrePropuesto, String categoria, double precioSugerido) {
+		return new SugerenciaArticulo(nombrePropuesto, categoria, precioSugerido);
+	}
+	
+	public SolicitudCambioTurno solicitarCambioTurno(Turno turnoActual, Turno turnoNuevo)
+			throws ReglaNegocioException {
+		if (!turnos.contains(turnoActual)) {
+	        throw new ReglaNegocioException("Ese turno no es de " + getNombre());
+	    }
+		return new SolicitudCambioTurno(turnoActual, turnoNuevo, this);
+	}
+
+	public void agregarTurno(Turno turno) {
+		turnos.add(turno);
+	}
+
+	public void cambiarTurno(Turno actual, Turno nuevo) {
+		int posicion = turnos.indexOf(actual);
+		if (posicion >= 0) {
+			turnos.set(posicion, nuevo);
+		}
+	}
+	
+	@Override
+	public boolean esEmpleado() {
+		return true;
+	}
+	
+	public boolean tieneTurnoEl(LocalDate fecha) {
+		String dia = nombreDia(fecha.getDayOfWeek());
+		for (Turno turno : turnos) {
+			if (sinTildes(turno.getDiaSemana()).equalsIgnoreCase(dia)) {
+				return true;
+			}
+		}
+		return false;
+	}
+ 
+	private static String nombreDia(DayOfWeek dia) {
+		switch (dia) {
+		case MONDAY: return "Lunes";
+		case TUESDAY: return "Martes";
+		case WEDNESDAY: return "Miercoles";
+		case THURSDAY: return "Jueves";
+		case FRIDAY: return "Viernes";
+		case SATURDAY: return "Sabado";
+		default: return "Domingo";
+		}
+	}
+ 
+	private static String sinTildes(String texto) {
+		return Normalizer.normalize(texto.trim(), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+	}
+	
+	@Override
+	public JSONObject toJSON() {
+		JSONObject json = super.toJSON();
+		json.put("tipo", "Empleado");
+		json.put("codigoEmpleado", codigoEmpleado);
+		json.put("codigoDescuento", codigoDescuento.toJSON());
+		JSONArray jsonTurnos = new JSONArray();
+	    for (Turno turno : turnos) {
+	    	jsonTurnos.put(turno.toJSON());
+	    }
+	    json.put("turnos", jsonTurnos);
+		return json;
+	}
+	
+	public static Empleado fromJSON(JSONObject json, Map<String, DisciplinaIndividual> mapaDisciplinas) {
+	    Empleado empleado = new Empleado(
+	            json.getInt("edad"),
+	            json.getString("nombre"),
+	            json.getString("login"),
+	            json.getString("password"),
+	            json.getString("codigoEmpleado"));
+	    empleado.restaurarEstadoSocio(json, mapaDisciplinas);
+	    empleado.restaurarEstadoEmpleado(json);
+	    return empleado;
+	}
+	
+	protected void restaurarEstadoEmpleado(JSONObject json) {
+		JSONArray jsonTurnos = json.getJSONArray("turnos");
+		for (int indice = 0; indice < jsonTurnos.length(); indice++) {
+			this.turnos.add(Turno.fromJSON(jsonTurnos.getJSONObject(indice)));
+		}
+	}
+}

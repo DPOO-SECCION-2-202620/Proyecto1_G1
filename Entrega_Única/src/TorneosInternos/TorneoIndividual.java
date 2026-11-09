@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import DeportesIndividuales.DisciplinaIndividual;
 import DeportesIndividuales.Modalidad;
 import DeportesIndividuales.NivelJugador;
-import DeportesIndividuales.Padel;
 import Excepciones.ReglaNegocioException;
 import Usuarios.Empleado;
 
@@ -23,9 +22,6 @@ public class TorneoIndividual extends Torneo{
 		this.disciplina = disciplina;
 		this.nivel = nivel;
 		this.modalidad = modalidad;
-		if (disciplina instanceof Padel && modalidad == Modalidad.SENCILLOS) {
-			throw new ReglaNegocioException("Los torneos de pádel siempre son de dobles");
-		}
 }
 
 	@Override
