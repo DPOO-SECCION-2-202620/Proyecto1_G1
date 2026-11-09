@@ -3,13 +3,14 @@ package Consola;
 import java.util.List;
 
 import Tienda_Cafeteria_Inventario.BonoDescuento;
+import TorneosInternos.JugadorTorneo;
 import Usuarios.Socio;
 
 public class OpcionVerBonos implements OpcionMenu {
 
-	private final Socio socio;
+	private final JugadorTorneo socio;
 
-	public OpcionVerBonos(Socio socio, LectorConsola lector) {
+	public OpcionVerBonos(JugadorTorneo socio, LectorConsola lector) {
 		this.socio = socio;
 	}
 

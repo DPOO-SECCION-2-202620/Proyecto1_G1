@@ -6,14 +6,14 @@ import java.util.List;
 import Excepciones.ReglaNegocioException;
 import NucleoSistema.ClubSeneca;
 import TorneosInternos.EstadoTorneo;
+import TorneosInternos.JugadorTorneo;
 import TorneosInternos.Torneo;
-import Usuarios.Socio;
 
 public class OpcionRetirarseTorneo extends OpcionTorneo {
 
-	private final Socio jugador;
+	private final JugadorTorneo jugador;
 
-	public OpcionRetirarseTorneo(ClubSeneca club, Socio jugador, LectorConsola lector) {
+	public OpcionRetirarseTorneo(ClubSeneca club, JugadorTorneo jugador, LectorConsola lector) {
 		super(club, lector);
 		this.jugador = jugador;
 	}

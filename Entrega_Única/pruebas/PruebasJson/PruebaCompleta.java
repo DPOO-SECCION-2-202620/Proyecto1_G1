@@ -1261,8 +1261,10 @@ public class PruebaCompleta {
 		exigir(inscribir(pequeno, miembro, equipo, "Portero", 1) && inscribir(pequeno, companero, equipo, "Defensa", 2),
 				"se arma el equipo del club pequeño");
 
-		exigir(!pequeno.darDeBajaSocio(sinEquipo), "dar de baja a quien no está en ningún equipo se rechaza (historia Administrador-01)");
-		exigir(iniciarSesionSinFallar(pequeno, "sinequipo", "x") != null, "el rechazo no cambia nada: el socio sigue pudiendo iniciar sesión");
+		// Proyecto 2: también se puede dar de baja a un socio que no está en ningún equipo
+		// (ver ClubSenecaTest.testDarDeBajaSocioSinEquipos).
+		exigir(pequeno.darDeBajaSocio(sinEquipo), "se da de baja a un socio que no está en ningún equipo");
+		exigir(iniciarSesionSinFallar(pequeno, "sinequipo", "x") == null, "el socio sin equipo dado de baja ya no inicia sesión");
 		exigir(!pequeno.darDeBajaSocio(null), "darDeBajaSocio(null) devuelve false");
 		exigir(pequeno.darDeBajaSocio(miembro), "se da de baja a un miembro del equipo");
 		exigir(iniciarSesionSinFallar(pequeno, "miembro", "x") == null, "el socio dado de baja ya no inicia sesión");
