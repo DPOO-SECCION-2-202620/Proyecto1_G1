@@ -12,6 +12,9 @@ public class PremiacionCompetitiva implements Premiacion{
 	private double tarifa;
 	
 	public PremiacionCompetitiva(double tarifa) throws ReglaNegocioException {
+		if (tarifa <= 0) {
+			throw new ReglaNegocioException("La tarifa de un torneo competitivo debe ser mayor a 0");
+		}
 		this.tarifa = tarifa;
 	}
 	
