@@ -1,0 +1,1125 @@
+package NucleoSistema;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import DeportesConjunto_Competencias.Baloncesto;
+import DeportesConjunto_Competencias.Categoria;
+import DeportesConjunto_Competencias.Competencia;
+import DeportesConjunto_Competencias.DeporteConjunto;
+import DeportesConjunto_Competencias.Equipo;
+import DeportesConjunto_Competencias.Futbol;
+import DeportesConjunto_Competencias.InscripcionCompetencia;
+import DeportesConjunto_Competencias.InscripcionEquipo;
+import DeportesConjunto_Competencias.TorneoCerros;
+import DeportesConjunto_Competencias.Voleibol;
+import DeportesIndividuales.DisciplinaIndividual;
+import DeportesIndividuales.EstadisticaPractica;
+import DeportesIndividuales.InscripcionIndividual;
+import DeportesIndividuales.Modalidad;
+import DeportesIndividuales.NivelJugador;
+import DeportesIndividuales.PartidoPractica;
+import DeportesIndividuales.RankingJugadorDisciplina;
+import DeportesIndividuales.Reserva;
+import Entrenamiento.EstadoAsistencia;
+import Entrenamiento.SesionEntrenamiento;
+import Excepciones.ReglaNegocioException;
+import Instalaciones.Instalacion;
+import Instalaciones.InstalacionConjunto;
+import Instalaciones.InstalacionIndividual;
+import PartidosEquipo_Estadisticas.EstadisticaConjunto;
+import PartidosEquipo_Estadisticas.EstadisticaFutbol;
+import PartidosEquipo_Estadisticas.Partido;
+import PartidosEquipo_Estadisticas.PartidoExterno;
+import PartidosEquipo_Estadisticas.PartidoInterno;
+import Tienda_Cafeteria_Inventario.Articulo;
+import Tienda_Cafeteria_Inventario.Bebida;
+import Tienda_Cafeteria_Inventario.BonoDescuento;
+import Tienda_Cafeteria_Inventario.CafeteriaSocios;
+import Tienda_Cafeteria_Inventario.CodigoDescuento;
+import Tienda_Cafeteria_Inventario.Inventario;
+import Tienda_Cafeteria_Inventario.LineaVenta;
+import Tienda_Cafeteria_Inventario.Producto;
+import Tienda_Cafeteria_Inventario.Rubro;
+import Tienda_Cafeteria_Inventario.SugerenciaArticulo;
+import Tienda_Cafeteria_Inventario.Tienda;
+import Tienda_Cafeteria_Inventario.Ubicacion;
+import Tienda_Cafeteria_Inventario.Venta;
+import TorneosInternos.Encuentro;
+import TorneosInternos.EstadoTorneo;
+import TorneosInternos.InscripcionTorneo;
+import TorneosInternos.JugadorTorneo;
+import TorneosInternos.Torneo;
+import TurnosEmpleados.EstadoSolicitud;
+import TurnosEmpleados.GestorTurnos;
+import TurnosEmpleados.SolicitudCambioTurno;
+import TurnosEmpleados.Turno;
+import Usuarios.Administrador;
+import Usuarios.Empleado;
+import Usuarios.Entrenador;
+import Usuarios.Socio;
+import Usuarios.ParticipanteExterno;
+import Usuarios.Usuario;
+
+public class ClubSeneca {
+
+	private String nombre;
+	
+	private List<DeporteConjunto> deportes;
+	
+	private List<Equipo> equipos;
+	
+	private Autenticador autenticador;
+	
+	private Persistencia persistencia;
+	
+	private List<SolicitudCambioTurno> solicitudes;
+	
+	private GeneradorReportes generadorReportes;
+	
+	private GestorTurnos gestorTurnos;
+	
+	private Historial historial;
+	
+	private List<SugerenciaArticulo> sugerencias;
+	
+	private List<Inventario> inventarios;
+	
+	private CafeteriaSocios cafeteria;
+	
+	private Tienda tienda;
+	
+	private List<Venta> ventas;
+	
+	private List<Usuario> usuarios;
+	
+	private List<Competencia> competencias;
+	
+	private List<DisciplinaIndividual> disciplinas;
+	
+	private List<RankingJugadorDisciplina> rankings;
+
+	private List<Torneo> torneos;
+	
+	public ClubSeneca(String nombre) {
+		super();
+		this.nombre = nombre;
+		
+		this.usuarios = new ArrayList<>();
+		this.deportes = new ArrayList<>();
+		this.disciplinas = new ArrayList<>();
+		this.rankings = new ArrayList<>();
+		this.torneos = new ArrayList<>();
+		this.inventarios = new ArrayList<>();
+		this.equipos = new ArrayList<>();
+		this.competencias = new ArrayList<>();
+		this.ventas = new ArrayList<>();
+		this.solicitudes = new ArrayList<>();
+		this.sugerencias = new ArrayList<>();
+
+		this.tienda = new Tienda();
+		this.cafeteria = new CafeteriaSocios();
+		this.historial = new Historial();
+
+		this.autenticador = new Autenticador();
+		this.gestorTurnos = new GestorTurnos();
+		this.generadorReportes = new GeneradorReportes();
+		this.persistencia = new Persistencia("datos");
+	}
+	
+	public void inscribirJugador(Socio socio, Equipo equipo, String posicion, int numeroCamiseta)
+			throws ReglaNegocioException {
+		equipo.agregarJugador(socio, posicion, numeroCamiseta);
+		guardarDatos();
+	}
+	
+	public PartidoInterno registrarPartidoInterno(Equipo equipoLocal, Equipo equipoVisitante,
+			int marcadorLocal, int marcadorVisitante,
+			List<EstadisticaConjunto> estadisticas) {
+		if (equipoLocal == null || equipoVisitante == null || equipoLocal.equals(equipoVisitante)) {
+			return null;
+		}
+		if (!equipoLocal.getDeporte().equals(equipoVisitante.getDeporte())) {
+			return null;
+		}
+		if (equipoLocal.getCategoria() != equipoVisitante.getCategoria()) {
+			return null;
+		}
+		if (!equipoLocal.puedeJugar() || !equipoVisitante.puedeJugar()) {
+			return null;
+		}
+		PartidoInterno partido = new PartidoInterno(LocalDate.now(), equipoLocal, equipoVisitante,
+				marcadorLocal, marcadorVisitante);
+		if (estadisticas != null) {
+			for (EstadisticaConjunto estadistica : estadisticas) {
+				partido.agregarEstadistica(estadistica);
+				if (estadistica instanceof EstadisticaFutbol) {
+					EstadisticaFutbol estadisticaFutbol = (EstadisticaFutbol) estadistica;
+					estadistica.getJugador().registrarTarjetas(estadisticaFutbol.getTarjetasAmarillas(),
+							estadisticaFutbol.getTarjetasRojas());
+				}
+			}
+		}
+		historial.agregarPartido(partido);
+		guardarDatos();
+		return partido;
+	}
+ 
+	public PartidoExterno registrarPartidoExterno(Competencia competencia, Equipo equipo,
+			LocalDate fecha, int marcadorPropio, int marcadorRival, String institucionRival,
+			String escenario, List<EstadisticaConjunto> estadisticas) {
+		if (competencia == null || equipo == null) {
+			return null;
+		}
+		InscripcionCompetencia inscripcionCompetencia = competencia.getInscripcionDe(equipo);
+		if (estadisticas != null && inscripcionCompetencia != null) {
+			for (EstadisticaConjunto estadistica : estadisticas) {
+				if (!inscripcionCompetencia.puedeAlinear(estadistica.getJugador().getJugador())) {
+					return null;
+				}
+			}
+		}
+		PartidoExterno partido = new PartidoExterno(fecha, marcadorPropio, marcadorRival, institucionRival,
+				escenario, equipo);
+		if (estadisticas != null) {
+			for (PartidosEquipo_Estadisticas.EstadisticaConjunto estadistica : estadisticas) {
+				partido.agregarEstadistica(estadistica);
+				if (estadistica instanceof EstadisticaFutbol && inscripcionCompetencia != null) {
+					EstadisticaFutbol estadisticaFutbol = (EstadisticaFutbol) estadistica;
+					inscripcionCompetencia.getRegistroDe(estadistica.getJugador().getJugador()).registrarTarjetas(
+							estadisticaFutbol.getTarjetasAmarillas(), estadisticaFutbol.getTarjetasRojas());
+				}
+			}
+		}
+		competencia.registrarPartido(partido);
+		historial.agregarPartido(partido);
+		guardarDatos();
+		return partido;
+	}
+	
+	public boolean inscribirEquipoEnCompetencia(Equipo equipo, Competencia competencia) {
+		if (equipo == null || competencia == null) {
+			return false;
+		}
+		if (!competencia.equipoCumpleRequisitos(equipo)) {
+			return false;
+		}
+		boolean inscrito = competencia.inscribirEquipo(equipo);
+		if (inscrito) {
+			if (!competencias.contains(competencia)) {
+				competencias.add(competencia);
+			}
+			guardarDatos();
+		}
+		return inscrito;
+	}
+	
+	public Reserva reservar(Socio socio, DisciplinaIndividual disciplina, InstalacionIndividual instalacion,
+			LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal,
+			int numeroJugadores, Modalidad modalidad) {
+		if (socio == null || disciplina == null || instalacion == null) {
+			return null;
+		}
+		if (!horaInicio.isBefore(horaFinal)) {
+			return null;
+		}
+		if (!instalacion.admiteModalidad(modalidad, numeroJugadores)) {
+			return null;
+		}
+		for (Reserva reservaExistente : historial.getReservas()) {
+			if (reservaExistente.getInstalacion().equals(instalacion)
+					&& reservaExistente.seSolapaCon(fecha, horaInicio, horaFinal)) {
+				return null;
+			}
+		}
+		if (!disciplina.hayCupo(historial.getReservas(), fecha, horaInicio, horaFinal)) {
+			return null;
+		}
+		Reserva reserva = new Reserva(numeroJugadores, horaInicio, horaFinal, fecha, modalidad, socio,
+				instalacion);
+		historial.agregarReserva(reserva);
+		guardarDatos();
+		return reserva;
+	}
+	
+	public PartidoPractica programarPartidoPractica(DisciplinaIndividual disciplina,
+			InstalacionIndividual instalacion, LocalDate fecha, List<Socio> jugadores) {
+		if (disciplina == null || instalacion == null || jugadores == null
+				|| (jugadores.size() != 2 && jugadores.size() != 4)) {
+			return null;
+		}
+		PartidoPractica partidoPractica = new PartidoPractica(fecha, disciplina, jugadores, instalacion);
+		if (!partidoPractica.validarNiveles()) {
+			return null;
+		}
+		historial.agregarPartidosPractica(partidoPractica);
+		guardarDatos();
+		return partidoPractica;
+	}
+	
+	public void finalizarPartidoPractica(PartidoPractica partido,
+			List<EstadisticaPractica> estadisticas) {
+		if (partido == null) {
+			return;
+		}
+		try {
+			partido.finalizar(estadisticas);
+		} catch (ReglaNegocioException excepcion) {
+			excepcion.printStackTrace();
+			return;
+		}
+		Socio ganador = partido.getGanador();
+		Map<RankingJugadorDisciplina, Double> promediosRivales = new HashMap<>();
+		for (Socio jugador : partido.getJugadores()) {
+			RankingJugadorDisciplina rankingJugador = null;
+			for (RankingJugadorDisciplina ranking : rankings) {
+				if (ranking.getDisciplina().equals(partido.getDisciplina()) && ranking.getJugador().equals(jugador)) {
+					rankingJugador = ranking;
+					break;
+				}
+			}
+			if (rankingJugador == null) {
+				continue;
+			}
+			double sumaRivales = 0;
+			int rivales = 0;
+			for (Socio otro : partido.getJugadores()) {
+				if (otro.equals(jugador)) {
+					continue;
+				}
+				for (RankingJugadorDisciplina ranking : rankings) {
+					if (ranking.getDisciplina().equals(partido.getDisciplina()) && ranking.getJugador().equals(otro)) {
+						sumaRivales += ranking.getPuntajeElo();
+						rivales++;
+						break;
+					}
+				}
+			}
+			if (rivales > 0) {
+				promediosRivales.put(rankingJugador, sumaRivales / rivales);
+			}
+		}
+		for (Map.Entry<RankingJugadorDisciplina, Double> entrada : promediosRivales.entrySet()) {
+			RankingJugadorDisciplina rankingJugador = entrada.getKey();
+			rankingJugador.calcularPuntajeElo(entrada.getValue(), rankingJugador.getJugador().equals(ganador));
+		}
+		guardarDatos();
+	}
+	
+	public RankingJugadorDisciplina getRanking(DisciplinaIndividual disciplina, Socio socio) {
+		for (RankingJugadorDisciplina ranking : rankings) {
+			if (ranking.getDisciplina().equals(disciplina) && ranking.getJugador().equals(socio)) {
+				return ranking;
+			}
+		}
+		return null;
+	}
+	
+	public SesionEntrenamiento planearSesion(Entrenador entrenador, LocalDate fecha,
+			LocalTime hora, int duracionMinutos, Instalacion instalacion, List<Socio> convocados) {
+		if (entrenador == null || instalacion == null || duracionMinutos <= 0) {
+			return null;
+		}
+		LocalTime fin = hora.plusMinutes(duracionMinutos);
+		for (SesionEntrenamiento sesionExistente : historial.getSesiones()) {
+			if (!sesionExistente.getFecha().equals(fecha)) {
+				continue;
+			}
+			LocalTime sesionExistenteFin = sesionExistente.getHora().plusMinutes(sesionExistente.getDuracionMinutos());
+			boolean seSolapan = hora.isBefore(sesionExistenteFin) && sesionExistente.getHora().isBefore(fin);
+			boolean mismoRecurso = sesionExistente.getInstalacion().equals(instalacion)
+					|| sesionExistente.getEntrenador().equals(entrenador);
+			if (seSolapan && mismoRecurso) {
+				return null;
+			}
+		}
+		SesionEntrenamiento sesion = new SesionEntrenamiento(fecha, hora, duracionMinutos, entrenador,
+				instalacion, convocados);
+		historial.agregarSesion(sesion);
+		guardarDatos();
+		return sesion;
+	}
+	
+	public void registrarAsistencia(SesionEntrenamiento sesion, Socio socio,
+			EstadoAsistencia estado, int evaluacion, String comentario) {
+		if (sesion == null || socio == null) {
+			return;
+		}
+		sesion.registrarAsistencia(socio, estado, evaluacion, comentario);
+		guardarDatos();
+	}
+	
+	public void registrarVenta(Socio comprador, Map<Producto, Integer> productos, Rubro rubro,
+			Instalacion instalacionActual, CodigoDescuento codigoDescuento, int puntosARedimir, double propina) {
+		if (comprador == null || productos == null || productos.isEmpty() || rubro == null) {
+			return;
+		}
+		for (Map.Entry<Producto, Integer> linea : productos.entrySet()) {
+			if (linea.getKey() == null || linea.getKey().getCantidad() < linea.getValue()) {
+				return;
+			}
+		}
+		if (puntosARedimir < 0 || puntosARedimir > comprador.getPuntosFidelidad()) {
+			puntosARedimir = 0;
+		}
+		Venta venta;
+		List<LineaVenta> lineas = new ArrayList<>();
+		productos.forEach((producto, cantidad) -> {
+		    lineas.add(new LineaVenta(cantidad, producto));
+		});
+		if (rubro == Rubro.TIENDA) {
+			venta = tienda.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);
+		} else if (rubro == Rubro.CAFETERIA) {
+			venta = cafeteria.vender(comprador, lineas, instalacionActual, codigoDescuento, puntosARedimir, propina);;
+		} else {
+			return;
+		}
+		if (venta == null) {
+			return;
+		}
+		for (Map.Entry<Producto, Integer> linea : productos.entrySet()) {
+			linea.getKey().reducirCantidad(linea.getValue());
+			if (linea.getKey() instanceof Bebida && ((Bebida) linea.getKey()).getCaliente()) {
+				comprador.registrarBebidaCaliente(LocalDateTime.now());
+			}
+		}
+		if (venta.getPuntosRedimidos() > 0) {
+			comprador.redimirPuntos(venta.getPuntosRedimidos());
+		}
+		comprador.acumularPuntos(venta.getPuntosGenerados());
+		ventas.add(venta);
+		guardarDatos();
+	}
+	
+	public List<Producto> getProductosDisponibles(Rubro rubro) {
+	    List<Producto> catalogo = new ArrayList<>();
+	    if (rubro == Rubro.TIENDA) {
+	        catalogo.addAll(tienda.getArticulos());
+	    } else if (rubro == Rubro.CAFETERIA) {
+	        catalogo.addAll(cafeteria.getProductos());
+	    }
+	    List<Producto> disponibles = new ArrayList<>();
+	    for (Producto producto : catalogo) {
+	        if (producto.getCantidad() > 0 && !disponibles.contains(producto)) {
+	            disponibles.add(producto);
+	        }
+	    }
+	    return disponibles;
+	}
+
+	public Venta registrarVentaConBono(Socio comprador, Map<Producto, Integer> productos, Rubro rubro,
+	        Instalacion instalacionActual, BonoDescuento bono, double propina) throws ReglaNegocioException {
+	    if (comprador == null || bono == null) {
+	        throw new ReglaNegocioException("Debe indicar el comprador y el bono");
+	    }
+	    if (!comprador.getBonos().contains(bono)) {
+	        throw new ReglaNegocioException("El bono no pertenece al socio");
+	    }
+	    if (bono.estaUsado()) {
+	        throw new ReglaNegocioException("El bono ya fue usado");
+	    }
+	    int ventasAntes = ventas.size();
+	    registrarVenta(comprador, productos, rubro, instalacionActual, null, 0, propina);
+	    if (ventas.size() == ventasAntes) {
+	        throw new ReglaNegocioException("No se pudo registrar la compra: revise los productos y las cantidades");
+	    }
+	    Venta venta = ventas.get(ventas.size() - 1);
+	    int puntosDeMas = venta.aplicarBono(bono.getPorcentaje());
+	    if (puntosDeMas > 0) {
+	        comprador.redimirPuntos(puntosDeMas);
+	    }
+	    bono.setUsado(true);
+	    guardarDatos();
+	    return venta;
+	}
+	
+	public void reabastecerTienda(Articulo articulo, int cantidad) {
+		if (articulo == null || cantidad <= 0) {
+			return;
+		}
+		tienda.reabastecer(articulo, cantidad);
+		guardarDatos();
+	}
+	
+	public void reabasteceCafeteriaSocios(Producto articulo, int cantidad) {
+		if (articulo == null || cantidad <= 0) {
+			return;
+		}
+		cafeteria.reabastecer(articulo, cantidad);
+		guardarDatos();
+	}
+	
+	public boolean moverArticulo(Articulo articulo, Ubicacion origen, Ubicacion destino) {
+		Inventario inventarioOrigen = null;
+		Inventario inventarioDestino = null;
+		List<Inventario> inventarios = getInventario();
+		for (Inventario inventario : inventarios) {
+			if (inventario.getUbicacion().equals(origen)) {
+				inventarioOrigen = inventario;
+			}
+			if (inventario.getUbicacion().equals(destino)) {
+				inventarioDestino  = inventario;
+			}
+			if (inventarioOrigen != null && inventarioDestino != null) {
+				break;
+			}
+		}
+		if (inventarioOrigen == null || inventarioDestino == null) {
+			return false;
+		}
+		if (!inventarioOrigen.tieneArticulo(articulo) || inventarioDestino.tieneArticulo(articulo)) {
+			return false;
+		}
+		inventarioOrigen.quitarArticulo(articulo);
+		inventarioDestino.agregarArticulo(articulo); 
+		guardarDatos();
+		return true;
+	}
+	
+	public SugerenciaArticulo registrarSugerencia(Empleado empleado, String nombrePropuesto,
+			String categoria, double precioSugerido) {
+		if (empleado == null) {
+			return null;
+		}
+		SugerenciaArticulo sugerencia = empleado.sugerirArticulo(nombrePropuesto, categoria, precioSugerido);
+		sugerencias.add(sugerencia);
+		guardarDatos();
+		return sugerencia;
+	}
+	
+	public void resolverSugerencia(SugerenciaArticulo sugerencia, boolean aprobada) {
+		if (sugerencia == null || !sugerencias.contains(sugerencia)) {
+			return;
+		}
+		if (aprobada) {
+			sugerencia.aprobar();
+			tienda.agregarArticulo(new Articulo(sugerencia.getNombrePropuesto(),
+					sugerencia.getCategoria(), sugerencia.getPrecioSugerido(), 0));
+		} else {
+			sugerencia.rechazar();
+		}
+		guardarDatos();
+	}
+	
+	public void resolverSolicitud(SolicitudCambioTurno solicitud, boolean aprobada)
+			throws ReglaNegocioException {
+		if (solicitud == null || !solicitudes.contains(solicitud)
+				|| solicitud.getEstado() != EstadoSolicitud.PENDIENTE) {
+			throw new ReglaNegocioException("La solicitud no existe o ya fue resuelta");
+		}
+		if (!aprobada) {
+			solicitud.rechazar();
+			guardarDatos();
+			return;
+		}
+		if (!gestorTurnos.puedeAprobar(solicitud, getEmpleados())) {
+			throw new ReglaNegocioException(
+					"La aprobación dejaría menos de 2 entrenadores o menos de 1 fisioterapeuta disponibles");
+		}
+		solicitud.aprobar();
+		solicitud.getSolicitante().cambiarTurno(solicitud.getTurnoActual(), solicitud.getTurnoNuevo());
+		guardarDatos();
+	}
+	
+	public Usuario iniciarSesion(String login, String password) {
+		return autenticador.autenticar(login, usuarios, password);
+	}
+	
+	public Equipo crearEquipo(String nombre, int cupoMaximo, DeporteConjunto deporte, Categoria categoria) {
+		for (Equipo equipo : equipos) {
+			if (equipo.getNombre().equalsIgnoreCase(nombre)) {
+				return null;
+			}
+		}
+		if (cupoMaximo < deporte.getMinimoJugadores()) {
+			return null;
+		}
+		Equipo equipo = new Equipo(nombre, cupoMaximo, deporte, categoria);
+		equipos.add(equipo);
+		guardarDatos();
+		return equipo;
+	}
+	
+	public boolean darDeBajaEquipo(Equipo equipo) {
+		if (equipo == null || !equipos.remove(equipo)) {
+			return false;
+		}
+		for (InscripcionEquipo inscripcion : equipo.getInscripciones()) {
+			inscripcion.getJugador().getInscripcionesEquipo().remove(inscripcion);
+		}
+		for (Competencia competencia : competencias) {
+			competencia.getInscripciones().removeIf(inscripcion -> inscripcion.getEquipo() == equipo);
+			competencia.getListaPartidos().removeIf(partido -> partido.getEquipo() == equipo);
+			if (competencia instanceof TorneoCerros) {
+				((TorneoCerros) competencia).getTablaPosiciones().remove(equipo);
+			}
+		}
+		historial.getPartidos().removeIf(partido -> 
+				(partido instanceof PartidoInterno && (((PartidoInterno) partido).getEquipoLocal() == equipo
+						|| ((PartidoInterno) partido).getEquipoVisitante() == equipo))
+				|| (partido instanceof PartidoExterno && ((PartidoExterno) partido).getEquipo() == equipo));
+		guardarDatos();
+		return true;
+	}
+	
+	public boolean darDeBajaSocio(Socio socio) {
+	    if (socio == null || !usuarios.contains(socio)) {
+	        return false;
+	    }
+	    usuarios.remove(socio);
+	    rankings.removeIf(ranking -> ranking.getJugador().equals(socio));
+	    for (Equipo equipo : equipos) {
+	        equipo.getInscripciones().removeIf(inscripcion -> inscripcion.getJugador() == socio);
+	    }
+	    for (Competencia competencia : competencias) {
+	        for (InscripcionCompetencia inscripcion : competencia.getInscripciones()) {
+	            inscripcion.getNomina().removeIf(registro -> registro.getInscripcionEquipo().getJugador() == socio);
+	        }
+	        for (PartidoExterno partido : competencia.getListaPartidos()) {
+	            partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+	        }
+	    }
+	    for (Partido partido : historial.getPartidos()) {
+	        partido.getEstadisticas().removeIf(estadistica -> estadistica.getJugador().getJugador() == socio);
+	    }
+	    historial.getReservas().removeIf(reserva -> reserva.getJugador() == socio);
+	    historial.getPartidosPractica().removeIf(partido -> partido.getJugadores().contains(socio));
+	    historial.getSesiones().removeIf(sesion -> sesion.getEntrenador() == socio);
+	    for (SesionEntrenamiento sesion : historial.getSesiones()) {
+	        sesion.getConvocados().remove(socio);
+	        sesion.getAsistencias().removeIf(asistencia -> asistencia.getJugador() == socio);
+	    }
+	    solicitudes.removeIf(solicitud -> solicitud.getSolicitante() == socio);
+	    guardarDatos();
+	    return true;
+	}
+	
+	public Map<LocalDate, Map<Rubro, Double>>  generarReporteVentas(Rubro rubro, Periodo periodo) {
+		return generadorReportes.reporteVentas(ventas, rubro, periodo);
+	}
+	
+	public List<RankingJugadorDisciplina> generarReporteDeportivo(){
+		List<RankingJugadorDisciplina> reporte = generadorReportes.reporteRankings(rankings);
+		return reporte;
+	}
+	
+	public void guardarDatos() {
+		try {
+			persistencia.guardar(this);
+		} catch (IOException excepcio) {
+			throw new UncheckedIOException("No se pudieron guardar los datos del club", excepcio);
+		}
+	}
+	
+	public void cargarDatos() {
+		try {
+			ClubSeneca cargado = persistencia.cargar();
+			if (cargado == null) {
+				return;
+			}
+			this.nombre = cargado.nombre;
+			this.usuarios = cargado.usuarios;
+			this.deportes = cargado.deportes;
+			this.disciplinas = cargado.disciplinas;
+			this.rankings = cargado.rankings;
+			this.inventarios = cargado.inventarios;
+			this.equipos = cargado.equipos;
+			this.competencias = cargado.competencias;
+			this.ventas = cargado.ventas;
+			this.solicitudes = cargado.solicitudes;
+			this.sugerencias = cargado.sugerencias;
+			this.tienda = cargado.tienda;
+			this.cafeteria = cargado.cafeteria;
+			this.historial = cargado.historial;
+			this.torneos = cargado.torneos;
+		} catch (IOException excepcion) {
+			throw new UncheckedIOException("No se pudieron cargar los datos del club", excepcion);
+		}
+	}
+	
+	public Socio crearSocio(int edad, String nombre, String login, String password) {
+		for (Usuario usuario : usuarios) {
+			if (usuario.getLogin().equals(login)) {
+				return null;
+			}
+		}
+		Socio socio = new Socio(edad, nombre, login, password);
+		usuarios.add(socio);
+		guardarDatos();
+		return socio;
+	}
+	
+	public boolean registrarUsuario(Usuario usuario) {
+		if (usuario == null) {
+			return false;
+		}
+		for (Usuario existente : usuarios) {
+			if (existente.getLogin().equals(usuario.getLogin())) {
+				return false;
+			}
+		}
+		usuarios.add(usuario);
+		if (usuario instanceof Administrador) {
+			((Administrador) usuario).setClub(this);
+		}
+		guardarDatos();
+		return true;
+	}
+	
+	public InscripcionIndividual inscribirEnDisciplina(Socio socio, DisciplinaIndividual disciplina, NivelJugador nivel) {
+		if (socio == null || disciplina == null) {
+			return null;
+		}
+		for (InscripcionIndividual existente : socio.getInscripcionesIndividuales()) {
+			if (existente.getDisciplina().equals(disciplina)) {
+				return null;
+			}
+		}
+		InscripcionIndividual inscripcion = new InscripcionIndividual(disciplina, nivel);
+		socio.agregarInscripcionIndividual(inscripcion);
+		if (getRanking(disciplina, socio) == null) {
+			rankings.add(new RankingJugadorDisciplina(socio, disciplina));
+		}
+		guardarDatos();
+		return inscripcion;
+	}
+	
+	public void registrarSolicitudTurno(Empleado solicitante, Turno turnoActual, Turno turnoNuevo) throws ReglaNegocioException {
+		if (solicitante == null) {
+			return;
+		}
+		SolicitudCambioTurno solicitud = solicitante.solicitarCambioTurno(turnoActual, turnoNuevo);
+		solicitudes.add(solicitud);
+		guardarDatos();
+	}
+	
+	public void asignarTurno(Empleado empleado, Turno turno) {
+		if (empleado == null || turno == null) {
+			return;
+		}
+		empleado.agregarTurno(turno);
+		guardarDatos();
+	}
+	
+	public List<Torneo> getTorneos() {
+		return new ArrayList<>(torneos);
+	}
+
+	/** HU-TINT-10 CA-1: torneos en el estado indicado (si estado es null, todos). */
+	public List<Torneo> getTorneos(EstadoTorneo estado) {
+		List<Torneo> resultado = new ArrayList<>();
+		for (Torneo torneo : torneos) {
+			if (estado == null || torneo.getEstado() == estado) {
+				resultado.add(torneo);
+			}
+		}
+		return resultado;
+	}
+
+	public void agregarTorneo(Torneo torneo) throws ReglaNegocioException {
+		if (torneo == null) {
+			throw new ReglaNegocioException("El torneo no puede ser nulo");
+		}
+		for (Torneo existente : torneos) {
+			if (existente.getNombre().equalsIgnoreCase(torneo.getNombre())) {
+				throw new ReglaNegocioException("Ya existe un torneo con el nombre " + torneo.getNombre());
+			}
+		}
+		torneos.add(torneo);
+		guardarDatos();
+	}
+
+	public void inscribirEnTorneo(Torneo torneo, InscripcionTorneo inscripcion) throws ReglaNegocioException {
+		boolean elegible = esElegiblePreferencial(torneo, inscripcion);
+		torneo.inscribir(inscripcion, LocalDate.now(), elegible);
+		guardarDatos();
+	}
+
+	public void retirarJugadorDeTorneo(Torneo torneo, JugadorTorneo jugador) throws ReglaNegocioException {
+		torneo.retirar(jugador);
+		guardarDatos();
+	}
+
+	public void retirarEquipoDeTorneo(Torneo torneo, Equipo equipo) throws ReglaNegocioException {
+		torneo.retirarEquipo(equipo);
+		guardarDatos();
+	}
+
+	public void iniciarTorneo(Torneo torneo) throws ReglaNegocioException {
+		torneo.iniciar();
+		guardarDatos();
+	}
+
+	public void registrarGanadorTorneo(Torneo torneo, Encuentro encuentro, InscripcionTorneo ganador)
+			throws ReglaNegocioException {
+		torneo.registrarGanador(encuentro, ganador);
+		guardarDatos();
+	}
+
+	/** HU-TINT-07 CA-6 y CA-7: corrige el ganador de un encuentro mientras el siguiente no se haya jugado. */
+	public void corregirGanadorTorneo(Torneo torneo, Encuentro encuentro, InscripcionTorneo nuevoGanador)
+			throws ReglaNegocioException {
+		torneo.corregirGanador(encuentro, nuevoGanador);
+		guardarDatos();
+	}
+
+	/**
+	 * HU-TINT-02: registra a un estudiante de la universidad o a una persona externa para que pueda iniciar sesión
+	 * en la consola de jugadores e inscribirse en torneos individuales.
+	 * Debe indicar el nivel en al menos una disciplina individual del club.
+	 */
+	public ParticipanteExterno registrarParticipanteExterno(int edad, String nombre, String login, String password,
+			boolean estudiante, Map<DisciplinaIndividual, NivelJugador> niveles) throws ReglaNegocioException {
+		if (nombre == null || nombre.isBlank()) {
+			throw new ReglaNegocioException("El nombre no puede estar vacío");
+		}
+		if (edad < ParticipanteExterno.EDAD_MINIMA || edad > ParticipanteExterno.EDAD_MAXIMA) {
+			throw new ReglaNegocioException("La edad debe estar entre " + ParticipanteExterno.EDAD_MINIMA + " y "
+					+ ParticipanteExterno.EDAD_MAXIMA);
+		}
+		if (login == null || login.isBlank() || password == null || password.isBlank()) {
+			throw new ReglaNegocioException("El login y la contraseña no pueden estar vacíos");
+		}
+		if (existeLogin(login)) {
+			throw new ReglaNegocioException("El login " + login + " ya se encuentra ocupado por otro usuario");
+		}
+		if (niveles == null || niveles.isEmpty()) {
+			throw new ReglaNegocioException("Debe indicar el nivel en al menos una disciplina");
+		}
+		ParticipanteExterno participante = new ParticipanteExterno(edad, nombre.trim(), login, password, estudiante);
+		for (Map.Entry<DisciplinaIndividual, NivelJugador> nivel : niveles.entrySet()) {
+			participante.asignarNivel(nivel.getKey(), nivel.getValue());
+		}
+		usuarios.add(participante);
+		guardarDatos();
+		return participante;
+	}
+
+	public boolean existeLogin(String login) {
+		for (Usuario usuario : usuarios) {
+			if (usuario.getLogin().equals(login)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Socio, empleado o participante externo con ese login (para elegir compañero de dobles). */
+	public JugadorTorneo buscarJugadorTorneo(String login) {
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof JugadorTorneo && usuario.getLogin().equals(login)) {
+				return (JugadorTorneo) usuario;
+			}
+		}
+		return null;
+	}
+
+	public boolean esElegiblePreferencial(Torneo torneo, InscripcionTorneo inscripcion) {
+		return new ClasificacionPreferencial().esElegible(torneo, inscripcion, rankings, historial.getPartidos(),
+				equipos);
+	}
+
+	public List<DisciplinaIndividual> getDisciplinas() {
+		return new ArrayList<>(disciplinas);
+	}
+
+	public void registrarDisciplina(DisciplinaIndividual disciplina) {
+		if (disciplina != null && !disciplinas.contains(disciplina)) {
+			disciplinas.add(disciplina);
+			guardarDatos();
+		}
+	}
+
+	/** Devuelve la instancia del deporte de conjunto (la crea y registra si aún no existe). */
+	public DeporteConjunto obtenerDeporte(String nombre) {
+		for (DeporteConjunto deporte : deportes) {
+			if (deporte.getNombre().equalsIgnoreCase(nombre)) {
+				return deporte;
+			}
+		}
+		for (Equipo equipo : equipos) {
+			if (equipo.getDeporte().getNombre().equalsIgnoreCase(nombre)) {
+				return equipo.getDeporte();
+			}
+		}
+		DeporteConjunto nuevo;
+		switch (nombre) {
+		case "Futbol":
+			nuevo = new Futbol();
+			break;
+		case "Baloncesto":
+			nuevo = new Baloncesto();
+			break;
+		case "Voleibol":
+			nuevo = new Voleibol();
+			break;
+		default:
+			return null;
+		}
+		deportes.add(nuevo);
+		guardarDatos();
+		return nuevo;
+	}
+
+	public Socio buscarSocio(String login) {
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof Socio && usuario.getLogin().equals(login)) {
+				return (Socio) usuario;
+			}
+		}
+		return null;
+	}
+	
+	public List<Inventario> getInventario() {
+		return inventarios;
+	}
+	
+	public Historial getHistorial() {
+		return historial;
+	}
+	
+	public List<Equipo> getEquipos() {
+		return new ArrayList<>(equipos);
+	}
+
+	public List<SolicitudCambioTurno> getSolicitudesPendientes() {
+		List<SolicitudCambioTurno> pendientes = new ArrayList<>();
+		for (SolicitudCambioTurno solicitud : solicitudes) {
+			if (solicitud.getEstado() == EstadoSolicitud.PENDIENTE) {
+				pendientes.add(solicitud);
+			}
+		}
+		return pendientes;
+	}
+
+	public List<Empleado> getEmpleados() {
+		List<Empleado> empleados = new ArrayList<>();
+		for (Usuario usuario : usuarios) {
+			if (usuario instanceof Empleado) {
+				empleados.add((Empleado) usuario);
+			}
+		}
+		return empleados;
+	}
+	
+	public void setPersistencia(Persistencia persistencia) {
+		this.persistencia = persistencia;
+	}
+
+	public JSONObject toJSON() {
+		
+	    JSONObject json = new JSONObject();
+	    json.put("nombre", nombre);
+
+	    JSONArray jsonUsuarios = new JSONArray();
+	    for (Usuario usuario : usuarios) {
+	        jsonUsuarios.put(usuario.toJSON());
+	    }
+	    json.put("usuarios", jsonUsuarios);
+
+	    JSONArray jsonDeportes = new JSONArray();
+	    for (DeporteConjunto deporte : deportes) {
+	    	jsonDeportes.put(deporte.toJSON());
+	    }
+	    json.put("deportes", jsonDeportes);
+
+	    JSONArray jsonDisciplinas = new JSONArray();
+	    for (DisciplinaIndividual disciplina : disciplinas) {
+	    	jsonDisciplinas.put(disciplina.toJSON());
+	    }
+	    json.put("disciplinas", jsonDisciplinas);
+	    
+	    JSONArray jsonRankings = new JSONArray();
+	    for (RankingJugadorDisciplina ranking : rankings) {
+	    	jsonRankings.put(ranking.toJSON());
+	    }
+	    json.put("rankings", jsonRankings);
+	    
+	    JSONArray jsonInventarios = new JSONArray();
+	    for (Inventario inventario : inventarios) {
+	    	jsonInventarios.put(inventario.toJSON());
+	    }
+	    json.put("inventarios", jsonInventarios);
+	    
+	    Map<String, InstalacionConjunto> instalacionesConjunto = new HashMap<>();
+	    for (SesionEntrenamiento sesion : historial.getSesiones()) {
+	    	if (sesion.getInstalacion() instanceof InstalacionConjunto) {
+	    		instalacionesConjunto.put(sesion.getInstalacion().getNombre(), (InstalacionConjunto) sesion.getInstalacion());
+	    	}
+	    }
+	    for (Inventario inventario : inventarios) {
+	    	for (Instalacion instalacion : inventario.getInstalaciones()) {
+	    		if (instalacion instanceof InstalacionConjunto) {
+	    			instalacionesConjunto.put(instalacion.getNombre(), (InstalacionConjunto) instalacion);
+	    		}
+	    	}
+	    }
+	    JSONArray jsonInstalacionesConjunto = new JSONArray();
+	    for (InstalacionConjunto instalacion : instalacionesConjunto.values()) {
+	    	jsonInstalacionesConjunto.put(instalacion.toJSON());
+	    }
+	    json.put("instalacionesConjunto", jsonInstalacionesConjunto);
+	    
+	    json.put("tienda", tienda.toJSON());
+	    
+	    json.put("cafeteria", cafeteria.toJSON());
+	    
+	    JSONArray jsonEquipos = new JSONArray();
+	    for (Equipo equipo : equipos) {
+	    	jsonEquipos.put(equipo.toJSON());
+	    }
+	    json.put("equipos", jsonEquipos);
+	    
+	    JSONArray jsonCompetencias = new JSONArray();
+	    for (Competencia competencia : competencias) {
+	    	jsonCompetencias.put(competencia.toJSON());
+	    }
+	    json.put("competencias", jsonCompetencias);
+	    
+	    JSONArray jsonVentas = new JSONArray();
+	    for (Venta venta : ventas) {
+	    	jsonVentas.put(venta.toJSON());
+	    }
+	    json.put("ventas", jsonVentas);
+	    
+	    JSONArray jsonSolicitudes = new JSONArray();
+	    for (SolicitudCambioTurno solicitud : solicitudes) {
+	    	jsonSolicitudes.put(solicitud.toJSON());
+	    }
+	    json.put("solicitudes", jsonSolicitudes);
+	    
+	    JSONArray jsonSugerencias = new JSONArray();
+	    for (SugerenciaArticulo sugerencia : sugerencias) {
+	    	jsonSugerencias.put(sugerencia.toJSON());
+	    }
+	    json.put("sugerencias", jsonSugerencias);
+	    
+	    json.put("historial", historial.toJSON());
+	    JSONArray jsonTorneos = new JSONArray();
+	    for (Torneo torneo : torneos) {
+	        jsonTorneos.put(torneo.toJSON());
+	    }
+	    json.put("torneos", jsonTorneos);
+	    return json;
+	}
+	
+	public static ClubSeneca fromJSON(JSONObject json) {
+		ClubSeneca club = new ClubSeneca(json.getString("nombre"));
+
+		Map<String, Usuario> mapaUsuarios = new HashMap<>();
+		Map<String, DeporteConjunto> mapaDeportes = new HashMap<>();
+		Map<String, DisciplinaIndividual> mapaDisciplinas = new HashMap<>();
+		Map<String, Instalacion> mapaInstalaciones = new HashMap<>();
+		Map<String, Producto> mapaProductos = new HashMap<>();
+		Map<String, Equipo> mapaEquipos = new HashMap<>();
+
+		JSONArray jsonDisciplinas = leerLista(json, "disciplinas");
+		for (int indice = 0; indice < jsonDisciplinas.length(); indice++) {
+			DisciplinaIndividual disciplina = DisciplinaIndividual.fromJSON(jsonDisciplinas.getJSONObject(indice));
+			club.disciplinas.add(disciplina);
+			mapaDisciplinas.put(disciplina.getNombre(), disciplina);
+			for (InstalacionIndividual instalacion : disciplina.getInstalaciones()) {
+				mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+			}
+		}
+		
+		JSONArray jsonInstalacionesConjunto = leerLista(json, "instalacionesConjunto");
+		for (int indice = 0; indice < jsonInstalacionesConjunto.length(); indice++) {
+			Instalacion instalacion = InstalacionConjunto.fromJSON(jsonInstalacionesConjunto.getJSONObject(indice));
+			mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+		}
+		
+		JSONArray jsonUsuarios = leerLista(json, "usuarios");
+		for (int indice = 0; indice < jsonUsuarios.length(); indice++) {
+			Usuario usuario = Usuario.fromJSON(jsonUsuarios.getJSONObject(indice), mapaDisciplinas);
+			club.usuarios.add(usuario);
+			mapaUsuarios.put(usuario.getLogin(), usuario);
+		}
+
+		JSONArray jsonDeportes = leerLista(json, "deportes");
+		for (int indice = 0; indice < jsonDeportes.length(); indice++) {
+			DeporteConjunto deporte = DeporteConjunto.fromJSON(jsonDeportes.getJSONObject(indice), mapaDeportes);
+			club.deportes.add(deporte);
+			mapaDeportes.put(deporte.getNombre(), deporte);
+		}
+		
+		JSONArray jsonRankings = leerLista(json, "rankings");
+		for (int indice = 0; indice < jsonRankings.length(); indice++) {
+			club.rankings.add(RankingJugadorDisciplina.fromJSON(jsonRankings.getJSONObject(indice), mapaUsuarios, mapaDisciplinas));
+		}
+
+		if (json.has("tienda")) {
+			club.tienda = Tienda.fromJSON(json.getJSONObject("tienda"), mapaProductos);
+		}
+		if (json.has("cafeteria")) {
+			club.cafeteria = CafeteriaSocios.fromJSON(json.getJSONObject("cafeteria"), mapaProductos);
+		}
+
+		JSONArray jsonInventarios = leerLista(json, "inventarios");
+		for (int indice = 0; indice < jsonInventarios.length(); indice++) {
+			Inventario inventario = Inventario.fromJSON(jsonInventarios.getJSONObject(indice), mapaProductos, mapaInstalaciones, mapaDisciplinas);
+			club.inventarios.add(inventario);
+			for (Instalacion instalacion : inventario.getInstalaciones()) {
+				mapaInstalaciones.put(instalacion.getNombre(), instalacion);
+			}
+		}
+
+		JSONArray jsonEquipos = leerLista(json, "equipos");
+		for (int indice = 0; indice < jsonEquipos.length(); indice++) {
+			Equipo equipo = Equipo.fromJSON(jsonEquipos.getJSONObject(indice), mapaDeportes, mapaUsuarios);
+			club.equipos.add(equipo);
+			mapaEquipos.put(equipo.getNombre(), equipo);
+		}
+
+		JSONArray jsonCompetencias = leerLista(json, "competencias");
+		for (int indice = 0; indice < jsonCompetencias.length(); indice++) {
+			club.competencias.add(Competencia.fromJSON(
+					jsonCompetencias.getJSONObject(indice), mapaDeportes, mapaEquipos));
+		}
+
+		JSONArray jsonVentas = leerLista(json, "ventas");
+		for (int indice = 0; indice < jsonVentas.length(); indice++) {
+			club.ventas.add(Venta.fromJSON(jsonVentas.getJSONObject(indice), mapaUsuarios, mapaProductos));
+		}
+
+		JSONArray jsonSolicitudes = leerLista(json, "solicitudes");
+		for (int indice = 0; indice < jsonSolicitudes.length(); indice++) {
+			club.solicitudes.add(SolicitudCambioTurno.fromJSON(jsonSolicitudes.getJSONObject(indice), mapaUsuarios));
+		}
+
+		JSONArray jsonSugerencias = leerLista(json, "sugerencias");
+		for (int indice = 0; indice < jsonSugerencias.length(); indice++) {
+			club.sugerencias.add(SugerenciaArticulo.fromJSON(jsonSugerencias.getJSONObject(indice)));
+		}
+		
+		JSONArray jsonTorneos = leerLista(json, "torneos");
+		for (int indice = 0; indice < jsonTorneos.length(); indice++) {
+			club.torneos.add(Torneo.fromJSON(jsonTorneos.getJSONObject(indice),
+					mapaDeportes, mapaDisciplinas, mapaUsuarios, mapaEquipos));
+		}
+
+		if (json.has("historial")) {
+			club.historial = Historial.fromJSON(json.getJSONObject("historial"),
+					mapaUsuarios, mapaEquipos, mapaDisciplinas, mapaInstalaciones);
+		}
+
+		return club;
+	}
+	
+	private static JSONArray leerLista(JSONObject json, String clave) {
+		JSONArray lista = json.optJSONArray(clave);         
+		return lista != null ? lista : new JSONArray();    
+	}
+	
+}
+
