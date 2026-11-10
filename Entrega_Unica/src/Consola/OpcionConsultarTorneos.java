@@ -1,5 +1,6 @@
 package Consola;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import NucleoSistema.ClubSeneca;
@@ -24,9 +25,17 @@ public class OpcionConsultarTorneos extends OpcionTorneo {
 			return;
 		}
 		EstadoTorneo filtro = elegirFiltro();
-		List<Torneo> torneos = club.getTorneos();
-		if (torneos.isEmpty()) {
-			System.out.println("No hay torneos registrados.");
+		List<Torneo> torneos = new ArrayList<Torneo>();
+		for (Torneo t : club.getTorneos())
+		{
+			if (filtro == null || t.getEstado() == filtro)
+			{
+				torneos.add(t);
+			}
+		}
+		if (torneos.isEmpty())
+		{
+			System.out.println("No hay torneos con ese estado.");
 			return;
 		}
 		while (true) {

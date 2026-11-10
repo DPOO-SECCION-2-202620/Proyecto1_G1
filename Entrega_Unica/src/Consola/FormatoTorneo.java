@@ -1,14 +1,13 @@
 package Consola;
 
 import java.util.List;
-import java.util.Locale;
 
 import Tienda_Cafeteria_Inventario.BonoDescuento;
 import TorneosInternos.Encuentro;
 import TorneosInternos.EstadoTorneo;
 import TorneosInternos.InscripcionTorneo;
-import TorneosInternos.PremioEntregado;
 import TorneosInternos.PremiacionCompetitiva;
+import TorneosInternos.PremioEntregado;
 import TorneosInternos.Torneo;
 
 public final class FormatoTorneo {
