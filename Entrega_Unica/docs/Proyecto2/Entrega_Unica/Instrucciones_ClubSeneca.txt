@@ -1,0 +1,45 @@
+INSTRUCCIONES - CLUB SENECA
+
+Iniciar la aplicación
+
+1. Ejecutar la clase DatosIniciales (paquete Consola) como Java Application. Crea los datos de prueba en datos/club.json. Solo hace falta la primera vez; si se vuelve a ejecutar, borra lo que haya y empieza de cero.
+
+2. Ejecutar como Java Application la consola que se quiera usar (todas en el paquete Consola):
+   - ConsolaSocio: socios y jugadores externos
+   - ConsolaEmpleado: entrenadores y fisioterapeutas
+   - ConsolaAdministrador: administrador
+
+3. Iniciar sesión con alguno de los usuarios de prueba (3 intentos). Después se elige la opción escribiendo su número. El 0 guarda y sale.
+
+Usuarios de prueba
+
+Estos son los que crea DatosIniciales:
+
+  Administrador
+    admin / admin123
+
+  Entrenadores (consola de empleado)
+    luis / clave-luis
+    carla / clave-carla
+    pablo / clave-pablo
+
+  Fisioterapeutas (consola de empleado)
+    marta / clave-marta
+    diego / clave-diego
+
+  Socios (consola de socio)
+    jugador01 hasta jugador09, con contraseña clave1 hasta clave9
+    (jugador01 / clave1, jugador02 / clave2, y así)
+    ana / clave-ana
+    nino / clave-nino  (es menor de edad, sirve para probar las categorías)
+
+  Jugador externo (consola de socio)
+    valentina / clave-valentina  (estudiante de la universidad)
+
+Qué hace cada consola
+
+   Socio: inscribirse en equipos y torneos individuales, retirarse, consultar torneos, ver bonos y comprar con bono. Los jugadores externos solo pueden manejar torneos y ver sus bonos.
+
+   Empleado: igual que el socio, sin inscripción en equipos. Los entrenadores además verifican el mínimo de jugadores de un equipo e inscriben o retiran equipos de torneos de conjunto.
+
+   Administrador: revisar solicitudes de cambio de turno, registrar estudiantes y personas externas, crear, iniciar y consultar torneos, y registrar o corregir ganadores.
