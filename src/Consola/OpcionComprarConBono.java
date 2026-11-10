@@ -60,7 +60,7 @@ public class OpcionComprarConBono implements OpcionMenu {
         Rubro rubro = Rubro.CAFETERIA;
         if (lugar == 1) {
             rubro = Rubro.TIENDA;
-        
+        }
 
         List<Producto> catalogo = club.getProductosDisponibles(rubro);
         if (catalogo.isEmpty()) {
